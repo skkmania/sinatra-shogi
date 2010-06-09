@@ -1,0 +1,6 @@
+*.swp
+../log/*.*
+log/*.*
+img/*.*
+lib/*.*
+lib

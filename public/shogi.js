@@ -1,29 +1,4 @@
 /**
- * load classes
- */
-/* 以下の処理はfirefoxでは動いたが,chromeで動かず。
-    var js = /shogi\.js(\?.*)?$/;
-    var scriptElements = $$('head script[src]').findAll(function(s) {
-      return s.src.match(js);
-    });
-alert('1 : ' + scriptElements.length);
-    if(scriptElements.length == 0)
-      scriptElements = $$('body script[src]').findAll(function(s) {
-        return s.src.match(js);
-      });
-alert('2 : ' + scriptElements.length);
-    scriptElements.each(function(s) {
-        alert(s.src); 
-        $A(['piece.js','cell.js','board.js','stand.js']).each(function(f){
-          var path = s.src.replace(js, '');
-          var scriptElm = document.createElement('script');
-          scriptElm.type = 'text/javascript';
-          scriptElm.src = path + f;
-          document.getElementsByTagName('body')[0].appendChild(scriptElm);
-        });
-      });
-*/
-/**
  * ShogiGame
  */
 ShogiGame = Class.create({
