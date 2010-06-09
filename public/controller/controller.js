@@ -327,6 +327,22 @@ GameController = Class.create({
     this.log.goOut();
   },
 	/**
+	 * slice(state)
+	 */
+        // reviewモードにおいて、sliceの配布がなされたときに受け取って処理するためのコールバック
+        // 
+  slice: function slice(state) { // GameController
+    this.log.getInto('GameController#slice');
+    this.handler.boardObj  = eval(state.get('board'));
+    this.handler.nextMoves = eval(state.get('next'));
+    this.handler.prevMoves = eval(state.get('prev'));
+    this.game.boardReadFromDB(this.handler.boardObj);
+    this.game.board.show();
+    this.prevArea.show(this.handler.prevMoves);
+    this.nextArea.show(this.handler.nextMoves);
+    this.log.goOut();
+  },
+	/**
 	 * over(state)
 	 */
         // 勝負がついた後のstateChangeへのコールバック

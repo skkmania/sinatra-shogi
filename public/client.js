@@ -474,6 +474,34 @@ var Handler = Class.create({
 
 
 	/**
+	 * makeReviewDelta()
+	 */
+	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
+	// 入力 : bid 数値 表示したい局面のbid
+	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
+        // 出力 : 作成されたdelta オブジェクト
+  makeReviewDelta: function makeReviewDelta(bid){ // Handler
+    var delta = {};
+    this.logObj.getInto();
+    var value = bid || $('inputText').value;
+    if(!this.dataStore.slices.get(value)){
+      this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
+      this.dataStore.arrangeByBid(15);
+    }
+    this.boardObj  = this.dataStore.slices.get(value).get('board')[0];
+    this.nextMoves = this.dataStore.slices.get(value).get('nextMoves');
+    this.prevMoves = this.dataStore.slices.get(value).get('prevMoves');
+    delta['mode']  = 'slice';
+    delta['bid']   = bid + '';
+    delta['board'] = Object.toJSON(this.boardObj);
+    delta['next']  = Object.toJSON(this.nextMoves);
+    delta['prev']  = Object.toJSON(this.prevMoves);
+    this.logObj.goOut();
+    return delta;
+  },
+
+
+	/**
 	 * refreshBoard
 	 */
 	// 入力されたbidのboard情報を取得し、盤面を書き換える。
@@ -504,13 +532,15 @@ var Handler = Class.create({
       case 'nxts' :
         var bid = this.nextMoves.find(function(e){ return e.mid == target; }).nxt_bid;
         this.logObj.debug('bid found : ' + bid);
-        this.refreshBoard(bid);
+        window.gameController.sendDelta( this.makeReviewDelta(bid) );
+        //this.refreshBoard(bid);
         break;
       case 'pres' :
         // これはバグのもとだな。nextMovesと異なり、prevMovesではmidが一意とはかぎらないので、これだとクリックしたmoveからbidを読んだかどうかわからない。
         var bid = this.prevMoves.find(function(e){ return e.mid == target; }).bid;
         this.logObj.debug('bid found : ' + bid);
-        this.refreshBoard(bid);
+        window.gameController.sendDelta( this.makeReviewDelta(bid) );
+        //this.refreshBoard(bid);
         break;
       default :
         break;
