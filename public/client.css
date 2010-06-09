@@ -1,0 +1,82 @@
+@charset "UTF-8";
+
+* {
+ margin: 0px;
+ padding: 0px;
+}
+
+.bids_hash { font: 9px; }
+
+#head {
+  height: 20px;
+  vertical-align: middle;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+#head #hTitle {
+  margin-left: 10px;
+  float: left;
+}
+
+div#content {
+  width: 900px;
+}
+
+div#pres {
+  float: left;
+  width:  20%;
+  vertical-align: middle;
+}
+
+#pres li {
+}
+
+div#self {
+  float: left;
+  width:  60%;
+  vertical-align: middle;
+}
+
+#nxts {
+  float: left;
+  width:  20%;
+  vertical-align: middle;
+}
+
+div#data {
+  clear: both;
+  vertical-align: middle;
+}
+
+#cache {
+  margin: 10px;
+  clear: both;
+}
+
+#cache #size {
+  float: left;
+  margin: 10px;
+  width:  20%;
+  vertical-align: middle;
+}
+
+#cache #age {
+  float: right;
+  margin: 10px;
+  width:  80%;
+  vertical-align: middle;
+}
+
+#cache #contents {
+  float: right;
+  width:  80%;
+  margin: 50px;
+  vertical-align: middle;
+}
+
+#footer {
+  margin: 50px;
+  clear: both;
+  text-align: right;
+}

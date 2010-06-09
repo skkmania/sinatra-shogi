@@ -1,0 +1,179 @@
+#debug_log {
+  background-color: #aaa;
+  border: solid black 2px;
+  overflow: auto;
+  width: 75%;
+  height: 300px;
+}
+
+.loggerDiv {
+  background-color: #fff;
+  border: solid black 1px;
+  width: 100%;
+}
+
+#debug_log:before {
+  content: "Debugging Messages";
+  display: block;
+  text-align: center;
+  font: bold 18pt sans-serif;
+}
+
+.debug_message {
+  border-bottom: solid black 1px;
+}
+
+.logDiv {
+  width: 97%;
+  margin-left : 15px;
+  margin-right : 5px;
+  border : dashed blue 1px;
+}
+
+.foldbutton {
+  color: green;
+  margin-left : 10px;
+}
+
+.foldallbutton {
+  color: red;
+  margin-left : 10px;
+}
+
+.logDivFirstLine {
+  color: blue;
+  margin-left : 10px;
+}
+
+.logRow {
+  clear: both;
+}
+
+.logCell_1 {
+  float: left;
+  font-size: 8pt;
+  font-weight: bold;
+  padding-right: 2px;
+  width: 160px;
+  display: inline;
+}
+
+.logCell_2 {
+  float: left;
+  font-size: 8pt;
+  display: inline;
+}
+
+.logCell_3 {
+  font-size: 14pt;
+  white-space: nowrap;
+  width: 100%;
+  display: inline;
+}
+
+ .modal {
+ background-color:#fff;
+ padding:10px;
+ border:1px solid #333;
+ }
+
+ .tooltip {
+ border:1px solid #000;
+ background-color:#fff;
+ width:500px;
+ color:#333;
+ padding:10px;
+ }
+ .simple_window {
+ width:400px;
+ height:150px;
+ border:1px solid #000;
+ background-color:#fff;
+ padding:10px;
+ text-align:left;
+ color:#333;
+ }
+ .window {
+ background-image:url("../img/lib/window_background.png");
+ background-position:top left;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+/*
+ padding:10px;
+*/
+ color:#000;
+ min-width:150px;
+ min-height:100px;
+ }
+ .window .window_contents {
+ background-color: #fff;
+/*
+ margin-top:10px;
+*/
+ width:100%;
+ height:100%;
+ overflow: auto;
+ }
+ .window .window_header {
+ text-align:center;
+ float:clear;
+ }
+
+ .window .window_footer {
+ cursor:s-resize;
+ background-color: #888;
+ text-align:right;
+ width:100%;
+ height:3%;
+ }
+
+ .draggable_handle {
+ height:13px;
+ width:13px;
+ background-image:url("../img/lib/window_close.gif");
+ }
+
+ .resizable_handle {
+ height:13px;
+ width:13px;
+ background-image:url("../img/lib/window_close.gif");
+ float:right;
+ cursor:nw-resize;
+ }
+
+ .window .window_title {
+/*
+ margin-top:-7px;
+ margin-bottom:7px;
+*/
+ cursor:move;
+ color: #bbb;
+ }
+
+ .window .window_resizable {
+ display:block;
+ position:absolute;
+ top:4px;
+ left:50px;
+ height:13px;
+ width:13px;
+ background-image:url("../img/lib/window_close.gif");
+ cursor:pointer;
+ cursor:hand;
+ }
+
+ .window .window_close {
+ display:block;
+/*
+ position:absolute;
+ top:4px;
+ left:5px;
+*/
+ height:13px;
+ width:13px;
+ background-image:url("../img/lib/window_close.gif");
+ cursor:pointer;
+ cursor:hand;
+ }
+
+#control_overlay { background-color:#000; }

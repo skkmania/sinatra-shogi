@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Animal Shogi</title>
+    <script src="http://www.google.com/jsapi"></script>
+    <script>
+      google.load("prototype", "1.6.0.3");
+      google.load("scriptaculous", "1.8.2");
+    </script>
+
+    <script src="../../unittest.js"></script>
+    <script src="../../pseudo-wave.js"></script>
+    <script src="../../locales.js"></script>
+    <script src="../../log4js.js"></script>
+    <script src="../../animal-shogi.js"></script>
+    <script src="../../test_animal-shogi.js"></script>
+    <script>
+      Event.observe(window, 'load', function() {
+        window.game = new AnimalShogiGame({containerId:'animal-shogi'});
+        wave.setStateCallback(window.game.stateChanged.bind(window.game));
+        window.game.show();
+        new Test.Unit.Runner( testcases, 'testlog' );
+      });
+    </script>
+    <link rel="stylesheet" href="../test.css" type="text/css" />
+    <link rel="stylesheet" href="../../animal-shogi.css" type="text/css" />
+  </head>
+  <body>
+    <div id="testlog"> </div>
+    <div id="test">
+      <button onclick="window.game.setPlayer(wave.getViewer().getId())">Join</button>
+      <button onclick="window.game.setPlayer(new wave.Participant().getId(), true);">Add Player</button>
+      <button onclick="javascript:window.game.nextTurn()">Next Turn</button>
+      <input id="state" value="piece:'giraffe_player2', from:[0,0], to:[0,1]" style="width:250px" />
+      <script>
+        function invokeMove() {
+          var value = eval('({' + $('state').value + '})');
+          var piece = Piece.selectByName(value.piece);
+          var fromCell = window.game.board.getCell(value.from[0], value.from[1]);
+          var toCell = window.game.board.getCell(value.to[0], value.to[1]);
+          piece.move(fromCell, toCell);
+          window.game.nextTurn();
+        }
+      </script>
+      <button onclick="javascript:invokeMove(); $('state').value = 'piece:\'giraffe_player2\', from:[0,1], to:[0,2]'">Move</button>
+      <button onclick="javascript:$('json').innerHTML = window.game.toHTML()">toJSON</button>
+    </div>
+<div id="container">
+  <div id="top-stand"></div>
+  <div id="animal-shogi"></div>
+  <div id="bottom-stand"></div>
+</div>
+    <div id="sidebar">
+      <div id="control-panel" class="sidebar-panel">
+        <h2><script>it('player')</script></h2>
+      </div>
+
+      <div id="top-panel" class="player">
+      <div id="player1-panel" class="player">
+        <script>it('sente');it('waiting');</script>
+      </div>
+      </div>
+      <div id="captured-top" class="sidebar-panel">
+        <h2><script>it('captured')</script></h2>
+        <div id="top-captured"></div>
+      </div>
+      <div id="message" class="sidebar-panel">
+        <h2><script>it('message')</script></h2>
+        <div id="message-body"></div>
+      </div>
+
+      <div id="bottom-panel" class="player">
+      <div id="player2-panel" class="player">
+        <script>it('gote');it('waiting');</script>
+      </div>
+      </div>
+      <div id="captured-bottom" class="sidebar-panel">
+        <h2><script>it('captured')</script></h2>
+        <div id="bottom-captured"></div>
+      </div>
+
+      <div style="text-align:left;">
+    	<button id="reverse-button" class="reverse" onclick="window.game.reverse()); this.hide();"><script>it('reverse')</script></button>
+      </div>
+
+      <div style="text-align:right;">
+        <a href="http://en.wikipedia.org/wiki/D%C5%8Dbutsu_sh%C5%8Dgi" target="_blank">Help</a>
+      </div>
+      <div id="joinButton">
+        <button id="join-button" class="join" onclick="window.game.setPlayer(wave.getViewer().getId()); this.hide();"><script>it('join')</script></button>
+      </div>
+    </div>
+    <pre id="json" style="margin-top:380px;"></pre>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+<ModulePrefs title="State Example" height="850">
+  <Require feature="rpc" /> 
+  <Require feature="wave" /> 
+</ModulePrefs>
+<Content type="html">
+<![CDATA[ 
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/prototype.js"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/scriptaculous/scriptaculous.js"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/scriptaculous/resizable.js"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/livepipe/livepipe.js"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/livepipe/window.js"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/scriptaculous/unittest.js"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/m17n.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/log4pipe.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/test/unit/log4pipe_test_common_functions.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/lib/common-utils.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/controller/controller.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/piece.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/cell.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/board.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/stand.js" charset="UTF-8"></script>
+<script src="http://skkmania.sakura.ne.jp/shogi/shogi.js" charset="UTF-8"></script>
+<script>
+  function init() {
+    var logObj = makeLogObj('testInitialize', {width:800, height:550, resizable:false});
+    $('logger0').insert(new Element('img',{id:'handle0',src:"http://skkmania.sakura.ne.jp/shogi/img/lib/window_close.gif"}));
+    new Resizable('logger0',{handle:'handle0'});
+if(wave) 
+    window.gameController = new GameController({containerId:'shogi','gameConstructor':'shogi'}, logObj);
+    if (wave && wave.isInWaveContainer()) {
+      wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
+    }
+  }
+  gadgets.util.registerOnLoadHandler(init);
+</script>
+<link rel="stylesheet" href="http://skkmania.sakura.ne.jp/shogi/css/log4pipe.css" type="text/css" />
+<link rel="stylesheet" href="http://skkmania.sakura.ne.jp/shogi/css/shogi.css" type="text/css" />
+
+<div id="testlog"> </div>
+
+<div id="container">
+  <div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>
+  <div id="counter"><span class="t">count</span><span id="counterNum"><span></div>
+  <div id="top-stand"></div>
+  <div id="shogi"></div>
+  <div id="promoteOrNot" class="confirmAction" style="display:none">
+    <div id="yesElement">yes</div>
+    <div id="noElement">no</div>
+  </div>
+  <div id="bottom-stand"></div>
+  <div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>
+</div>
+<div id="sidebar">
+  <div id="control-panel">
+    <div id="message">
+      <div class="t">message</div>
+      <div id="message-body"></div>
+    </div>
+  </div>
+</div>
+<div id="rev-b">
+  <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>
+  <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>
+  <button id="test-button" class="testbutton t" onclick="new Test.Unit.Runner( testcases, 'testlog' );">run_test</button>
+</div>
+<div style="clear:both;text-align:right;">
+    <a href="http://en.wikipedia.org/wiki/D%C5%8Dbutsu_sh%C5%8Dgi" target="_blank" class="t">help</a>
+</div>
+
+<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
+
+  <p id="links_pool"> </p>
+  <p id="window_pool">
+    <div id="logger0"></div>
+    <div id="logger1"></div>
+  </p>
+<!--pre id="json" style="margin-top:380px;"></pre-->
+]]> 
+</Content>
+</Module>

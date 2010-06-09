@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+  <title>pseudo-wave Unit test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script src="../../prototype.js"></script>
+<script src="../../scriptaculous/scriptaculous.js"></script>
+<script src="../../scriptaculous/resizable.js"></script>
+<script src="../../livepipe/livepipe.js"></script>
+<script src="../../livepipe/window.js"></script>
+<script src="../../scriptaculous/unittest.js"></script>
+<script src="../../m17n.js" charset="UTF-8"></script>
+<script src="../../log4pipe.js" charset="UTF-8"></script>
+<script src="../../../test/unit/log4pipe_test_common_functions.js" charset="UTF-8"></script>
+<script src="../../common-utils.js" charset="UTF-8"></script>
+<script src="../../pseudo-wave.js" charset="UTF-8"></script>
+<script src="../../../piece.js" charset="UTF-8"></script>
+<script src="../../../cell.js" charset="UTF-8"></script>
+<script src="../../../board.js" charset="UTF-8"></script>
+<script src="../../../stand.js" charset="UTF-8"></script>
+<script src="../../../shogi.js" charset="UTF-8"></script>
+<script src="../../../controller/controller.js" charset="UTF-8"></script>
+<script src="../../unittest.js" type="text/javascript"></script>
+<link rel="stylesheet" href="../../../css/shogi.css" type="text/css" />
+<link rel="stylesheet" href="../../test.css" type="text/css" />
+<link rel="stylesheet" href="../../../css/log4pipe.css" type="text/css" />
+  <style type="text/css" media="screen">
+  /* <![CDATA[ */
+    #div_absolute_test { position: absolute }
+    #links_pool a { margin-left: 10px }
+  /* ]]> */
+  </style>
+</head>
+<body>
+<h1>pseudo-wave test</h1>
+<p>
+  Test of methods of class pseudo-wave
+</p>
+
+<!-- Log output -->
+<div id="testlog"> </div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+  var title;
+  var window_link; 
+  var resizable_id;
+  var shogiGameObj;
+  var settings = {containerId:'shogi','gameConstructor':'shogi'};
+
+  new Test.Unit.Runner({
+    
+  setup: function() { with( this ) {
+    title = 'popup' + TestCounter;
+    window_link = "logger"  + TestCounter;
+    resizable_id = "handle" + TestCounter;
+    HOST = '../../';
+  } },
+
+  teardown: function() { with( this ) {
+    TestCounter++;
+    delete settings;
+  } },
+
+  testDebugDump : function() {  with( this )  {
+    var logObj = makeLogObj('testDebugDump', {width:800, height:600, resizable:false});
+    logObj.debug('test debug_dump');
+    logObj.setLevel(Log.ERROR);
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var gameObj = new GameController(settings, logObj);
+    gameObj.top = 0;
+    gameObj.players = ['test01@googlewave.com','test02@googlewave.com'];
+    gameObj.setPlayersOrder();
+    gameObj.log.debug('test debug_dump');
+    gameObj.game.debug_dump();
+    assertEqual( 'shogi', gameObj.game.container.id );
+    } },
+
+  testMateCheck : function() {  with( this )  {
+    var logObj = makeLogObj('testMateCheck', {width:800, height:600, resizable:false});
+    logObj.debug('test mateCheck');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var gameObj = new GameController(settings, logObj);
+    gameObj.top = 0;
+    gameObj.players = ['test01@googlewave.com','test02@googlewave.com'];
+    gameObj.setPlayersOrder();
+    gameObj.log.debug('test mateCheck');
+    logObj.setLevel(Log.DEBUG);
+    logObj.setDiv = true;
+    var result = gameObj.game.mateCheck([2,1]);
+    assertEqual(false, result, '[2,1] is mated');
+    result = gameObj.game.mateCheck([2,2]);
+    assertEqual(false, result, '[2,2] is mated');
+    result = gameObj.game.mateCheck([1,4]);
+    assertEqual(true, result, '[1,4] is not mated');
+    result = gameObj.game.mateCheck([2,4]);
+    assertEqual(true, result, '[2,4] is not mated');
+    assertEqual( 'shogi', gameObj.game.container.id );
+    } },
+
+  testCheckFinish : function() {  with( this )  {
+    var logObj = makeLogObj('testCheckFinish', {width:800, height:600, resizable:false});
+    logObj.debug('test checkFinish');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var gameObj = new GameController(settings, logObj);
+    gameObj.top = 0;
+    gameObj.players = ['test01@googlewave.com','test02@googlewave.com'];
+    gameObj.setPlayersOrder();
+    gameObj.log.debug('test checkFinish');
+
+    logObj.setLevel(Log.DEBUG);
+    logObj.setDiv = true;
+    var result = gameObj.game.checkFinish(gameObj.player1, 'chick',[2,1], 'chick');
+    assertEqual(null, result, 'not finish');
+    result = gameObj.game.checkFinish(gameObj.player1, 'chick',[2,2], 'chick');
+    assertEqual(false, result, '[2,2] is mated');
+    result = gameObj.game.checkFinish(gameObj.player1, 'chick',[2,3], 'chick');
+    assertEqual(true, result, '[1,4] is not mated');
+    result = gameObj.game.checkFinish(gameObj.player1, 'chick',[2,4], 'chick');
+    assertEqual(true, result, '[2,4] is not mated');
+    assertEqual( 'shogi', gameObj.game.container.id );
+    } },
+
+  testGetPlayer : function() {  with( this )  {
+    var logObj = makeLogObj('testgetPlayer', {width:800, height:600, resizable:false});
+    logObj.debug('test confirmActionByUser');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var gameObj = new GameController(settings, logObj);
+    gameObj.players = ['test01@googlewave.com','test02@googlewave.com'];
+    gameObj.setPlayersOrder();
+    gameObj.log.debug('test getPlayer');
+    logObj.setLevel(Log.DEBUG);
+    logObj.setDiv = true;
+    gameObj.game.getPlayer(gameObj.player1);
+    assertEqual(logObj, gameObj.log);
+    assertEqual( 'shogi', gameObj.game.container.id );
+    } },
+
+  testConfirmActionByUser : function() {  with( this )  {
+    var logObj = makeLogObj('testConfirmActionByUser', {width:800, height:600, resizable:false});
+    logObj.debug('test confirmActionByUser');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var gameObj = new GameController(settings, logObj);
+    gameObj.log.debug('board show');
+    assertEqual(logObj, gameObj.log);
+    gameObj.game.top = 0;
+    gameObj.game.board.show();
+    var toCell = gameObj.game.board.getCell(2,1);
+    var fromCell = gameObj.game.board.getCell(2,2);
+    var piece = gameObj.game.board.getCell(2,2).piece;
+    logObj.setLevel(Log.DEBUG);
+    logObj.setDiv = true;
+    gameObj.game.confirmActionByUser([piece, fromCell, toCell]);
+    gameObj.game.yesElement.fire('click');
+    //gameObj.game.confirmActionElement.yesElement.fire('click');
+    assertEqual(logObj, gameObj.log);
+    assertEqual( 'shogi', gameObj.game.container.id );
+    logObj.debug('logObj still alive 5');
+    } },
+
+  testMoveValidate : function() {  with( this )  {
+    var logObj = makeLogObj('testMoveValidate', {width:800, height:600, resizable:false});
+    logObj.debug('test moveValidate');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    settings = {'containerId':'shogi'};
+    var gameObj = new GameController(settings, logObj);
+    gameObj.log.debug('test moveValidate');
+
+    // 局面の準備
+    gameObj.top = 0;
+    gameObj.game.board.show();
+    str = 'l__p__P_Ln_p___PRNs_p___P_S__p___P_Gk_p___P_Kg_p___P_G__p___P_Sn_p___PBNl_p___P_L';
+    gameObj.game.board.read(str);
+    var str = 'gsbr';
+    gameObj.game.whiteStand.read(str);
+
+    // testの準備
+    gameObj.players = ['test01@googlewave.com','test02@googlewave.com'];
+    gameObj.setPlayersOrder();
+    logObj.setLevel(Log.DEBUG);
+    logObj.setDiv = true;
+
+    // 自分の手番の駒の上に進もうとしていないかCheck
+    var piece = gameObj.game.board.getCell(2,9).piece;
+    var fromCell = gameObj.game.board.getCell(2,9);
+    var toCell = gameObj.game.board.getCell(3,7);
+    var res = moveValidate([piece, fromCell, toCell]);
+    // assert
+    assertEqual( 'badAction', res, 'moveValidate move piece on board onto other self piece test');
+
+    // 駒の上に持ち駒をうとうとする動作に対するテスト
+    var piece = gameObj.game.whiteStand.pieces[0];
+    var fromObj = gameObj.game.whiteStand;
+    var toCell = gameObj.game.board.getCell(5,7);
+    var res = moveValidate([piece, fromObj, toCell]);
+    // assert
+    assertEqual( 'badAction', res, 'moveValidate put piece from stand to another piece test');
+    
+    // 成ろうとしているかCheck
+    var piece = gameObj.game.board.getCell(5,7).piece;
+    var fromCell = gameObj.game.board.getCell(5,7);
+    var toCell = gameObj.game.board.getCell(5,6);
+    var res = moveValidate([piece, fromCell, toCell]);
+    // assert
+    assertEqual( 'normal', res, 'moveValidate put piece from stand to another piece test');
+    
+  } },
+
+  testPromoteCheck : function() {  with( this )  {
+    var logObj = makeLogObj('testPromoteCheck', {width:800, height:600, resizable:false});
+    logObj.debug('test promoteCheck');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    settings = {'containerId':'shogi'};
+    var gameObj = new GameController(settings, logObj);
+    gameObj.log.debug('test promoteCheck');
+
+    // 局面の準備
+    gameObj.top = 0;
+    gameObj.game.board.show();
+    str = 'l_pP____Ln_Q___PRNs_pN__P_S__p___P_Gk_p___P_Kg_p___P_G__p___P_Sn_p___PBNl_p___P_L';
+    gameObj.game.board.read(str);
+    var str = 'gsbr';
+    gameObj.game.whiteStand.read(str);
+
+    // testの準備
+    logObj.setLevel(Log.DEBUG);
+    logObj.setDiv = true;
+    gameObj.players = ['test01@googlewave.com','test02@googlewave.com'];
+    gameObj.setPlayersOrder();
+    var piece = gameObj.game.board.getCell(1,4).piece;
+    var fromCell = gameObj.game.board.getCell(1,4);
+    var toCell = gameObj.game.board.getCell(1,3);
+    var res = promoteCheck([piece, fromCell, toCell]);
+
+    // assert
+    assertEqual('needConfirm', res, 'promoteCheck put piece from 1 4 to 1 3 test');
+    logObj.setLevel(Log.ERROR);
+    logObj.setDiv = false;
+    
+    // testの準備
+    var piece = gameObj.game.board.getCell(2,3).piece;
+    var fromCell = gameObj.game.board.getCell(2,3);
+    var toCell = gameObj.game.board.getCell(2,2);
+    var res = promoteCheck([piece, fromCell, toCell]);
+
+    // assert
+    assertEqual( false, res, 'promoteCheck put piece from 2 3 to 2 2 test');
+
+    // testの準備
+    var piece = gameObj.game.board.getCell(3,4).piece;
+    var fromCell = gameObj.game.board.getCell(3,4);
+    var toCell = gameObj.game.board.getCell(4,2);
+    var res = promoteCheck([piece, fromCell, toCell]);
+
+    // assert
+    assertEqual( 'mustPromote', res, 'promoteCheck put piece from 3 4 to 4 2 test');
+  } },
+
+  testToString : function() {  with( this )  {
+    var logObj = makeLogObj('testToString', {width:800, height:600, resizable:false});
+    logObj.debug('test toString');
+    logObj.setLevel(Log.ERROR);
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var gameObj = new GameController(settings, logObj);
+    shogiGameObj = gameObj.game;
+    shogiGameObj.log = logObj;
+    shogiGameObj.log.debug('logObj is set to shogiGameObj.log');
+
+    assertEqual( 'ShogiGame', shogiGameObj.toString() );
+  } }
+  }, "testlog");
+// ]]>
+</script>
+  <p id="links_pool"> </p>
+  <hr>
+  <p id="window_pool">
+    <div id="logger0"></div>
+    <div id="logger1"></div>
+    <div id="logger2"></div>
+    <div id="logger3"></div>
+    <div id="logger4"></div>
+    <div id="logger5"></div>
+    <div id="logger6"></div>
+    <div id="logger7"></div>
+    <div id="logger8"></div>
+<div id="container">
+  <div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>
+  <div id="counter"><span class="t">count</span><span id="counterNum"><span></div>
+  <div id="top-stand"></div>
+  <div id="shogi"></div>
+  <div id="promoteOrNot" class="confirmAction" style="display:none">
+    <div class="t">promote</div>
+    <div id="yesElement">yes</div>
+    <div id="noElement">no</div>
+  </div>
+  <div id="bottom-stand"></div>
+  <div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>
+</div>
+<div id="sidebar">
+  <div id="control-panel">
+    <div id="message">
+      <div class="t">message</div>
+      <div id="message-body"></div>
+    </div>
+  </div>
+</div>
+<div id="rev-b">
+  <button id="reverse-button" class="reverse t" onclick="window.shogiGameObj.reverse();">reverse</button>
+  <button id="dump-button" class="dump t" onclick="window.shogiGameObj.debug_dump();">dump</button>
+</div>
+
+<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
+
+</body>
+</html>

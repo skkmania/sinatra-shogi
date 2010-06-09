@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+  <title>Area Unit test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="http://www.google.com/jsapi"></script>
+    <script>
+      google.load("prototype", "1.6.0.3");
+      google.load("scriptaculous", "1.8.2");
+    </script>
+<script src="../../lib/MessagePack-JS/msgpack.js"></script>
+<script src="../../lib/scriptaculous/resizable.js"></script>
+<script src="../../lib/livepipe/livepipe.js"></script>
+<script src="../../lib/livepipe/window.js"></script>
+<script src="../../lib/scriptaculous/unittest.js"></script>
+<script src="../../lib/m17n.js" charset="UTF-8"></script>
+<script src="../../client.js" charset="UTF-8"></script>
+<script src="../../lib/log4pipe.js" charset="UTF-8"></script>
+<script src="../../lib/log4pipe_test_common_functions.js" charset="UTF-8"></script>
+
+<link rel="stylesheet" href="../test.css" type="text/css" />
+<link rel="stylesheet" href="../../css/log4pipe.css" type="text/css" />
+<link rel="stylesheet" href="../../client.css" type="text/css" />
+
+  <style type="text/css" media="screen">
+  /* <![CDATA[ */
+    #div_absolute_test { position: absolute }
+    #links_pool a { margin-left: 10px }
+  /* ]]> */
+  </style>
+</head>
+<body>
+<h1>Area test</h1>
+<p>
+  Test of methods of class Area in client.js
+</p>
+
+<!-- Log output -->
+<div id="testlog"> </div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+  var title;
+  var window_link; 
+  var resizable_id;
+
+  new Test.Unit.Runner({
+    
+  setup: function() { with( this ) {
+    title = 'popup' + TestCounter;
+    window_link = "logger"  + TestCounter;
+    resizable_id = "handle" + TestCounter;
+    HOST = 'localhost';
+  } },
+
+  teardown: function() { with( this ) {
+    TestCounter++;
+    delete settings;
+  } },
+
+  testAreaInitialize : function() {  with( this )  {
+    var logObj = makeLogObj('testAreaInitialize', {width:600, height:350, resizable:false});
+    logObj.debug('test Area initialize');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var hand = new Handler(logObj);
+    var standObj = new Area(hand, logObj, 'nxts', 'NextMoves', {});
+    logObj.debug('Area obj initialized');
+    assertEqual( 'nxts', standObj.container );
+    logObj.debug('Area container : '+standObj.container);
+
+    } },
+    
+  testAreaDraggable : function() {  with( this )  {
+    var logObj = makeLogObj('testAreaDraggable', {width:600, height:350, resizable:false});
+    logObj.debug('test Area initialize');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var hand = new Handler(logObj);
+    var standObj = new Area(hand, logObj, 'nxts', 'testAreaDraggable', {draggable:true});
+    logObj.debug('Area obj initialized');
+    assertEqual( 'nxts', standObj.container );
+    logObj.debug('Area container : '+standObj.container);
+    standObj.window.open();
+    assert( standObj.window.isOpen );
+
+    } },
+    
+  testAreaLink : function() {  with( this )  {
+    var logObj = makeLogObj('testAreaLink', {width:600, height:350, resizable:false});
+    logObj.debug('test Area initialize');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var hand = new Handler(logObj);
+    var standObj = new Area(hand, logObj, 'nxts', 'testAreaLink', {draggable:true});
+    logObj.debug('Area obj initialized');
+    assertEqual( 'nxts', standObj.container );
+    logObj.debug('Area container : '+standObj.container);
+    standObj.window.open();
+    assert( standObj.window.isOpen );
+
+    } },
+    
+  testAreaDisplay : function() {  with( this )  {
+    var logObj = makeLogObj('testAreaDisplay', {width:600, height:350, resizable:false});
+    logObj.debug('test Area display');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var hand = new Handler(logObj);
+    hand.dataStore.getMsg(1,1,3,15,'full',false);
+    hand.dataStore.makeSlice(1,15);
+
+    var standObj = new Area(hand, logObj, 'nxts', 'NextMoves', {position:[700, 100], width:200, height:450, resizable:false});
+    logObj.debug('NextMoves Area obj initialized');
+    standObj.display(1);
+    assertEqual('nxts', standObj.window.container.id );
+    assert( standObj.window.isOpen );
+
+    var standObj = new Area(hand, logObj, 'pres', 'PrevMoves', {position:[100, 100], width:200, height:450, resizable:true});
+    logObj.debug('PrevMoves Area obj initialized');
+    standObj.display(1);
+    assertEqual('pres', standObj.window.container.id );
+    assert( standObj.window.isOpen );
+    } },
+    
+  testAreaEvent : function() {  with( this )  {
+    var logObj = makeLogObj('testAreaEvent', {width:600, height:350, resizable:false});
+    logObj.debug('test Area event');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var hand = new Handler(logObj);
+    hand.dataStore.getMsg(1,1,3,15,'full',false);
+    hand.dataStore.makeSlice(1,15);
+
+    var standObj = new Area(hand, logObj, 'nxts', 'NextMoves', {position:[700, 100], width:200, height:450, resizable:false});
+    logObj.debug('NextMoves Area obj initialized');
+    standObj.window.observe('afterOpen',function(event){  
+      logObj.debug('opened');
+      //event.stop();
+    });  
+    standObj.window.observe('click',function(event){  
+      logObj.debug('clicked');
+      //event.stop();
+    });  
+    standObj.window.open();
+    assertEqual('nxts', standObj.window.container.id );
+    assert( standObj.window.isOpen );
+
+    } },
+    
+  testAreaInitOnClick : function() {  with( this )  {
+    var logObj = makeLogObj('testAreaInitOnClick', {width:600, height:350, resizable:false});
+    logObj.debug('test Area initOnClick');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var hand = new Handler(logObj);
+    var standObj = new Area(hand, logObj, 'nxts', 'NextMoves', {position:[700, 100], width:200, height:450, resizable:true});
+    logObj.debug('Area obj initialized');
+    standObj.display(1);
+    assert( standObj.window.isOpen );
+    var hand = new Handler(logObj);
+    hand.dataStore.getMsg(1,1,3,15,'full',false);
+    hand.dataStore.makeSlice(1,15);
+    standObj.initOnClick();
+    } }
+  }, "testlog");
+// ]]>
+</script>
+  <p id="links_pool"> </p>
+  <hr>
+  <p id="window_pool">
+    <div id="logger0"></div>
+    <div id="logger1"></div>
+    <div id="logger2"></div>
+    <div id="logger3"></div>
+    <div id="logger4"></div>
+    <div id="logger5"></div>
+    <div id="logger6"></div>
+    <div id="logger7"></div>
+    <div id="logger8"></div>
+  </p>
+
+<div id="container">
+</div>
+<div id="content">
+   <div id="cache">
+     <div id="size"></div>
+     <div id="age"></div>
+   </div>
+   <div id="pres"></div>
+   <div id="self"></div>
+   <div id="nxts"></div>
+   <div id="data"></div>
+</div>
+
+<div id="testAreaDraggable"></div>
+<div id="testAreaLink"></div>
+<div id="testAreaDisplay"></div>
+<a href="#testAreaLink">testAreaLink</a>
+</body>
+</html>

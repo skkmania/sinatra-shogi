@@ -1,0 +1,42 @@
+* MessagePack-JS
+  JavaScript implimentation for MessagePack serialization format.
+
+** usage
+
+  var $true  = MessagePack.unpack(unescape("%c3"));
+  alert($true); // true
+
+  var int8   = MessagePack.unpack(unescape("%d0%c0"));
+  alert(int8); // -64
+
+  var fixraw = MessagePack.unpack(unescape("%a1%61"));
+  alert(fixraw); // 'a'
+
+  var int32  = MessagePack.unpack(unescape("%d2%ff%f0%00%00"));
+  alert(int32); // -1048576
+
+** environment
+  tested for IE 8.0.6 , Firefox 3.6.3 , Google Chrome 4.1
+
+** see other
+  http://msgpack.sourceforge.net/
+
+** LISENCE
+  MIT Lisence
+
+** Test
+  Test code (tests.html) is targeted for JsUnit
+  Benchmark code needs prototype.js
+  if you want to test and benchmark msgpack.js,
+    please deploy as follows:
+        ${MessagePack-JS-DIR}/msgpack.js
+        ${MessagePack-JS-DIR}/tests.html
+        # see jsunit < http://github.com/pivotal/jsunit >
+        ${MessagePack-JS-DIR}/jsunit/testRunner.html 
+        ${MessagePack-JS-DIR}/jsunit/app/jsUnitCore.js
+        ${MessagePack-JS-DIR}/jsunit/testRunner.html
+        ${MessagePack-JS-DIR}/jsunit/app/jsUnitCore.js
+
+        ${MessagePack-JS-DIR}/benchmark/benchmark.html
+        # see prototype.js < http://www.prototypejs.org/ >
+        ${MessagePack-JS-DIR}/benchmark/prototype/prototype.js

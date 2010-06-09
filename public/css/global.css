@@ -1,0 +1,149 @@
+* {
+	margin:0; padding:0;
+}
+
+body {
+	background:#fff none repeat scroll 0 0;
+	color:#333;
+	font-size:12px;
+	line-height:1.5;
+	margin:20px;
+	padding:0;
+	font-family:verdana,arial,helvetica,sans-serif;
+}
+h1 {
+	font-size:1.5em;
+	margin-bottom:1em;
+}
+h2 {
+	font-size:1.2em;
+	margin-bottom:1em;
+	margin-top:2em;
+}
+h3 {
+	font-size:1em;
+	margin-bottom:1em;
+}
+.mtop0 {
+	margin-top:0;
+}
+ul {
+	margin-bottom:10px;
+	padding-left:18px;
+}
+ol {
+	margin-bottom:10px;
+	padding-left:26px;
+}
+li {
+	margin:5px 0;
+}
+ol li ol,
+ul li ul,
+ol li ul,
+ul li ol  {
+	margin:0;
+}
+p {
+	margin:1em 0;
+}
+a {
+	color:#0075d9;
+}
+form th {
+	text-align:right;
+	vertical-align:top;
+}
+th,td,textarea,input {
+	font-family:verdana,arial,helvetica,sans-serif;
+	font-size:100%;
+}
+img {
+	border:0;
+}
+pre {
+	margin-top:1em;
+	margin-bottom:1em;
+	padding:10px;
+	overflow:auto;
+	overflow-y: visible;
+}
+code {
+	padding:1px 3px;
+}
+code, pre {
+	background:#fff none repeat scroll 0 0;
+	color:#555;
+}
+textarea,input { padding:2px 5px; }
+blockquote{ margin:1em 0; padding:15px; border:1px solid #ccc; background:#fff url("../img/skin/dquot.gif") no-repeat 10px .8em; }
+cite { text-align:right; display:block; font-size:.85em; }
+cite a { text-decoration:none; }
+dl	{ margin:0; padding:0; }
+dt	{ font-weight:bold; margin:0; padding:0 0 0 20px; font-size:1.2em; }
+dd	{ margin:0; padding:0; }
+img { border:0; }
+fieldset {
+	background-color:#fff;
+	padding:0 10px 10px 10px;
+	border:1px solid #ccc;
+}
+legend {
+	font-weight:bold;
+}
+option {
+	padding-right:1em;
+}
+hr {
+	margin:20px 0;
+}
+fieldset p {
+	margin-top:1em;
+	margin-bottom:0;
+}
+th,
+td {
+	padding:3px 5px;
+}
+img.icon { vertical-align:middle; padding-right:2px; }
+.cite { font-size:.8em; }
+.indent { margin-left:20px; }
+.clearfix:after {
+	content:".";
+	display:block;
+	visibility:hidden;
+	height:0.1px;
+	font-size:0.1em;
+	line-height:0;
+	clear:both;
+}
+.clearfix {
+	display:inline-block;
+}
+/* Hides from IE-mac \*/
+* html .clearfix {
+	height:1%;
+}
+.clearfix {
+	display:block;
+}
+/* End hide from IE-mac */
+
+#wrap {
+	margin-top:100px;
+	margin-bottom:100px;
+}
+
+body.black {
+	background-color:#000;
+	color:#ccc;
+}
+body.black a {
+	color:#ff6699;
+}
+.red {
+	color:red;
+}
+.blue {
+	color:blue;
+}

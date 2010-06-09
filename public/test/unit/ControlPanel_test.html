@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+  <title>Control Panel Unit test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script src="../../lib/prototype.js"></script>
+<script src="../../lib/scriptaculous/scriptaculous.js"></script>
+<script src="../../lib/scriptaculous/resizable.js"></script>
+<script src="../../lib/livepipe/livepipe.js"></script>
+<script src="../../lib/livepipe/window.js"></script>
+<script src="../../lib/scriptaculous/unittest.js"></script>
+<script src="../../lib/m17n.js" charset="UTF-8"></script>
+<script src="../../lib/log4pipe.js" charset="UTF-8"></script>
+<script src="../../test/unit/log4pipe_test_common_functions.js" charset="UTF-8"></script>
+<script src="../../lib/common-utils.js" charset="UTF-8"></script>
+<script src="../../lib/pseudo-wave.js" charset="UTF-8"></script>
+<script src="../../controller/controller.js" charset="UTF-8"></script>
+<script src="../../shogi.js" charset="UTF-8"></script>
+<script src="../../lib/unittest.js" type="text/javascript"></script>
+<link rel="stylesheet" href="../../css/shogi.css" type="text/css" />
+<link rel="stylesheet" href="../test.css" type="text/css" />
+<link rel="stylesheet" href="../../css/log4pipe.css" type="text/css" />
+  <style type="text/css" media="screen">
+  /* <![CDATA[ */
+    #div_absolute_test { position: absolute }
+    #links_pool a { margin-left: 10px }
+  /* ]]> */
+  </style>
+</head>
+<body>
+<h1>Control Panel test</h1>
+<p>
+  Test of methods of class Control Panel in game-controller.js
+</p>
+
+<!-- Log output -->
+<div id="testlog"> </div>
+
+<!-- Tests follow -->
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+  var title;
+  var window_link; 
+  var resizable_id;
+
+  new Test.Unit.Runner({
+    
+  setup: function() { with( this ) {
+    title = 'popup' + TestCounter;
+    window_link = "logger"  + TestCounter;
+    resizable_id = "handle" + TestCounter;
+    HOST = 'http://skkmania.sakura.ne.jp/shogi/';
+  } },
+
+  teardown: function() { with( this ) {
+    TestCounter++;
+    delete settings;
+  } },
+
+  testControlPanelInitialize : function() {  with( this )  {
+    var logObj = makeLogObj('testControlPanelInitialize', {width:600, height:350, resizable:false});
+    logObj.debug('test Control Panel initialize');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    settings = {'containerId':'shogi'};
+    window.gameController = new GameController(settings, logObj);
+    window.gameController.log.debug('test controlPanel initialize');
+    assert( 'window.gameController.game === window.gameController.controlPanel.game' );
+    } },
+
+  testControlPanelUpdate : function() {  with( this )  {
+    var logObj = makeLogObj('testControlPanelUpdate', {width:600, height:350, resizable:false});
+    logObj.debug('test Control Panel update');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    settings = {'containerId':'shogi'};
+    window.gameController = new GameController(settings, logObj);
+    var cp = window.gameController.controlPanel;
+    window.gameController.log.debug('test controlPanel update');
+    assert( '(cp.player1Elm === $("top-panel")) && (window.gameController.game.top == 1)' );
+    } },
+    
+  testToString : function() {  with( this )  {
+    var logObj = makeLogObj('testToString', {width:500, height:150, resizable:false});
+    logObj.debug('test toString');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    settings = {'containerId':'shogi'};
+    var gameObj = new GameController(settings, logObj);
+    gameObj.log.debug('test ToString');
+    assertEqual( 'dummy', gameObj.toString() );
+  } }
+  }, "testlog");
+// ]]>
+</script>
+  <p id="links_pool"> </p>
+  <hr>
+  <p id="window_pool">
+    <div id="logger0"></div>
+    <div id="logger1"></div>
+    <div id="logger2"></div>
+    <div id="logger3"></div>
+    <div id="logger4"></div>
+    <div id="logger5"></div>
+    <div id="logger6"></div>
+    <div id="logger7"></div>
+    <div id="logger8"></div>
+  </p>
+<div id="container">
+  <div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>
+  <div id="top-stand"></div>
+  <div id="shogi"></div>
+  <div id="bottom-stand"></div>
+  <div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>
+</div>
+<div id="sidebar">
+  <div id="control-panel">
+    <div id="message">
+      <div class="t">message</div>
+      <div id="message-body"></div>
+    </div>
+  </div>
+</div>
+<div id="rev-b">
+  <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>
+  <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>
+</div>
+
+<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
+
+</body>
+</html>
