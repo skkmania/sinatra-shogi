@@ -333,13 +333,14 @@ GameController = Class.create({
         // 
   slice: function slice(state) { // GameController
     this.log.getInto('GameController#slice');
-    this.handler.boardObj  = eval(state.get('board'));
-    this.handler.nextMoves = eval(state.get('next'));
-    this.handler.prevMoves = eval(state.get('prev'));
+    this.handler.boardObj  = state.get('board').evalJSON();
+    this.handler.nextMoves = state.get('next').evalJSON();
+    this.handler.prevMoves = state.get('prev').evalJSON();
+    this.log.debug(Object.toJSON(this.handler.boardObj));
     this.game.boardReadFromDB(this.handler.boardObj);
     this.game.board.show();
-    this.prevArea.show(this.handler.prevMoves);
-    this.nextArea.show(this.handler.nextMoves);
+    this.handler.prevArea.show(this.handler.prevMoves);
+    this.handler.nextArea.show(this.handler.nextMoves);
     this.log.goOut();
   },
 	/**
