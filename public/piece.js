@@ -99,32 +99,53 @@ Piece = Class.create({
 	 */
   toggleDraggable: function toggleDraggable(){ // Piece
     this.game.log.getInto('Piece#toggleDraggable');
-    this.game.log.debug('entered Piece#toggleDraggable:'+this.toDebugString());
+
+    // for log
+    this.game.log.debug('piece : '+this.toDebugString());
     if(this.drag){
       this.game.log.debug('this.drag : '+ this.drag.toString());
     } else {
       this.game.log.debug('this piece has no drag');
     }
     this.game.log.debug('count : '+this.game.controller.count);
+
+    // main
+    if ( (this.game.controller.playerSetting == 'public')
+      || (this.game.controller.playerSetting == 'review') ) 
+      this.simpleToggleDraggable();
+    else
+      this.viewerRelatedToggleDraggable();
+    this.game.log.goOut();
+  },
+
+	/**
+	 * simpleToggleDraggable()
+	 */
+  simpleToggleDraggable: function simpleToggleDraggable(){ // Piece
+    this.game.log.getInto('Piece#simpleToggleDraggable');
+    if (!this.drag){
+        this.addDraggable('toggled');
+    } else {
+        this.drag.destroy();
+        this.drag = null;
+        this.game.log.debug('drag destroyed because this has one : '+ Draggables.drags.length);
+    }
+    this.game.log.goOut();
+  },
+	/**
+	 * viewerRelatedToggleDraggable()
+	 */
+  viewerRelatedToggleDraggable: function viewerRelatedToggleDraggable(){ // Piece
+    this.game.log.getInto('Piece#viewerRelatedToggleDraggable');
     var thisPieceIsViewers = this.isViewersP();
     this.game.log.debug('isViewersP : '+ thisPieceIsViewers);
     var thisTurnIsViewers = this.game.controller.isViewersTurn();
     this.game.log.debug('isViewersTurn : '+thisTurnIsViewers);
     if (!this.drag){
-      if(this.game.controller.playerSetting == 'public'){
-        this.addDraggable('toggled');
-      } else {
         if(thisPieceIsViewers && thisTurnIsViewers){
           this.addDraggable('toggled');
         }
-      }
     } else {
-      if(this.game.controller.playerSetting == 'public'){
-        this.game.log.debug('to destroy drag because this is not in turn. : '+ Draggables.drags.length);
-        this.drag.destroy();
-        this.game.log.debug('length of drags became : '+ Draggables.drags.length);
-        this.drag = null;
-      } else {
         if(thisPieceIsViewers){
           if(!thisTurnIsViewers){
             this.game.log.debug('to destroy drag because this is not Vieweres turn. : '+ Draggables.drags.length);
@@ -138,9 +159,8 @@ Piece = Class.create({
           this.game.log.debug('length of drags became : '+ Draggables.drags.length);
           this.drag = null;
         }
-      }
     }
-    this.game.log.debug(this.drag?'drag remains':'no drag');
+    this.game.log.debug(this.drag ? 'drag remains':'no drag');
     this.game.log.goOut();
   },
 	/**

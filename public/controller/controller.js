@@ -338,7 +338,8 @@ GameController = Class.create({
     this.handler.prevMoves = state.get('prev').evalJSON();
     this.log.debug(Object.toJSON(this.handler.boardObj));
     this.game.boardReadFromDB(this.handler.boardObj);
-    this.game.board.show();
+    this.game.toggleDraggable();
+    //this.game.board.show();
     this.handler.prevArea.show(this.handler.prevMoves);
     this.handler.nextArea.show(this.handler.nextMoves);
     this.log.goOut();
