@@ -322,6 +322,7 @@ GameController = Class.create({
     if (!this.game.board.shown) this.game.board.show();
     this.game.boardReadFromState(state);  // 盤面の読み込み
     this.game.toggleDraggable();
+    this.game.board.turn = this.readTurnFromState(state);
     this.controlPanel.update('playing');
     //this.prepareFromState(state);
     this.log.goOut();
@@ -334,6 +335,8 @@ GameController = Class.create({
   slice: function slice(state) { // GameController
     this.log.getInto('GameController#slice');
     this.handler.boardObj  = state.get('board').evalJSON();
+    this.game.board.turn = this.readTurnFromState(state);
+    this.game.board.bid    = state.get('bid') + 0;
     this.handler.nextMoves = state.get('next').evalJSON();
     this.handler.prevMoves = state.get('prev').evalJSON();
     this.log.debug(Object.toJSON(this.handler.boardObj));
@@ -379,10 +382,26 @@ GameController = Class.create({
     this.log.getInto('GameController#makeDelta');
     this.count++;
     var delta = {};
-    delta['board'] = this.game.board.toString();
-    delta['bstand'] = this.game.blackStand.toString();
-    delta['wstand'] = this.game.whiteStand.toString();
-    delta['count'] = this.count.toString();
+    if (this.playerSetting == 'review') {
+      var obj = {};
+      obj['board']  = this.game.board.toString();
+      obj['black']  = this.game.blackStand.toString();
+      obj['white']  = this.game.whiteStand.toString();
+      obj['bid']    = this.game.board.bid.toString();
+      obj['turn']   = (!this.game.board.turn).toString();
+      delta['board'] = Object.toJSON(obj);
+      delta['count'] = this.count.toString();
+      delta['next']  = Object.toJSON([]);
+      delta['prev']  = Object.toJSON([]);
+      this.mode = 'slice';
+      delta['mode']   = 'slice';
+    } else {
+      delta['board']  = this.game.board.toString();
+      delta['bstand'] = this.game.blackStand.toString();
+      delta['wstand'] = this.game.whiteStand.toString();
+      delta['count']  = this.count.toString();
+      delta['mode']   = this.mode;
+    }
     switch(flag){
       case 'continue':
         break;
@@ -703,6 +722,35 @@ GameController = Class.create({
     this.controlPanel.update('playing');
     this.clearMessage();
     this.log.goOut();
+  },
+	/**
+	 * readTurnFromState(state)
+	 */
+  readTurnFromState: function readTurnFromState(state) { // GameController
+    // 機能 stateから新しいturnを読み取り返す。このturn値が次のstateが
+    //      降ってくるまでのゲーム全体のturn値の基礎となる。
+    //      stateにturn情報がない場合はtrueを返す
+    // 入力 state
+    // 出力 turn 論理値 stateから読み取る
+    this.log.getInto('GameController#readTurnFromState');
+    var ret = state.get('turn');
+    this.log.debug('state[turn] : ' + Object.toJSON(ret));
+    if (!ret){
+      ret = state.get('board');
+      this.log.debug('state[board] : ' + Object.toJSON(ret));
+      if(ret){
+        ret = ret.evalJSON().turn;
+        //ret = ret['turn'];
+        this.log.debug('state[board][turn] : ' + Object.toJSON(ret));
+      } else {
+        ret = true;
+      }
+    }
+    if (ret == 'true' ) ret = true;
+    if (ret == 'false') ret = false;
+    this.log.debug('returning : ' + Object.toJSON(ret));
+    this.log.goOut();
+    return ret;
   },
 	/**
 	 * getTurn()

@@ -92,6 +92,16 @@
      <div id="nmCommentsMore"   class="Moves"></div>
    </div>
 
+  <p id="links_pool"> </p>
+  <p id="window_pool">
+    <div id="logger0"></div>
+    <div id="logger1"></div>
+  </p>
+
+<div id="gameTurn"></div>
+<div id="boardTurn"></div>
+<div id="viewersTurn"></div>
+
 <div id="sidebar">
   <div id="control-panel">
     <div id="message">
@@ -117,12 +127,12 @@
      <div id="personalBoardCommentIpeTrigger"></div>
    </div>
    <div id="situationImage">
-     <p id="siTitle">局面画像</p>
+     <p id="siTitle"></p>
    </div>
    <div id="kifRead">
-     <p id="krTitle">棋譜読込</p>
+     <p id="krTitle"></p>
      <form method="POST" id="kifReadForm" action="./24kif.rb">
-       <textarea name="kifText" cols="40" rows="5" id="kifTextArea"></textarea>
+       <textarea name="kifText" cols="40" rows="1" id="kifTextArea"></textarea>
          <input type="submit" name="submit" value="post" />
          <input type="reset" name="reset" value="reset" />
      </form>
@@ -130,12 +140,5 @@
 
 <button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
 
-  <p id="links_pool"> </p>
-  <p id="window_pool">
-    <div id="logger0"></div>
-    <div id="logger1"></div>
-  </p>
-
-  <pre id="json" style="margin-top:380px;"></pre>
   </body>
 </html>

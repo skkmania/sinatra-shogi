@@ -7,10 +7,13 @@ Board = Class.create({
 	 */
   initialize: function initialize(elm, game) {
     game.log.getInto('Board#initialize');
+    this.bid = 1;
     this.game = game;
     //this.top = game.controller.top;
     this.elm = elm || document.body;
     this.shown = false;
+    this.turn = true; // trueは先手番、falseは後手番。初期化なので先手スタート
+    $('boardTurn').update('board : ' + this.turn.toString());
     this.cells = [];
     for (var r = 0; r < this.game.height; r++) {
       var row = [];
