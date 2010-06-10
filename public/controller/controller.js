@@ -35,7 +35,7 @@ Player = Class.create({
 	/**
 	 * statusHtml()
 	 */
-  statusHtml: function statusHtml() {
+  statusHtml: function statusHtml() { // Player
 // playerのshort nameのspan のHTMLを返す。mine, turnのどちらかあるいは両方をclassとして指定する。
 // classの意味（効果はcssで次のように定義されている。）
 // mine は下線をひく
@@ -133,6 +133,9 @@ ControlPanel = Class.create({
           this.player1Elm.innerHTML = t('sente') + this.controller.player1.statusHtml();
         if(this.controller.player2)
           this.player2Elm.innerHTML = t('gote') + this.controller.player2.statusHtml();
+        break;
+      case 'slice':
+        this.controller.message('');
         break;
       default:
         this.player1Elm.innerHTML = t('sente');
@@ -323,6 +326,7 @@ GameController = Class.create({
     this.game.boardReadFromState(state);  // 盤面の読み込み
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
+    $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.controlPanel.update('playing');
     //this.prepareFromState(state);
     this.log.goOut();
@@ -335,14 +339,16 @@ GameController = Class.create({
   slice: function slice(state) { // GameController
     this.log.getInto('GameController#slice');
     this.handler.boardObj  = state.get('board').evalJSON();
+    $('inputText').value = this.handler.boardObj['bid'];
     this.game.board.turn = this.readTurnFromState(state);
+    $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.game.board.bid    = state.get('bid') + 0;
     this.handler.nextMoves = state.get('next').evalJSON();
     this.handler.prevMoves = state.get('prev').evalJSON();
     this.log.debug(Object.toJSON(this.handler.boardObj));
     this.game.boardReadFromDB(this.handler.boardObj);
     this.game.toggleDraggable();
-    //this.game.board.show();
+    this.controlPanel.update('slice');
     this.handler.prevArea.show(this.handler.prevMoves);
     this.handler.nextArea.show(this.handler.nextMoves);
     this.log.goOut();
@@ -439,7 +445,8 @@ GameController = Class.create({
         // 現在の手番のplayer objectを返す
   playerInTurn: function playerInTurn() { // GameController
     this.log.getInto('GameController#playerInTurn');
-    if (this.getTurn())
+    //if (this.getTurn())
+    if (this.game.board.turn)
       ret = this.blackplayers[0];
     else
       ret = this.whiteplayers[0];
