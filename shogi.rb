@@ -150,4 +150,13 @@ get '/getBids' do
   r.finish
 end
 
-
+# パラメータ：board, moveの情報
+# 機能：DBにそれらを登録
+post '/bid' do
+    logger2.debug { 'into post bid' }
+    logger2.debug { 'params : ' + params.inspect }
+  ct = CacheTest.new( params, logger2 )
+  body = ct.regist_board_move( params )
+  r = Sinatra::Response.new(body,201,{"Content-Type" => "text/plain"})
+  r.finish
+end

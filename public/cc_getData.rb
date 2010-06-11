@@ -139,7 +139,6 @@ class CacheTest
 
   def to_html
   end
-end
 
 =begin
 ct = CacheTest.new
@@ -147,3 +146,27 @@ ct.determine_bid_range
 ct.get_data
 ct.output
 =end
+  def regist_board_move(params)
+    turn    = params['turn'][0].to_s
+    board   = params['board'][0]
+    black   = params['black'][0]
+    white   = params['white'][0]
+    from    = params['from'][0]
+    from    = 0 if from == 'ss'
+    to      = params['to'][0]
+    piece   = params['piece'][0]
+    promote = params['promote'][0]
+    oldbid  = params['oldbid'][0]
+
+    query = "select get_bid('#{turn}'::bool,'#{board}'::char(81),\
+      '#{black}'::varchar(38),'#{white}'::varchar(38),\
+       #{oldbid}::integer, #{from}::smallint, #{to}::smallint,\
+      '#{piece}'::char, '#{promote}'::bool);"
+    @logger.debug { "#{query}" }
+    result = DB[query].all
+    @logger.debug { "result.inspect : #{result.inspect}" } 
+    @logger.debug { "result : #{result}" } 
+    @logger.debug { "result.msgpack : #{result.to_msgpack}" } 
+    return result.to_msgpack
+  end
+end
