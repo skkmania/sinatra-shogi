@@ -133,10 +133,13 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
         this.log.debug('fromObj :' + fromObj.toDebugString());
         this.log.debug('toCell :' + toCell.toDebugString());
 
-        // send action to GameController
-        this.game.controller.receiveAction(actionContents);
         this.log.goOut();
 
+        // find if this move is in nextMoves
+        if(!this.game.findMove(actionContents)){ 
+          // send action to GameController
+          this.game.controller.receiveAction(actionContents);
+        }
       }.bind(this)
     });
   },

@@ -30,6 +30,36 @@ window.gameController.game = this;
     // this.debug_dump();
   },
 	/**
+	 * findMove(actionContents)
+	 */ 
+        // 入力 : 配列 actionContents 駒の動きをあらわした配列
+	// 出力 : 論理値
+        // 機能 : 入力の動きがnextMovesの中にあるか探し
+	//        無ければfalseを返す
+	//        あればそのmoveのnxt_bidをtargetとしてsendDeltaする
+  findMove: function findMove(actionContents) { // ShogiGame
+    this.log.getInto('ShogiGame#findMove');
+    var chr = actionContents[0].chr;
+    var from = actionContents[1].type == 'stand' ? 0 :
+                 actionContents[1].x * 10 + actionContents[1].y;
+    var to = actionContents[2].x * 10 + actionContents[2].y;
+    var promote = actionContents[0].promote_type ? false : true;
+    if(actionContents[0].type == 'Gold' || 
+       actionContents[0].type == 'King')
+      promote = false;  
+    this.log.debug('chr : ' + chr + ', from : ' + from + ', to : ' + to + ', promote : ' + promote);
+    var ret = this.controller.handler.nextMoves.find(function(e){
+      return (e.piece == chr) && (e.m_from == from) &&
+             (e.m_to == to) && (e.promote == promote);
+    });
+    this.log.debug('ret : ' + Object.toJSON(ret));
+    this.log.goOut();
+    if(ret){
+      this.controller.sendDelta( this.controller.handler.makeReviewDelta(ret.nxt_bid) );
+    } else
+      return false;
+  },
+	/**
 	 * respondValidity(actionContents)
 	 */ 
         // GameControllerからactionの正当性を問われる
@@ -302,6 +332,8 @@ window.gameController.game = this;
 	/**
 	 * doAction(actionContents)
 	 */
+	// 入力 : 配列 actionContents : [piece, fromObj, toCell]
+	// 成るというactionの場合、pieceは成った状態でここにくる
   doAction: function doAction(actionContents) { // ShogiGame
     var piece = actionContents[0];
     var fromObj = actionContents[1];
@@ -313,6 +345,10 @@ window.gameController.game = this;
     this.log.debug('piece : ' + piece.toDebugString());
     this.log.debug('fromObj : ' + fromObj.toDebugString());
     this.log.debug('toCell : ' + toCell.toDebugString());
+
+    // この動きがすでにnextMovesのなかにあるならばその動作をすればよい。
+    this.findMove(actionContents);
+
     if (toCell.piece){
       this.log.warn('piece moving and capturing. : ');
       this.log.debug('draggable.obj is : ' + piece.toDebugString());

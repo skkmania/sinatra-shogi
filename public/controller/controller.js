@@ -478,7 +478,7 @@ GameController = Class.create({
 	 */
   // ユーザのアクションがここに通知される
   //   (具体的には、gameのPieceがonDropの中でこの関数を呼び出す)
-  // actionContents : [piece, fromObj, toCell]
+  // 入力 : 配列 actionContents : [piece, fromObj, toCell]
   receiveAction: function receiveAction(actionContents) { // GameController
     this.log.getInto('GameController#receiveAction');
     switch(this.game.respondValidity(actionContents)){
