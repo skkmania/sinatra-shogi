@@ -241,6 +241,55 @@ var Store = Class.create(Hash, {
     });
     var response = new Ajax.Response(request);
     this.logObj.goOut();
+  },
+
+  getQueryStr : function getQueryStr(move){
+    this.logObj.getInto(); 
+    var res = $H({
+      'turn'  : this.game.board.turn ? 't' : 'f',
+      'board' : this.game.board.toString(),
+      'black' : this.game.blacStand.toString(),
+      'white' : this.game.whiteStand.toString(),
+      'from'  : move.from,
+      'to'    : move.to,
+      'piece' : move.piece,
+      'promote' : move.promote ? 't' : 'f',
+      'oldbid': move.bid
+    }).toQueryString();
+    this.log.debug('res : ' + res);
+    this.logObj.goOut();
+    return res;
+  },
+
+  registBoard : function registBoard(move){ // Store
+    this.logObj.getInto(); 
+    var request = new Ajax.Request('/bid', {
+         method: 'post',
+         onCreate: function(request, response){
+             if(request.transport.overrideMimeType){
+                 request.transport.overrideMimeType("text/plain; charset=x-user-defined");
+             }
+         },
+      parameters : this.getQueryStr(move);
+      asynchronous : false,
+      onSuccess : function onSuccess_registBoard(response){
+        this.logObj.getInto('onSuccess_registBoard');
+        this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
+        var data= MessagePack.unpack(response.responseText);
+        this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
+        this.read(data);
+        this.logObj.goOut();
+        return data;
+      }.bind(this),
+      onFailure : function onFailure_getData(response){
+        this.logObj.getInto();
+        this.logObj.debug('onFailure : ' + response.status + response.statusText);
+        this.logObj.goOut();
+        return false;
+      }.bind(this)
+    });
+    var response = new Ajax.Response(request);
+    this.logObj.goOut();
   }
 });
 

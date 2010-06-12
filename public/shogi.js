@@ -30,27 +30,40 @@ window.gameController.game = this;
     // this.debug_dump();
   },
 	/**
-	 * findMove(actionContents)
+	 * makeMove(actionContents)
 	 */ 
         // 入力 : 配列 actionContents 駒の動きをあらわした配列
+	// 出力 : Moveオブジェクト
+        // 機能 : 入力のactionを表すMoveオブジェクトを作成し返す
+  makeMove: function makeMove(actionContents) { // ShogiGame
+    this.log.getInto('ShogiGame#makeMove');
+    var ret = new Move();
+    ret.bid = this.board.bid;
+    ret.piece = actionContents[0].chr;
+    ret.from = actionContents[1].type == 'stand' ? 0 :
+                 actionContents[1].x * 10 + actionContents[1].y;
+    ret.to = actionContents[2].x * 10 + actionContents[2].y;
+    ret.promote = actionContents[0].promote_type ? false : true;
+    if(actionContents[0].type == 'Gold' || 
+       actionContents[0].type == 'King')
+      ret.promote = false;  
+    this.log.debug(ret.toDebugString());
+    this.log.goOut();
+    return ret;
+  },
+	/**
+	 * findMove(move)
+	 */ 
+        // 入力 : Moveオブジェクト 駒の動きをあらわしている
 	// 出力 : 論理値
         // 機能 : 入力の動きがnextMovesの中にあるか探し
 	//        無ければfalseを返す
 	//        あればそのmoveのnxt_bidをtargetとしてsendDeltaする
-  findMove: function findMove(actionContents) { // ShogiGame
+  findMove: function findMove(move) { // ShogiGame
     this.log.getInto('ShogiGame#findMove');
-    var chr = actionContents[0].chr;
-    var from = actionContents[1].type == 'stand' ? 0 :
-                 actionContents[1].x * 10 + actionContents[1].y;
-    var to = actionContents[2].x * 10 + actionContents[2].y;
-    var promote = actionContents[0].promote_type ? false : true;
-    if(actionContents[0].type == 'Gold' || 
-       actionContents[0].type == 'King')
-      promote = false;  
-    this.log.debug('chr : ' + chr + ', from : ' + from + ', to : ' + to + ', promote : ' + promote);
     var ret = this.controller.handler.nextMoves.find(function(e){
-      return (e.piece == chr) && (e.m_from == from) &&
-             (e.m_to == to) && (e.promote == promote);
+      return (e.piece == move.chr) && (e.m_from == move.from) &&
+             (e.m_to == move.to) && (e.promote == move.promote);
     });
     this.log.debug('ret : ' + Object.toJSON(ret));
     this.log.goOut();
@@ -347,7 +360,10 @@ window.gameController.game = this;
     this.log.debug('toCell : ' + toCell.toDebugString());
 
     // この動きがすでにnextMovesのなかにあるならばその動作をすればよい。
-    this.findMove(actionContents);
+    var m = this.makeMove(actionContents);
+    this.findMove(m);
+
+    // nextMovesに無ければ、まず新手と新局面を作成して、
 
     if (toCell.piece){
       this.log.warn('piece moving and capturing. : ');
@@ -366,9 +382,14 @@ window.gameController.game = this;
       piece.sitOnto(toCell);
     }
 
-    this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
-    
     this.log.goOut();
+    // DBサーバに情報を投げ、そのbidとmidを含むsliceを受け取る
+    this.controller.handler.registBoard(m);
+    // 受け取ったsliceを元にdeltaを構成し、stateを発行する
+    this.controller.sendDelta( this.controller.handler.makeReviewDelta(ret.nxt_bid) );
+
+    // reviewモードではここから先は通らないはず。
+    this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
   },
 	/**
 	 * doActionWithPromote(actionContents)

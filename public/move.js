@@ -85,6 +85,16 @@ var Move = Class.create({
     return sankaku + to_x + '0一二三四五六七八九'[to_y] + Chr2Kanji[this.piece.toLowerCase()] + pro + '(' + this.from + ')';
   },
 
+  toDebugString : function toDebugString(){
+    var ret;
+    ret = 'bid : ' + this.bid;
+    ret += ', piece : ' + this.piece;
+    ret += ', from : ' + this.from;
+    ret += ', to : ' + this.to;
+    ret += ', promote : ' + this.promote;
+    return ret;
+  },
+
   legalCheck : function(){
     if (typeof this.to == "String"){
       var to_x = this.to[0]-0;
