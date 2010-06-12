@@ -4,6 +4,7 @@ require 'msgpack'
 require 'json'
 require 'get84.rb'
 require 'public/cc_getData.rb'
+require 'public/db_accessor.rb'
 
 configure do
   LOGGER = Logger.new("log/sinatra.log") 
@@ -155,8 +156,8 @@ end
 post '/bid' do
     logger2.debug { 'into post bid' }
     logger2.debug { 'params : ' + params.inspect }
-  ct = CacheTest.new( params, logger2 )
-  body = ct.regist_board_move( params )
+  da = DbAccessor.new( params, logger2 )
+  body = da.regist_board
   r = Sinatra::Response.new(body,201,{"Content-Type" => "text/plain"})
   r.finish
 end

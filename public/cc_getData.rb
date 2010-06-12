@@ -166,6 +166,10 @@ ct.output
     result = DB[query].all
     @logger.debug { "result.inspect : #{result.inspect}" } 
     @logger.debug { "result : #{result}" } 
+    if existed(result)
+      
+    else
+    end
     @logger.debug { "result.msgpack : #{result.to_msgpack}" } 
     return result.to_msgpack
   end

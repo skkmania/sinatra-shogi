@@ -156,9 +156,9 @@ class DbAccessor
     @logger.debug { "result : #{result}" } 
     if result['mid'] >= 0
       # 新しい局面を登録した場合
-      result['board'] = [{}]
+      result['board'] = [{"turn": @turn, "board": @board, "black": @black, "bid": @bid, "white": @white}]
       result['nextMoves'] = []
-      result['prevMoves'] = [{}]
+      result['prevMoves'] = [{"promote": @promote, "m_from": @from, "m_to": @to, "bid": @bid, "nxt_bid": result['bid'], "mid": result['mid'], "piece": @piece}]
       @logger.debug { "result.msgpack : #{result.to_msgpack}" } 
       return result.to_msgpack
     else
