@@ -34,6 +34,23 @@ var Slice = Class.create(Hash, {
     this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.logObj = logObj;
     logObj.goOut();
+  },
+
+	/**
+	 * toDebugHtml()
+	 */
+  toDebugHtml : function toDebugHtml(){
+    this.logObj.getInto('Slice#toDebugHtml');
+    var ret = '<div class="slice">';
+    this.logObj.debug('values : ' + Object.toJSON(this.values()));
+    this.each(function(pair){
+      // this.logObj.debug('pair.value.map : ' + Object.toJSON(pair.value.map(function(e){ return Object.toJSON(e); })));
+      ret = ret + pair.key + ' : ' +
+           pair.value.map(function(e){ return Object.toJSON(e); }).join(',')
+           + '<br>';
+    }.bind(this));
+    this.logObj.goOut();
+    return ret + '</div>';
   }
 });
 
@@ -83,7 +100,7 @@ var Store = Class.create(Hash, {
 	// this.names にmaskフィルタをかけて得られる配列を返す
 	// 入力 : 数値 mask
 	// 出力 : 配列
-  getMaskedDataName : function getMaskedDataName(mask) {
+  getMaskedDataName : function getMaskedDataName(mask) { // Store
     var ret = [];
     for(var index=0; index < 10; index++){
       if ((mask & (1 << index)) > 0) ret.push(this.names[index]);
@@ -96,7 +113,7 @@ var Store = Class.create(Hash, {
 	// オブジェクトの各プロパティの値を文字列から配列にして返す
 	// 入力例 : {"nxts": "{3,235}", "bid": 2, "pres": "{1}"}
 	// 出力例 : {"nxts": [3,235],   "bid": 2, "pres": [1]}
-  _toArray : function _toArray(obj) {
+  _toArray : function _toArray(obj) { // Store
     var ret = {};
     for (key in obj){
       switch (typeof obj[key]){
@@ -118,11 +135,11 @@ var Store = Class.create(Hash, {
 	/**
 	 * read(data)
 	 */
-	// サーバからうけたっとデータを格納する
+	// サーバからうけたデータを自身に格納する
 	//  単にHashのupdateですまないのは、bidsの内容を文字列から配列へ変換するためである
 	// 入力 : data  javascriptのオブジェクト
 	// 出力 : なし
-  read : function read(data) {
+  read : function read(data) { // Store
     this.logObj.getInto('Store#read');
     this.logObj.debug('data#bids before : '+Object.toJSON(data['bids']));
     data['bids'] = data['bids'].map(function(e){
@@ -143,7 +160,7 @@ var Store = Class.create(Hash, {
 	//        数値 mask this.nameのうち何を結果に含めるかを指定する
 	//           指定方法：this.nameの添字をbitに見立てた二進から10進変換
 	// 出力 : Sliceオブジェクト(Hash)
-  makeSlice : function makeSlice(bid, mask) {
+  makeSlice : function makeSlice(bid, mask) { // Store
     this.logObj.getInto('Store#makeSlice');
     var m = mask || 1023;
     var ret = new Slice(this.logObj);
@@ -180,7 +197,7 @@ var Store = Class.create(Hash, {
 	//            2 : bidが2のsliceのデータ, 
 	//                ....
 	//            n : bidがnのsliceのデータ }
-  arrangeByBid : function arrangeByBid(mask) {
+  arrangeByBid : function arrangeByBid(mask) { // Store
     var m = mask || 1023;
     this.logObj.getInto();
     this.get('bids').pluck('bid').each(function(target){
@@ -237,6 +254,7 @@ var Store = Class.create(Hash, {
         this.logObj.debug('onFailure : ' + response.status + response.statusText);
         this.logObj.goOut();
         return false;
+
       }.bind(this)
     });
     var response = new Ajax.Response(request);
@@ -546,6 +564,7 @@ var Handler = Class.create({
   makeReviewDelta: function makeReviewDelta(bid){ // Handler
     var delta = {};
     this.logObj.getInto();
+    this.logObj.debug('bid : ' + bid);
     var value = bid || $('inputText').value;
     if(!this.dataStore.slices.get(value)){
       this.dataStore.getMsg(value, 1, 3, 15, 'full', false);

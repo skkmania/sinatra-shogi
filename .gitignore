@@ -1,6 +1,8 @@
+.swp
 *.swp
+*/*/.swp
 ../log/*.*
 log/*.*
 img/*.*
-lib/*.*
-lib
+public/lib/*.*
+public/lib
