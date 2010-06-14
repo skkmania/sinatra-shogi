@@ -68,14 +68,14 @@ var Store = Class.create(Hash, {
 	 * initialize()
 	 */
   initialize : function initialize($super, logObj){
-    logObj.getInto('Store#initialize');
+    this.logObj = logObj;
+    this.logObj.getInto('Store#initialize');
     //logObj.getInto('arguments 0: ' + arguments[0]);
     //logObj.getInto('arguments 1: ' + arguments[1]);
     $super();
     this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    this.logObj = logObj;
-    this.slices = new Slices(logObj);
-    logObj.goOut();
+    this.slices = new Slices(this.logObj);
+    this.logObj.goOut();
   },
 	/**
 	 * getMaskedDataName(mask)
@@ -243,26 +243,29 @@ var Store = Class.create(Hash, {
     this.logObj.goOut();
   },
 
-  getQueryStr : function getQueryStr(move){
+  getQueryStr : function getQueryStr(move){ // Store
     this.logObj.getInto(); 
-    var res = $H({
-      'turn'  : this.game.board.turn ? 't' : 'f',
-      'board' : this.game.board.toString(),
-      'black' : this.game.blacStand.toString(),
-      'white' : this.game.whiteStand.toString(),
-      'from'  : move.from,
-      'to'    : move.to,
-      'piece' : move.piece,
+    var game = window.gameController.game;
+    var res = {
+      'turn'    : game.board.turn ? 't' : 'f',
+      'board'   : game.board.toString(),
+      'black'   : game.blackStand.toString(),
+      'white'   : game.whiteStand.toString(),
+      'from'    : move.from,
+      'to'      : move.to,
+      'piece'   : move.piece,
       'promote' : move.promote ? 't' : 'f',
-      'oldbid': move.bid
-    }).toQueryString();
-    this.log.debug('res : ' + res);
+      'oldbid'  : move.bid
+    };
+    res = $H(res).toQueryString();
+    this.logObj.debug('res : ' + res);
     this.logObj.goOut();
     return res;
   },
 
   registBoard : function registBoard(move){ // Store
     this.logObj.getInto(); 
+    var game = window.gameController.game;
     var request = new Ajax.Request('/bid', {
          method: 'post',
          onCreate: function(request, response){
@@ -270,18 +273,28 @@ var Store = Class.create(Hash, {
                  request.transport.overrideMimeType("text/plain; charset=x-user-defined");
              }
          },
-      parameters : this.getQueryStr(move);
+      parameters : this.getQueryStr(move),
       asynchronous : false,
       onSuccess : function onSuccess_registBoard(response){
         this.logObj.getInto('onSuccess_registBoard');
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= MessagePack.unpack(response.responseText);
         this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
+          // この出力例：
+          //  {"prevMoves": [{"promote": "f", "m_to": "96", "piece": "P", "bid": "1", "mid": 5, "m_from": "97", "nxt_bid": 73630}],
+// "nextMoves": [],
+// "board": [{"white": "", "black": "", "bid": "1", "board": "lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxPxxL", "turn": "f"}]}
+        this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
+        this.logObj.debug('data[board][0] : ' + Object.toJSON(data['board'][0]));
+        this.logObj.debug('data[board][0][bid] : ' + Object.toJSON(data['board'][0]['bid']));
+        game.new_bid = parseInt(data['board'][0]['bid']);
+              // DBからの返事である、盤面のbid
+        this.logObj.debug('game.new_bid : ' + game.new_bid);
         this.read(data);
         this.logObj.goOut();
         return data;
       }.bind(this),
-      onFailure : function onFailure_getData(response){
+      onFailure : function onFailure_registBoard(response){
         this.logObj.getInto();
         this.logObj.debug('onFailure : ' + response.status + response.statusText);
         this.logObj.goOut();
@@ -367,7 +380,7 @@ var Area = Class.create({
     this.logObj.goOut();
   },
 
-  display : function display_Area(target){
+  display : function display_Area(target){ // Area
     this.logObj.getInto();
     this.logObj.debug(this.container + ' stand is to be displayed.');
     this.logObj.debug('target is ' + target);
@@ -466,10 +479,12 @@ var Area = Class.create({
 //-----------------------------------------------------------------
 var Handler = Class.create({
 
-  initialize : function initialize(logObj) {
-    logObj.getInto('Handler#initialize');
-    this.dataStore = new Store(logObj); // データをbidごとに再構成したデータの貯蔵庫
-    logObj.debug('dataStore was created.');
+  initialize : function initialize(controller) {
+    this.controller = controller;
+    this.logObj = this.controller.log;
+    this.logObj.getInto('Handler#initialize');
+    this.dataStore = new Store(this.logObj); // データをbidごとに再構成したデータの貯蔵庫
+    this.logObj.debug('dataStore was created.');
     // 以下の３つのプロパティは、保持するキャッシュの肥大化を防ぐ目的で導入
     // 例えば１局の将棋の指し手を次々に読み込んでいけば、そのたびにキャッシュにデータが増える。
     // なので、中盤になったら序盤のデータは捨ててもいいだろう、と判断する
@@ -482,14 +497,14 @@ var Handler = Class.create({
     this.data_name = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
-    logObj.debug('areas are being initialized');
-    this.prevArea = new Area(this, logObj,'pres', 'prevMoves',{position:[10,100], width:150, height:400});
+    this.logObj.debug('areas are being initialized');
+    this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:150, height:400});
     this.prevArea.initOnClick();
     //this.selfArea = new Area(this, logObj,'self', 'boards');
     //this.dataArea = new Area(this, logObj,'data', 'data');
-    this.nextArea = new Area(this, logObj,'nxts', 'nextMoves',{position:[600,100], width:150, height:400});
+    this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[600,100], width:150, height:400});
     this.nextArea.initOnClick();
-    logObj.debug('areas were initialized');
+    this.logObj.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';
   // range は 'only' か 'full'の２値をとる。
@@ -517,8 +532,7 @@ var Handler = Class.create({
    //    ただし、bids, boardは必須。つまりmaskは最低3になる。
     this.masked_data_name = $A();
 
-    this.logObj = logObj;
-    logObj.goOut();
+    this.logObj.goOut();
   },
 
 
@@ -541,7 +555,7 @@ var Handler = Class.create({
     this.nextMoves = this.dataStore.slices.get(value).get('nextMoves');
     this.prevMoves = this.dataStore.slices.get(value).get('prevMoves');
     delta['mode']  = 'slice';
-    delta['bid']   = bid + '';
+    delta['bid']   = bid.toString();
     delta['board'] = Object.toJSON(this.boardObj);
     delta['next']  = Object.toJSON(this.nextMoves);
     delta['prev']  = Object.toJSON(this.prevMoves);
@@ -559,7 +573,9 @@ var Handler = Class.create({
   refreshBoard: function refreshBoard(bid){ // Handler
     this.logObj.getInto();
     var boardObj, nextMoves, prevMoves;
-    var value = bid || $('inputText').value;
+
+    if(bid) $('inputText').value = bid;
+    var value = $('inputText').value;
     if(!this.dataStore.slices.get(value)){
       this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
       this.dataStore.arrangeByBid(15);

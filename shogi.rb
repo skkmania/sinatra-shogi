@@ -3,8 +3,8 @@ require 'sinatra'
 require 'msgpack'
 require 'json'
 require 'get84.rb'
-require 'public/cc_getData.rb'
-require 'public/db_accessor.rb'
+require 'lib/cc_getData.rb'
+require 'lib/db_accessor.rb'
 
 configure do
   LOGGER = Logger.new("log/sinatra.log") 
@@ -28,6 +28,10 @@ end
 get '/hello/:name' do
     # matches "GET /hello/foo" and "GET /hello/bar"
     # params[:name] is 'foo' or 'bar'
+    "Hello #{params[:name]}!"
+end
+
+get '/helloP' do
     "Hello #{params[:name]}!"
 end
 

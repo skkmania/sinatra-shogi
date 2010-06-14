@@ -39,7 +39,7 @@
         // if (wave && wave.isInWaveContainer())
         if(wave) 
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
-        //window.handler = new Handler(logObj);
+        window.gameController.handler.refreshBoard(1);
       });
 
       function addPlayer(name) {

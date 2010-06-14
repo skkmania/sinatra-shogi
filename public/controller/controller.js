@@ -160,7 +160,7 @@ GameController = Class.create({
     } else {
       this.log.debug(this.settings);
     }
-    this.handler = new Handler(log);
+    this.handler = new Handler(this);
     this.handler.updateData(1, 1, 'full', false);
     this.handler.prevArea.window.open();
     this.handler.nextArea.window.open();
@@ -342,7 +342,7 @@ GameController = Class.create({
     $('inputText').value = this.handler.boardObj['bid'];
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
-    this.game.board.bid    = state.get('bid') + 0;
+    this.game.board.bid    = parseInt(state.get('bid'));
     this.handler.nextMoves = state.get('next').evalJSON();
     this.handler.prevMoves = state.get('prev').evalJSON();
     this.log.debug(Object.toJSON(this.handler.boardObj));

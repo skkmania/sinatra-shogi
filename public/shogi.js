@@ -381,12 +381,15 @@ window.gameController.game = this;
       fromObj.removeByObj(piece);
       piece.sitOnto(toCell);
     }
+    // 新局面なのでturnも反転しておく
+    this.board.turn = !this.board.turn;
 
     this.log.goOut();
     // DBサーバに情報を投げ、そのbidとmidを含むsliceを受け取る
-    this.controller.handler.registBoard(m);
+    this.controller.handler.dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
-    this.controller.sendDelta( this.controller.handler.makeReviewDelta(ret.nxt_bid) );
+    this.log.debug('doAction: game.new_bid : ' + this.new_bid);
+    this.controller.sendDelta( this.controller.handler.makeReviewDelta(this.new_bid) );
 
     // reviewモードではここから先は通らないはず。
     this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
