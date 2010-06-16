@@ -24,6 +24,7 @@ function initOnClick_Title(){
  */
 //  1画面ぶんのデータの集まりを保持するクラス
 //  画面を遷移するごとにStoreからsliceを切り出すのは計算量の面で損だとの考えからつくってみた
+//  keyとして bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
 var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
@@ -77,9 +78,9 @@ var Slices = Class.create(Hash, {
  * Store Class
  */
 //  dataをやりとり、操作するクラス
-//  Hashの子クラス
-//  
-//  keyとして bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
+//  Hashの子クラス だが、Hashにする必要はなかったか。
+//  dataの構造としては、Storeは、this.slicesオブジェクトを持ち、それが
+//  各sliceオブジェクトをもつ。
 var Store = Class.create(Hash, {
 	/**
 	 * initialize()
@@ -87,12 +88,17 @@ var Store = Class.create(Hash, {
   initialize : function initialize($super, logObj){
     this.logObj = logObj;
     this.logObj.getInto('Store#initialize');
-    //logObj.getInto('arguments 0: ' + arguments[0]);
-    //logObj.getInto('arguments 1: ' + arguments[1]);
     $super();
     this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices(this.logObj);
+    this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
     this.logObj.goOut();
+  },
+	/**
+	 * currentSlice()
+         */
+  currentSlice: function currentSlice(){
+    return this.slices.get(this.currentBid);
   },
 	/**
 	 * getMaskedDataName(mask)
@@ -150,6 +156,22 @@ var Store = Class.create(Hash, {
       this.set(key, data[key]);
     }
     this.logObj.debug('merged');
+    this.logObj.goOut();
+  },
+	/**
+	 * readState(data)
+	 */
+	// stateのデータを自身に格納する
+	// 入力 : state  google wave のgadgetの仕様にしたがう
+	// 出力 : なし
+  readState : function readState(state) { // Store
+    this.logObj.getInto('Store#readState');
+    this.currentBid = state.get('bid');
+    var slice = new Slice(this.logObj);
+    slice.set('board',     state.get('board').evalJSON());
+    slice.set('nextMoves', state.get('next').evalJSON());
+    slice.set('prevMoves', state.get('prev').evalJSON());
+    this.slices.set(this.currentBid, slice);
     this.logObj.goOut();
   },
 	/**
@@ -321,6 +343,22 @@ var Store = Class.create(Hash, {
     });
     var response = new Ajax.Response(request);
     this.logObj.goOut();
+  },
+	/**
+	 * toDebugHtml()
+	 */
+  toDebugHtml: function toDebugHtml() { // Store
+    this.logObj.getInto(); 
+    var ret = '<table class="storeTable">';
+    this.slices.each(function(pair){
+      ret += '<tr>'
+      ret += '<td>' + pair.key + '</td>';
+      ret += '<td>' + pair.value.toDebugHtml() + '</td>';
+      ret += '</tr>';
+    });
+    ret += '</table>';
+    this.logObj.goOut();
+    return ret;
   }
 });
 
@@ -378,13 +416,16 @@ var Area = Class.create({
     this.window.open();
     this.logObj.goOut();
   },
-
-  show : function show(dataAry){ // Area
+	/*
+	 * show()
+	 */
+	// dataStoreのデータをもとに、自身のwindowに内容を表示する
+  show : function show(){ // Area
     this.logObj.getInto('Area#show');
     this.logObj.debug(this.container + ' area is to be displayed.');
-    this.logObj.debug('dataAry is ' + Object.toJSON(dataAry));
     var ret = '';
     var str = '<ul>';
+    var dataAry = this.handler.dataStore.get(this.title);
     str += $A(dataAry).inject(ret, function(acc, e){
       var m = new Move();
       var kanji = m.fromObj(e).toKanji();
@@ -432,11 +473,7 @@ var Area = Class.create({
            str = '<ul><li>' + target + '</li></ul>';
            break;
       case 'data':
-           if(this.handler.dataStore.slices.get(target)){
-             str = this.handler.dataStore.toTable(target);
-	   } else {
-	     str = '<ul><li>now loading</li></ul>';
-           }
+           str = this.handler.dataStore.toDebugHtml();
            break;
       case 'nxts':
         this.logObj.debug('nxts : str -> ' + str);
@@ -518,10 +555,10 @@ var Handler = Class.create({
     this.logObj.debug('areas are being initialized');
     this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:150, height:400});
     this.prevArea.initOnClick();
-    //this.selfArea = new Area(this, logObj,'self', 'boards');
-    //this.dataArea = new Area(this, logObj,'data', 'data');
     this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[600,100], width:150, height:400});
     this.nextArea.initOnClick();
+    // dataStoreのdebug dump用のエリア
+    this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[200,500], width:700, height:400});
     this.logObj.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';
@@ -573,7 +610,7 @@ var Handler = Class.create({
     this.boardObj  = this.dataStore.slices.get(value).get('board')[0];
     this.nextMoves = this.dataStore.slices.get(value).get('nextMoves');
     this.prevMoves = this.dataStore.slices.get(value).get('prevMoves');
-    delta['mode']  = 'slice';
+    delta['mode']  = 'review';
     delta['bid']   = bid.toString();
     delta['board'] = Object.toJSON(this.boardObj);
     delta['next']  = Object.toJSON(this.nextMoves);

@@ -332,6 +332,28 @@ GameController = Class.create({
     this.log.goOut();
   },
 	/**
+	 * review(state)
+	 */
+        // reviewモードにおいて、reviewの配布がなされたときに受け取って処理するためのコールバック
+        // 
+  review: function review(state) { // GameController
+    this.log.getInto('GameController#review');
+
+    // stateから、dataStoreに情報を格納する
+    this.handler.dataStore.readState(state);
+
+    // 画面を更新する
+    $('inputText').value = this.handler.dataStore.currentBid;
+    this.game.board.turn = this.readTurnFromState(state);
+    $('boardTurn').update('board : ' + this.game.board.turn.toString());
+    this.game.boardReadFromDB();
+    this.game.toggleDraggable();
+    this.controlPanel.update('review');
+    this.handler.prevArea.show();
+    this.handler.nextArea.show();
+    this.log.goOut();
+  },
+	/**
 	 * slice(state)
 	 */
         // reviewモードにおいて、sliceの配布がなされたときに受け取って処理するためのコールバック
@@ -666,6 +688,7 @@ GameController = Class.create({
     delta['whites'] = this.whiteplayers.pluck('name').join(',');
     this.log.debug('whiteplayers : ' + this.whiteplayers.pluck('name').join('<br>'));
     delta['mode'] = 'playing';
+    if (this.playerSetting == 'review') delta['mode'] = 'review';
     this.log.debug('leaving with : ' + Log.dumpObject(delta));
     this.log.goOut();
     return delta;

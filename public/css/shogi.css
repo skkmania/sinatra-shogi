@@ -188,3 +188,6 @@ button.join {
 pre#json {
   clear: both;
 }
+table.storeTable tr td{
+  border: 1px solid yellow;
+}
