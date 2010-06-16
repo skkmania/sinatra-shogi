@@ -155,17 +155,17 @@ GameController = Class.create({
 	 */
   initialize: function initialize(settings, log) { // GameController
     this.log = log;
+    var title = settings['logTitle'] || 'popup';
+    this.log.getInto('GameController#initialize');
     if(settings === undefined){
       this.log.debug('settings is undefined.');
     } else {
       this.log.debug(this.settings);
     }
     this.handler = new Handler(this);
-    this.handler.updateData(1, 1, 'full', false);
+//    this.handler.updateData(1, 1, 'full', false);
     this.handler.prevArea.window.open();
     this.handler.nextArea.window.open();
-    var title = settings['logTitle'] || 'popup';
-    this.log.getInto('GameController#initialize');
     this.settings = settings;
     this.container = $(this.settings['containerId']);
     this.playerSetting = settings['playerSetting'] || 'viewer';

@@ -227,9 +227,11 @@ Log = Class.create({
     firstLine.className = 'logDivFirstLine';
     firstLine.innerHTML = str || arguments.callee.caller.name; 
     ret.folded = false;
+    ret.hideInsided = false;
     ret.appendChild(firstLine);
     this.addFoldButton(firstLine);
     this.addFoldAllButton(firstLine);
+    this.addHideInsideButton(firstLine);
     var parent = this.currentDiv();
     if(parent)
       parent.appendChild(ret);
@@ -256,6 +258,14 @@ Log = Class.create({
     div.appendChild(button);
   },
 
+  addHideInsideButton: function addHideInsideButton(div) {
+    var button = new Element('span', { 'className':'hideInsideButton' });
+    button.div = div.up(); 
+    button.innerHTML = 'hideAll';
+    button.onclick = this.hideInside(div.up());
+    div.appendChild(button);
+  },
+
   fold: function fold(div) {
     return function() {
       var targets = div.childElements().findAll(function(e){ return e.hasClassName('logRow'); });
@@ -269,6 +279,18 @@ Log = Class.create({
       var targets = div.select('.logRow');
       div.folded ? targets.invoke('show') : targets.invoke('hide');
       div.folded = !(div.folded);
+    }
+  },
+
+	/*
+	 * hideInside(div)
+	 */
+	// 自分のタイトルを除いた要素をすべてhideする
+  hideInside: function hideInside(div) {
+    return function() {
+      var targets = div.select('.logDiv');
+      div.hideInsided ? targets.invoke('show') : targets.invoke('hide');
+      div.hideInsided = !(div.hideInsided);
     }
   },
 	/**

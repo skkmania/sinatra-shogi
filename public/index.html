@@ -33,6 +33,7 @@
         $('logger0').insert(new Element('img',
          {id:'handle0', src:"img/lib/window_close.gif"}));
         new Resizable('logger0',{handle:'handle0'});
+        logObj.setLevel(Log.ERROR);
         if(wave) 
           window.gameController = new GameController({containerId:'shogi',
                'playerSetting':'review', 'gameConstructor':'shogi'}, logObj);
