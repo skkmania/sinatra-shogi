@@ -195,11 +195,12 @@ window.gameController.game = this;
     return $A(this.board.cells.flatten().pluck('piece'), this.blackStand.pieces, this.whiteStand.pieces).flatten().compact();
   },
 	/**
-	 * boardReadFromDB(boardObj)
+	 * boardReadFromDB()
 	 */
 	// DBから受け取ったボード情報オブジェクトを読み込む
-  boardReadFromDB: function boardReadFromDB(boardObj) { // ShogiGame
+  boardReadFromDB: function boardReadFromDB() { // ShogiGame
     this.log.getInto('Game#boardReadFromDB: ');
+    var boardObj = this.controller.handler.dataStore.currentSlice().get('board');
     this.board.read(boardObj['board'] || this.board.initialString);
     this.blackStand.read(boardObj['black'] || this.blackStand.initialString);
     this.whiteStand.read(boardObj['white'] || this.whiteStand.initialString);

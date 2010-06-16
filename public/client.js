@@ -40,18 +40,20 @@ var Slice = Class.create(Hash, {
 	/**
 	 * toDebugHtml()
 	 */
-  toDebugHtml : function toDebugHtml(){
+  toDebugHtml : function toDebugHtml(){ // Slice
     this.logObj.getInto('Slice#toDebugHtml');
-    var ret = '<div class="slice">';
+    var ret = '<table class="slice">';
     this.logObj.debug('values : ' + Object.toJSON(this.values()));
     this.each(function(pair){
       // this.logObj.debug('pair.value.map : ' + Object.toJSON(pair.value.map(function(e){ return Object.toJSON(e); })));
-      ret = ret + pair.key + ' : ' +
-           pair.value.map(function(e){ return Object.toJSON(e); }).join(',')
-           + '<br>';
+      ret += '<tr>';
+      ret += '<td>' + pair.key + '</td>';
+      ret += pair.value.map(function(e){
+         return '<td>' + Object.toJSON(e) + '</td>'; }).join('');
+      ret += '</tr>';
     }.bind(this));
     this.logObj.goOut();
-    return ret + '</div>';
+    return ret + '</table>';
   }
 });
 
@@ -425,7 +427,7 @@ var Area = Class.create({
     this.logObj.debug(this.container + ' area is to be displayed.');
     var ret = '';
     var str = '<ul>';
-    var dataAry = this.handler.dataStore.get(this.title);
+    var dataAry = this.handler.dataStore.currentSlice().get(this.title);
     str += $A(dataAry).inject(ret, function(acc, e){
       var m = new Move();
       var kanji = m.fromObj(e).toKanji();

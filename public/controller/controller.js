@@ -421,8 +421,8 @@ GameController = Class.create({
       delta['count'] = this.count.toString();
       delta['next']  = Object.toJSON([]);
       delta['prev']  = Object.toJSON([]);
-      this.mode = 'slice';
-      delta['mode']   = 'slice';
+      this.mode = 'review';
+      delta['mode']   = 'review';
     } else {
       delta['board']  = this.game.board.toString();
       delta['bstand'] = this.game.blackStand.toString();
