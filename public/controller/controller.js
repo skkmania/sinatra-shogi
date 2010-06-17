@@ -345,6 +345,7 @@ GameController = Class.create({
     // 画面を更新する
     $('inputText').value = this.handler.dataStore.currentBid;
     this.game.board.turn = this.readTurnFromState(state);
+    this.game.board.bid    = parseInt(state.get('bid'));
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.game.boardReadFromDB();
     this.game.toggleDraggable();

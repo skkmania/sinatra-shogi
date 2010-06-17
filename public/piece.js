@@ -78,12 +78,14 @@ Piece = Class.create({
   
     this.drag = new Draggable(this.elm, {
           onStart: function onStart() {
-            this.game.log.getInto('Draggable#onStart of ' + this.toDebugString());
-            this.game.log.warn('Drag started. : ' + startMessage, {3:{'color':'#33AA88'}});
+            this.game.log.getInto('Draggable#onStart');
+            this.game.log.debug(this.toDebugString());
+            this.game.log.debug('Drag started. : ' + startMessage);
             this.game.log.goOut();
           }.bind(this),
           onEnd: function onEnd() {
-            this.game.log.getInto('Draggable#onEnd of ' + this.toDebugString());
+            this.game.log.getInto('Draggable#onEnd');
+            this.game.log.debug(this.toDebugString());
             this.elm.style.top = 0;
             this.elm.style.left = 0;
             this.game.log.goOut();
@@ -403,12 +405,19 @@ this.game.log.goOut();
 	 * toDebugString()
 	 */
   toDebugString: function toDebugString() {  // Piece
-    var ret = 'chr: <span style="color: #3F8080">' + this.chr + '</span>, ';
-    ret += (', className: ' + this.elm.className);
-    ret += (', promote_type: ' + this.promote_type || 'undefined');
-    ret += (', unpromote_type: ' + this.unpromote_type || 'undefined');
-    if (this.cell && this.cell.elm) ret += (', cell_name:' + this.cell.elm.id);
-    else ret += ', [no cell]';
+    var ret = '<div style="color: #3F80FF">[';
+    ret += '<span style="color: #FF80FF">' + this.chr + '</span>,  ';
+    ret += 'cN: ';
+    ret += '<span style="color: #FF80FF">' + this.elm.className + '</span>,  ';
+    ret += 'p_type: ';
+    ret += '<span style="color: #FF80FF">' + (this.promote_type || 'undefined') + '</span>,  ';
+    ret += 'unp_type: ';
+    ret += '<span style="color: #FF80FF">' + (this.unpromote_type || 'undefined') + '</span>,  ';
+    if (this.cell && this.cell.elm){
+      ret += 'cell:';
+      ret += '<span style="color: #FF80FF">' + this.cell.elm.id + '</span>';
+    } else ret += '[no cell]';
+    ret += ' ]</div>';
     return ret;
   }
 });

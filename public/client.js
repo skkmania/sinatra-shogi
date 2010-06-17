@@ -604,7 +604,7 @@ var Handler = Class.create({
     var delta = {};
     this.logObj.getInto();
     this.logObj.debug('bid : ' + bid);
-    var value = bid || $('inputText').value;
+    var value = bid.toString() || $('inputText').value;
     if(!this.dataStore.slices.get(value)){
       this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
       this.dataStore.arrangeByBid(15);
