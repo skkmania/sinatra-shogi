@@ -45,11 +45,17 @@ var Slice = Class.create(Hash, {
     var ret = '<table class="slice">';
     this.logObj.debug('values : ' + Object.toJSON(this.values()));
     this.each(function(pair){
-      // this.logObj.debug('pair.value.map : ' + Object.toJSON(pair.value.map(function(e){ return Object.toJSON(e); })));
+      this.logObj.debug('pair.key: ' + Object.toJSON(pair.key));
+      this.logObj.debug('pair.value: ' + Object.toJSON(pair.value));
       ret += '<tr>';
       ret += '<td>' + pair.key + '</td>';
-      ret += pair.value.map(function(e){
-         return '<td>' + Object.toJSON(e) + '</td>'; }).join('');
+      if (!pair.value.length){
+         ret += '[]';
+      } else {
+         ret += pair.value.map(function(e){
+                  return '<td>' + Object.toJSON(e) + '</td>';
+                }).join('');
+      }
       ret += '</tr>';
     }.bind(this));
     this.logObj.goOut();
@@ -74,6 +80,21 @@ var Slices = Class.create(Hash, {
     this.logObj = logObj;
     logObj.goOut();
   },
+	/**
+	 * read(bid,sliceData)
+	 */
+	// サーバからうけたデータを自身に格納する
+	// registBoardのレスポンスを登録することを想定している
+	// 入力 : bid  新しいボードのbid
+	//      : sliceData  javascriptのオブジェクト 新しいボードの１画面ぶんのデータ
+	// 出力 : なし
+  read : function read(bid, sliceData) { // Slices
+    this.logObj.getInto('Slices#read');
+    this.logObj.debug('typeof bid : ' + typeof bid);
+    this.set(bid, sliceData);
+    this.logObj.debug('this['+bid+'] became ' + Object.toJSON(this.get(bid)));
+    this.logObj.goOut();
+  }
 });
 
 /**
@@ -174,6 +195,7 @@ var Store = Class.create(Hash, {
     slice.set('nextMoves', state.get('next').evalJSON());
     slice.set('prevMoves', state.get('prev').evalJSON());
     this.slices.set(this.currentBid, slice);
+    this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
     this.logObj.goOut();
   },
 	/**
@@ -224,6 +246,7 @@ var Store = Class.create(Hash, {
   arrangeByBid : function arrangeByBid(mask) { // Store
     var m = mask || 1023;
     this.logObj.getInto();
+    this.logObj.debug('bids : ' + Object.toJSON(this.get('bids')));
     this.get('bids').pluck('bid').each(function(target){
       this.logObj.debug('target bid : ' + target);
       this.makeSlice(target, m);
@@ -316,12 +339,13 @@ var Store = Class.create(Hash, {
              }
          },
       parameters : this.getQueryStr(move),
-      asynchronous : false,
+      asynchronous : true,
+      //asynchronous : false,
       onSuccess : function onSuccess_registBoard(response){
         this.logObj.getInto('onSuccess_registBoard');
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= MessagePack.unpack(response.responseText);
-        this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
+        this.logObj.debug('result of registBoard :<br> unpacked responseText : ' + Object.toJSON(data));
           // この出力例：
           //  {"prevMoves": [{"promote": "f", "m_to": "96", "piece": "P", "bid": "1", "mid": 5, "m_from": "97", "nxt_bid": 73630}],
 // "nextMoves": [],
@@ -329,10 +353,17 @@ var Store = Class.create(Hash, {
         this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
         this.logObj.debug('data[board][0] : ' + Object.toJSON(data['board'][0]));
         this.logObj.debug('data[board][0][bid] : ' + Object.toJSON(data['board'][0]['bid']));
+        var game = window.gameController.game;
         game.new_bid = parseInt(data['board'][0]['bid']);
               // DBからの返事である、盤面のbid
         this.logObj.debug('game.new_bid : ' + game.new_bid);
-        this.read(data);
+        this.slices.read(game.new_bid, data);
+        this.logObj.debug('slice read done : ');
+        this.logObj.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
+        //var delta =  window.gameController.handler.makeReviewDelta(game.new_bid);
+        var delta =  window.gameController.handler.makeDeltaFromSlice(game.new_bid, data);
+        this.logObj.debug('delta : ' + Object.toJSON(delta));
+        window.gameController.sendDelta(delta);
         this.logObj.goOut();
         return data;
       }.bind(this),
@@ -350,17 +381,27 @@ var Store = Class.create(Hash, {
 	 * toDebugHtml()
 	 */
   toDebugHtml: function toDebugHtml() { // Store
-    this.logObj.getInto(); 
+    this.logObj.getInto('Store#toDebugHtml'); 
+    // 自身を表示
     var ret = '<table class="storeTable">';
-    this.slices.each(function(pair){
+    this.each(function(pair){
       ret += '<tr>'
       ret += '<td>' + pair.key + '</td>';
-      ret += '<td>' + pair.value.toDebugHtml() + '</td>';
+      ret += '<td>' + Object.toJSON(pair.value) + '</td>';
       ret += '</tr>';
     });
     ret += '</table>';
+    // slicesを表示
+    var ret_slice = '<table class="storeTable">';
+    this.slices.each(function(pair){
+      ret_slice += '<tr>'
+      ret_slice += '<td>' + pair.key + '</td>';
+      ret_slice += '<td>' + pair.value.toDebugHtml() + '</td>';
+      ret_slice += '</tr>';
+    });
+    ret_slice += '</table>';
     this.logObj.goOut();
-    return ret;
+    return ret + ret_slice;
   }
 });
 
@@ -594,7 +635,41 @@ var Handler = Class.create({
 
 
 	/**
-	 * makeReviewDelta()
+	 * makeDeltaFromSlice(bid, slice)
+	 */
+	// 入力されたsliceからdeltaを生成し返す
+	// 入力 : bid 数値 表示したい局面のbid
+	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
+	//      : slice  オブジェクト
+          // 例：
+          //  {"prevMoves": [{"promote": "f", "m_to": "96",
+	//                    "piece": "P", "bid": "1", "mid": 5,
+	//                    "m_from": "97", "nxt_bid": 73630}],
+	//     "nextMoves": [],
+	//     "board"    : [{"white": "", "black": "", "bid": "1",
+	//                    "board": "lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxPxxL", "turn": "f"}]}
+        // 出力 : 作成されたdelta オブジェクト
+  makeDeltaFromSlice: function makeDeltaFromSlice(bid, slice){ // Handler
+    var delta = {};
+    this.logObj.getInto();
+      delta['mode']  = 'review';
+      delta['bid']   = Object.toJSON(bid);
+      delta['turn']  = (bid % 2 == 0) ? 'f':'t';
+      delta['board'] = Object.toJSON(slice.board);
+      delta['next']  = Object.toJSON(slice.nextMoves);
+      delta['prev']  = Object.toJSON(slice.prevMoves);
+/*
+      delta['bid']   = bid;
+      delta['board'] = slice.board;
+      delta['next']  = slice.nextMoves;
+      delta['prev']  = slice.prevMoves;
+*/
+      this.logObj.debug('delta : ' + Object.toJSON(delta));
+    this.logObj.goOut();
+    return delta;
+  },
+	/**
+	 * makeReviewDelta(bid)
 	 */
 	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
 	// 入力 : bid 数値 表示したい局面のbid
@@ -604,19 +679,43 @@ var Handler = Class.create({
     var delta = {};
     this.logObj.getInto();
     this.logObj.debug('bid : ' + bid);
-    var value = bid.toString() || $('inputText').value;
-    if(!this.dataStore.slices.get(value)){
+    this.logObj.debug('typeof bid : ' + typeof bid);
+    var value = bid || $('inputText').value;
+    //var value = bid.toString() || $('inputText').value;
+    this.logObj.debug('value : ' + value);
+    var slice = this.dataStore.slices.get(value);
+    if(!slice){
+      this.logObj.debug('was not found in slices key, so try getMsg.');
+      this.logObj.debug('slices key is : ' + this.dataStore.slices.keys().join(','));
       this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
       this.dataStore.arrangeByBid(15);
+      slice = this.dataStore.slices.get(value);
     }
-    this.boardObj  = this.dataStore.slices.get(value).get('board')[0];
-    this.nextMoves = this.dataStore.slices.get(value).get('nextMoves');
-    this.prevMoves = this.dataStore.slices.get(value).get('prevMoves');
-    delta['mode']  = 'review';
-    delta['bid']   = bid.toString();
-    delta['board'] = Object.toJSON(this.boardObj);
-    delta['next']  = Object.toJSON(this.nextMoves);
-    delta['prev']  = Object.toJSON(this.prevMoves);
+    this.logObj.debug('slice : ' + Object.toJSON(slice));
+    this.logObj.debug('slice constructor : ' + Object.toJSON(slice.constructor));
+    this.logObj.debug('slice.keys : ' + (slice.keys().join(',')));
+    //slice = $H(slice);
+    //if(slice && !slice.constructor) slice = $H(slice);
+    //this.logObj.debug('slice constructor 2 : ' + Object.toJSON(slice.constructor));
+    if(slice){
+      this.logObj.debug('slices[' + value + '] : ' + Object.toJSON(slice));
+      this.logObj.debug('slice.keys : ' + (slice.keys().join(',')));
+      slice.each(function(pair){
+        this.logObj.debug('key : ' + Object.toJSON(pair.key));
+        this.logObj.debug('value : ' + Object.toJSON(pair.value));
+      }.bind(this));
+      this.boardObj  = slice.get('board')[0];
+      this.nextMoves = slice.get('nextMoves');
+      this.prevMoves = slice.get('prevMoves');
+      delta['mode']  = 'review';
+      delta['bid']   = value;
+      delta['board'] = Object.toJSON(this.boardObj);
+      delta['next']  = Object.toJSON(this.nextMoves);
+      delta['prev']  = Object.toJSON(this.prevMoves);
+      this.logObj.debug('delta : ' + Object.toJSON(delta));
+    } else {
+      this.logObj.fatal('cannot get slice');
+    }
     this.logObj.goOut();
     return delta;
   },
@@ -629,22 +728,32 @@ var Handler = Class.create({
 	// 入力 : bid 数値 表示したい局面のbid
 	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
   refreshBoard: function refreshBoard(bid){ // Handler
-    this.logObj.getInto();
+    this.logObj.getInto('Handler#refreshBoard');
+    this.logObj.debug('bid : ' + bid);
     var boardObj, nextMoves, prevMoves;
 
     if(bid) $('inputText').value = bid;
     var value = $('inputText').value;
-    if(!this.dataStore.slices.get(value)){
+    this.logObj.debug('value : ' + value);
+    this.logObj.debug('typeof value : ' + typeof value);
+    var slice = this.dataStore.slices.get(value);
+    this.logObj.debug('slice['+value+'] : ' + Object.toJSON(slice));
+    if(!slice){
       this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
       this.dataStore.arrangeByBid(15);
+      slice = this.dataStore.slices.get(value);
     }
-    this.boardObj = this.dataStore.slices.get(value).get('board')[0];
-    this.nextMoves = this.dataStore.slices.get(value).get('nextMoves');
-    this.prevMoves = this.dataStore.slices.get(value).get('prevMoves');
-    window.gameController.game.boardReadFromDB(this.boardObj);
-    window.gameController.game.board.show();
-    this.prevArea.show(this.prevMoves);
-    this.nextArea.show(this.nextMoves);
+    if(slice){
+      this.boardObj = slice.get('board')[0];
+      this.nextMoves = slice.get('nextMoves');
+      this.prevMoves = slice.get('prevMoves');
+      window.gameController.game.boardReadFromDB(this.boardObj);
+      window.gameController.game.board.show();
+      this.prevArea.show(this.prevMoves);
+      this.nextArea.show(this.nextMoves);
+    } else {
+      this.logObj.fatal('cannot get slice');
+    }
     this.logObj.goOut();
   },
 

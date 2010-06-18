@@ -47,7 +47,7 @@ window.gameController.game = this;
     if(actionContents[0].type == 'Gold' || 
        actionContents[0].type == 'King')
       ret.promote = false;  
-    this.log.debug(ret.toDebugString());
+    this.log.debug('move made as : ' + ret.toDebugString());
     this.log.goOut();
     return ret;
   },
@@ -61,16 +61,20 @@ window.gameController.game = this;
 	//        あればそのmoveのnxt_bidをtargetとしてsendDeltaする
   findMove: function findMove(move) { // ShogiGame
     this.log.getInto('ShogiGame#findMove');
+    this.log.debug('move : ' + Object.toJSON(move));
     var ret = this.controller.handler.nextMoves.find(function(e){
-      return (e.piece == move.chr) && (e.m_from == move.from) &&
+      return (e.piece == move.piece) && (e.m_from == move.from) &&
              (e.m_to == move.to) && (e.promote == move.promote);
     });
-    this.log.debug('ret : ' + Object.toJSON(ret));
+    this.log.debug('whether move was found or not : ' + Object.toJSON(ret));
     this.log.goOut();
+    return ret;
+/*
     if(ret){
       this.controller.sendDelta( this.controller.handler.makeReviewDelta(ret.nxt_bid) );
     } else
       return false;
+*/
   },
 	/**
 	 * respondValidity(actionContents)
@@ -390,10 +394,10 @@ window.gameController.game = this;
     this.controller.handler.dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
     this.log.debug('doAction: game.new_bid : ' + this.new_bid);
-    this.controller.sendDelta( this.controller.handler.makeReviewDelta(this.new_bid) );
+    //this.controller.sendDelta( this.controller.handler.makeReviewDelta(this.new_bid) );
 
     // reviewモードではここから先は通らないはず。
-    this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
+    //this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
   },
 	/**
 	 * doActionWithPromote(actionContents)

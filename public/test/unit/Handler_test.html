@@ -9,6 +9,7 @@
       google.load("prototype", "1.6.0.3");
       google.load("scriptaculous", "1.8.2");
     </script>
+<script src="../../lib/MessagePack-JS/msgpack.js"></script>
 <script src="../../lib/scriptaculous/resizable.js"></script>
 <script src="../../lib/livepipe/livepipe.js"></script>
 <script src="../../lib/livepipe/window.js"></script>
@@ -17,6 +18,14 @@
 <script src="../../client.js" charset="UTF-8"></script>
 <script src="../../lib/log4pipe.js" charset="UTF-8"></script>
 <script src="../../lib/log4pipe_test_common_functions.js" charset="UTF-8"></script>
+<script src="../../lib/common-utils.js" charset="UTF-8"></script>
+<script src="../../lib/pseudo-wave.js" charset="UTF-8"></script>
+<script src="../../controller/controller.js" charset="UTF-8"></script>
+<script src="../../piece.js" charset="UTF-8"></script>
+<script src="../../cell.js" charset="UTF-8"></script>
+<script src="../../board.js" charset="UTF-8"></script>
+<script src="../../stand.js" charset="UTF-8"></script>
+<script src="../../shogi.js" charset="UTF-8"></script>
 
 <link rel="stylesheet" href="../test.css" type="text/css" />
 <link rel="stylesheet" href="../../css/log4pipe.css" type="text/css" />
@@ -65,7 +74,9 @@
     $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
     new Resizable(window_link,{handle:resizable_id});
 
-    var handlerObj = new Handler(logObj);
+    settings = {'containerId':'shogi'};
+    var controllerObj = new GameController(settings, logObj);
+    var handlerObj = new Handler(controllerObj);
     logObj.debug('Handler object was initialized');
     assertEqual( 10, handlerObj.data_name.size() );
     } },
@@ -97,6 +108,20 @@
     assertEqual( 'black-stand', storeObj.game.blackHandler.id );
     storeObj.game.whiteHandler.show();
     assertEqual( 'white-stand', storeObj.game.whiteHandler.id );
+    } },
+
+  testMakeReviewDelta : function() {  with( this )  {
+    var logObj = makeLogObj('testMakeReviewDelta', {width:600, height:350, resizable:false});
+    logObj.debug('test Handler makeReviewDelta');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    settings = {'containerId':'shogi'};
+    var controllerObj = new GameController(settings, logObj);
+    var handlerObj = controllerObj.handler;
+    var delta = handlerObj.makeReviewDelta(1);
+    handlerObj.logObj.debug('test Handler makeReviewDelta');
+    assertEqual('review', delta['mode']);
     } },
 
   testToString : function() {  with( this )  {

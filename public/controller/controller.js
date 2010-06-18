@@ -520,6 +520,7 @@ GameController = Class.create({
         break;
     }
     this.log.goOut();
+    return;
   },
 	/**
 	 * confirmActionByUser(actionContents)

@@ -167,8 +167,9 @@ class DbAccessor
       ret['board'] = [{"turn"=> @turn, "board"=> @board, "black"=> @black, "bid"=> new_bid, "white"=> @white}]
       ret['nextMoves'] = []
       ret['prevMoves'] = [{"promote"=> @promote, "m_from"=> @from, "m_to"=> @to, "bid"=> @bid, "nxt_bid"=> new_bid, "mid"=> new_mid, "piece"=> @piece}]
-      @logger.debug { "ret.msgpack : #{ret.to_msgpack}" } 
-      return ret.to_msgpack
+      packed_ret = ret.to_msgpack
+      @logger.debug { "ret.msgpack : #{packed_ret}" } 
+      return packed_ret
     else
       # 既存の局面だった場合(midはregist_boardの答えには含まれない）
       @bid = new_bid

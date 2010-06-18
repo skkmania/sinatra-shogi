@@ -135,10 +135,17 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
 
         this.log.goOut();
 
+        var m = this.game.makeMove(actionContents);
+        var foundMove = this.game.findMove(m);
         // find if this move is in nextMoves
-        if(!this.game.findMove(actionContents)){ 
+        if(!foundMove){ 
           // send action to GameController
           this.game.controller.receiveAction(actionContents);
+          return null;
+        } else {
+          // nextMovesのなかにあったらそれを実行
+          var delta = window.gameController.handler.makeReviewDelta(foundMove['nxt_bid']);
+          window.gameController.sendDelta(delta);
         }
       }.bind(this)
     });
