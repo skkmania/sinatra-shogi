@@ -54,19 +54,12 @@ Stand = Class.create({
 	/**
 	 * read(str)
 	 */
+	// stateから読んだ文字列を元に駒を駒台に置く
+	// 入力 : str 文字列 駒のchrを並べたもの
+	// 出力 : なし
   read: function read(strFromState){ // Stand
     this.game.log.getInto('Stand#read');
     this.game.log.debug('entered Stand#read with : ' + strFromState );
-    // stateから読んだ文字列を元に駒を駒台に置く
-    // strFromStateが空文字列ならclearして終わり
-/*
-    if (strFromState.length == 0){
-      this.pieces.clear();
-      this.game.log.debug('leaving  Stand#read because nothing to do.' );
-      this.game.log.goOut();
-      return;
-    }
-*/
     // 現在のstandの状態との差分を埋める
     var str_now = this.toString();
     this.game.log.debug('Stand#read str_now : ' + str_now, {'indent':1} );

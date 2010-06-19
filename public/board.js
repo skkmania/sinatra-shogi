@@ -76,8 +76,8 @@ Board = Class.create({
     this.bid = parseInt(ary[0]);
     this.turn = (ary[1] == 't');
     this.read(ary[2]);
-    if(ary[3].length > 0) this.game.blackStand.read(ary[3]);
-    if(ary[4].length > 0) this.game.whiteStand.read(ary[4]);
+    this.game.blackStand.read(ary[3]);
+    this.game.whiteStand.read(ary[4]);
     this.game.log.goOut();
     return;
   },
