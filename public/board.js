@@ -47,7 +47,42 @@ Board = Class.create({
     game.log.goOut();
   },
 	/**
-	 * pawnExists(x, chr))
+	 * toDelta()
+	 */
+        // board情報をstateに載せるときの文字列を生成して返す
+	// 入力 : なし
+	// 出力 : 文字列 カンマ区切りで、
+	//  bid, turn, board, blackStand, whiteStand　を並べたもの
+	// 出力例 初期盤面ならば、'1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL,,'
+  toDelta: function toDelta(){ // Board
+    this.game.log.getInto('Board#toDelta');
+    var ret = [this.bid, (this.turn?'t':'f'),this.toString(),
+               this.game.blackStand.toString(), this.game.whiteStand.toString()].join(',');
+    this.game.log.debug('returning : ' + ret);
+    this.game.log.goOut();
+    return ret;
+  },
+	/**
+	 * fromDelta(str)
+	 */
+        // state上のboard情報を自身に反映させる
+	// 入力 : str  state.get('board')を受け取ることを想定している
+	// 入力例 初期盤面ならば、'1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL,,'
+	// 出力 : なし
+  fromDelta: function fromDelta(str){ // Board
+    this.game.log.getInto('Board#fromDelta');
+    var ary = str.split(',');
+    if(ary.length != 5) this.game.log.fatal('Board#fromDelta:read error');
+    this.bid = parseInt(ary[0]);
+    this.turn = (ary[1] == 't');
+    this.read(ary[2]);
+    if(ary[3].length > 0) this.game.blackStand.read(ary[3]);
+    if(ary[4].length > 0) this.game.whiteStand.read(ary[4]);
+    this.game.log.goOut();
+    return;
+  },
+	/**
+	 * pawnExists(x, chr)
 	 */
         // 列xにchrを持つ駒が存在したらtrueを返す
   pawnExists: function pawnExists(x, chr){ // Board
