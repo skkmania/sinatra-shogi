@@ -18,49 +18,52 @@ var Move = Class.create({
   nxtBid: null,
   toStr: null,
 
-  initialize : function(str){
+  initialize : function initialize(log, str){
+    this.log = log;
+    this.log.getInto();
     if (str && str.length == 6){
-      this.from = str.slice(0,2);
-      this.to = str.slice(2,4);
-      this.piece = str.slice(4,5);
+      this.from    = str.slice(0,2);
+      this.to      = str.slice(2,4);
+      this.piece   = str.slice(4,5);
       this.promote = str.slice(-1) == 't' ? true : false;
-      this.toStr = str;
+      this.toStr   = str;
     }
+    this.log.goOut();
   },
 
   // DBから取得したデータのオブジェクトを読み、とりいれる。
-  fromObj : function fromObj_Moves(h){
-    this.bid = h.bid;
-    this.mid = h.mid;
-    this.from = h.m_from;
-    this.to = h.m_to;
-    this.piece = h.piece;
+  fromObj : function fromObj_Move(h){
+    this.bid     = h.bid;
+    this.mid     = h.mid;
+    this.from    = h.m_from;
+    this.to      = h.m_to;
+    this.piece   = h.piece;
     this.promote = h.promote;
-    this.nxtBid = h.nxt_bid;
+    this.nxtBid  = h.nxt_bid;
     return this;
   },
 
   // get_nxtMoves.rhtmlが返すハッシュをとりいれる。
-  fromHash : function fromHash_Moves(h){
-    this.bid = parseInt(h.bid);
-    this.mid = parseInt(h.mid);
-    this.from = parseInt(h.m_from);
-    this.to = parseInt(h.m_to);
-    this.piece = h.piece;
+  fromHash : function fromHash_Move(h){ // Move
+    this.bid     = parseInt(h.bid);
+    this.mid     = parseInt(h.mid);
+    this.from    = parseInt(h.m_from);
+    this.to      = parseInt(h.m_to);
+    this.piece   = h.piece;
     this.promote = (h.promote == 't');
-    this.nxtBid = parseInt(h.nxt_bid);
+    this.nxtBid  = parseInt(h.nxt_bid);
     return this;
   },
 
   // moves テーブルのレコードを配列にしたものを受け取ってその値をとりいれる
-  fromRecord : function fromRecord_Moves(ary){
-    this.bid = ary[0];
-    this.mid = ary[1];
-    this.from = ary[2];
-    this.to = ary[3];
-    this.piece = ary[4];
+  fromRecord : function fromRecord_Move(ary){
+    this.bid     = ary[0];
+    this.mid     = ary[1];
+    this.from    = ary[2];
+    this.to      = ary[3];
+    this.piece   = ary[4];
     this.promote = (ary[5] == 't');
-    this.nxtBid = ary[6];
+    this.nxtBid  = ary[6];
     return this;
   },
 
@@ -72,13 +75,13 @@ var Move = Class.create({
     var sankaku = (this.isBlack()) ?  '▲' : '△' ;
     var pro = this.promote ? '成' : '';
     if (typeof this.to == "String"){
-      var to_x = this.to[0]-0;
-      var to_y = this.to[1]-0;
+      var to_x   = this.to[0]-0;
+      var to_y   = this.to[1]-0;
       var from_x = this.from[0]-0;
       var from_y = this.from[1]-0;
     } else {
-      var to_x = Math.floor(this.to / 10);
-      var to_y = this.to - 10*to_x;
+      var to_x   = Math.floor(this.to / 10);
+      var to_y   = this.to - 10*to_x;
       var from_x = Math.floor(this.from / 10);
       var from_y = this.from - 10*from_x;
     }
@@ -87,7 +90,7 @@ var Move = Class.create({
 
   toDebugString : function toDebugString(){
     var ret;
-    ret = 'bid : ' + this.bid;
+    ret =  'bid : ' + this.bid;
     ret += ', piece : ' + this.piece;
     ret += ', from : ' + this.from;
     ret += ', to : ' + this.to;
@@ -95,7 +98,8 @@ var Move = Class.create({
     return ret;
   },
 
-  legalCheck : function(){
+  legalCheck : function legalCheck(){
+    this.log.getInto();
     if (typeof this.to == "String"){
       var to_x = this.to[0]-0;
       var to_y = this.to[1]-0;
@@ -107,106 +111,107 @@ var Move = Class.create({
       var from_x = Math.floor(this.from / 10);
       var from_y = this.from - 10*from_x;
     }
-    dw('legalcheck@Move', 3);
-    dw('legal check this move : ' + Object.toJSON(this), 3);
+    this.log.debug('legalcheck@Move');
+    this.log.debug('legal check this move : ' + Object.toJSON(this));
     switch(this.piece){
-      case 'a':
+      case 'p':
         return (from_x == to_x) && (to_y - from_y == 1);
 	break;
-      case 'A':
+      case 'P':
         return (from_x == to_x) && (from_y - to_y == 1);
 	break;
-      case 'b':
+      case 'l':
         return (from_x == to_x) && (to_y - from_y > 0);
 	break;
-      case 'B':
+      case 'L':
         return (from_x == to_x) && (to_y - from_y < 0);
 	break;
-      case 'c':
+      case 'n':
         return (Math.abs(from_x - to_x) == 1) && (to_y - from_y == 2);
 	break;
-      case 'C':
+      case 'N':
         return (Math.abs(from_x - to_x) == 1) && (from_y - to_y == 2);
 	break;
-      case 'd':
+      case 's':
         return (from_x == to_x) && (to_y - from_y == 1) ||
                (Math.abs(from_x - to_x) == 1) && (Math.abs(from_y - to_y) == 1);
 	break;
-      case 'D':
+      case 'S':
         return (from_x == to_x) && (from_y - to_y == 1) ||
                (Math.abs(from_x - to_x) == 1) && (Math.abs(from_y - to_y) == 1);
 	break;
-      case 'e': case 'i': case 'j': case 'k': case 'l': case 'm':
+      case 'g': case 'q': case 'm': case 'o': case 't':
         return ((from_x == to_x) && Math.abs(to_y - from_y) == 1) ||
 	       ((Math.abs(from_x - to_x) == 1) && (from_y == to_y)) ||
 	       ((to_y - from_y == 1) && (Math.abs(from_x - to_x) == 1));
 	break;
-      case 'E': case 'I': case 'J': case 'K': case 'L': case 'M':
+      case 'G': case 'Q': case 'M': case 'O': case 'T':
         return ((from_x == to_x) && Math.abs(to_y - from_y) == 1) ||
 	       ((Math.abs(from_x - to_x) == 1) && (from_y == to_y)) ||
 	       ((from_y - to_y == 1) && (Math.abs(from_x - to_x) == 1));
 	break;
-      case 'f': case 'F':
+      case 'b': case 'B':
         return Math.abs(from_x - to_x) == Math.abs(from_y - to_y);
 	break;
-      case 'n': case 'N':
+      case 'h': case 'H':
         return Math.abs(from_x - to_x) == Math.abs(from_y - to_y) ||
                ((from_x == to_x) && Math.abs(to_y - from_y) == 1) ||
 	       ((Math.abs(from_x - to_x) == 1) && (from_y == to_y));
 	break;
-      case 'g': case 'G':
+      case 'r': case 'R':
         return (from_x == to_x) || (from_y == to_y);
 	break;
-      case 'o': case 'O':
+      case 'd': case 'D':
         return (from_x == to_x) || (from_y == to_y) ||
                ((Math.abs(from_x - to_x) == 1) && (Math.abs(from_y - to_y) == 1));
 	break;
-      case 'h': case 'H':
+      case 'k': case 'K':
         return (Math.abs(from_x - to_x) < 2) && (Math.abs(from_y - to_y) < 2);
 	break;
       default:
         break;
     } // switch
-  } // function
+    this.log.goOut();
+  }, // function legalCheck
+	/*
+	 * toDebugString()
+	 */
+  toDebugString: function toDebugString(){
+    return '
+  }
 });
 
 
 // 指し手の集合 
+// Hashの子クラス
+// 指し手のmidをkeyとする
+var Moves = Class.create(Hash, {
 
-var Moves = Class.create({
-
-  bid  : null,
-  pn   : null,  // prev or next : true -> next,  false -> prev.
-  moves: null,  // moves は配列であり、その添字はmidに等しくなければいけない
-
-  initialize : function(p, m){
-    this.pn    = p;
-    this.moves = m;
+  initialize : function($super, log){ // Moves
+    this.log = log;
+    this.log.getInto('Moves#initialize');
+    $super();
+    this.log.goOut();
   },
-
-  setBid : function(bid){ this.bid = bid; },
-
-  clearMoves : function(){
-    this.bid = null;
-    this.pn  = null;
-    this.moves.clear(); },
-
-  // 指し手を渡すと、その指し手のmidを調べて返す
-  // 盤上で生成した指し手が、指し手候補にふくまれているかどうか調べるために使う関数
-  // みつからなければ、-1を返す
-  index : function(m){
-    debug_msg('index@Moves','start');
-    dw_arg(arguments);
-    dw('index@Moves : this.moves -> ' + Object.toJSON(this.moves), 3);
-    var res = -1;
-    this.moves.each(function(e){
-      if ( parseInt(m.from) == e.from && parseInt(m.to) == e.to
-        && m.piece == e.piece && m.promote == e.promote){
-          res = e.mid;
-      }
+	/*
+	 * search(m)
+	 */
+	// 指し手を渡すと、その指し手のmidを調べて返す
+	// 盤上で生成した指し手が、指し手候補にふくまれているかどうか調べるために使う関数
+	// 入力 : Moveオブジェクト
+	// 出力 : Moveオブジェクトまたはundefined
+	//        みつかったときはそのmove
+	//        みつからないときはundefined
+  search : function(m){
+    this.log.getInto('Moves#search');
+    var res = this.find(function(pair){
+      return (parseInt(m.from) == pair.value.from
+           && parseInt(m.to)   == pair.value.to
+           && m.piece          == pair.value.piece
+           && m.promote        == pair.value.promote);
     });
-    dw('index@Moves : returning -> ' + res, 3);
-    debug_msg('index@Moves','end');
+    this.log.debug('returning : ' + res.toDebugString());
+    this.log.goOut();
     return res;
   },
 
@@ -228,7 +233,9 @@ var Moves = Class.create({
       
 });
 
-
+/*
+ * MovePoint クラス
+ */
 // 指し手の評価値 
 //  各ユーザが持つ値と、その総和とがある。
 var MovePoint = Class.create({
@@ -256,6 +263,9 @@ var MovePoint = Class.create({
   }
 });
 
+/*
+ * MovePoints クラス
+ */
 // 指し手の評価値の集合 
 var MovePoints = Class.create({
 
@@ -273,7 +283,7 @@ var MovePoints = Class.create({
   },
 
   // 指し手を渡すと、それが配列の第何要素かを調べて返す
-  index : function(m){
+  index : function(m){ // MovePoints
     debug_msg('index@MovePoints','start');
     dw_arg(arguments);
     var ar = this.movePoints.map(function(e){ return e.toStr; });
