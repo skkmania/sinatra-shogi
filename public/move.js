@@ -250,10 +250,11 @@ var Moves = Class.create(Hash, {
 	 * search(m)
 	 */
 	// 盤上で生成した指し手が、指し手候補にふくまれているかどうか調べるために使う関数
+	// 比較はminimalEqualによる
 	// 入力 : Moveオブジェクト
-	// 出力 : Moveオブジェクトまたはundefined
+	// 出力 : Moveオブジェクトまたはfalse
 	//        みつかったときはそのmove
-	//        みつからないときはundefined
+	//        みつからないときはfalse
   search : function(m){ // Moves
     this.log.getInto('Moves#search');
     var res = this.find(function(pair){
@@ -263,7 +264,10 @@ var Moves = Class.create(Hash, {
     }.bind(this));
     // this.log.debug('returning : ' + res.value.toDelta());
     this.log.goOut();
-    return res.value;
+    if (res)
+      return res.value;
+    else
+      return false;
   },
 
 	/*

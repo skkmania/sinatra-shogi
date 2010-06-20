@@ -76,7 +76,7 @@
     new Resizable(window_link,{handle:resizable_id});
 
     var m = new Moves(logObj);
-    } },
+  } },
 
   testMovesSearch : function() {  with( this )  {
     var logObj = makeLogObj('testMovesSearch', {width:600, height:350, resizable:false});
@@ -90,6 +90,7 @@
     var m2 = new Move(logObj, '7776Pf');
     var m3 = new Move(logObj, '9796Pf');
     var m4 = new Move(logObj, '5958Kf');
+    var m5 = new Move(logObj, '4958Gf');
     ms.set(1,m1);
     ms.set(2,m2);
     ms.set(3,m3);
@@ -98,7 +99,8 @@
     assertEqual( 'B',  ms.get(1).piece, 'ms.get' );
     assertEqual( 'B',  ms.search(m1).piece, 'ms.search');
     assertEqual( 'P',  ms.search(m2).piece, 'ms.search');
-    } },
+    assert(!ms.search(m5), 'ms not include m5');
+  } },
 
   testMovesToKanji : function() {  with( this )  {
     var logObj = makeLogObj('testMovesToKanji', {width:600, height:350, resizable:false});
@@ -112,7 +114,7 @@
     assertEqual( '▲7六歩(77)', m.toKanji() );
     m = new Moves(logObj, '3334pf');
     assertEqual( '△3四歩(33)', m.toKanji() );
-    } },
+  } },
 
   testMovesToDelta : function() {  with( this )  {
     var logObj = makeLogObj('testMovesToDelta', {width:600, height:350, resizable:false});
