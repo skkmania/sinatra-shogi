@@ -134,6 +134,21 @@
     assertEqual( '1,1,33,34,P,f,100', m.toDelta() );
     } },
 
+  testMoveMinimalEqual : function() {  with( this )  {
+    var logObj = makeLogObj('testMoveMinimalEqual', {width:600, height:350, resizable:false});
+    logObj.debug('test Move fromDelta');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var m1 = (new Move(logObj, '8822Bt')).fromDelta('1,1,33,34,P,f,100');
+    var m2 = (new Move(logObj, '8822Bt')).fromDelta('1,1,33,34,P,f,100');
+    var m3 = (new Move(logObj, '8822Bt')).fromDelta('1,1,33,35,P,f,100');
+    var m4 = (new Move(logObj, '8822Bt')).fromDelta('2,1,33,34,P,f,100');
+    assert( m1.minimalEqual(m2) );
+    assert(!m1.minimalEqual(m3) );
+    assert( m1.minimalEqual(m4) );
+    } },
+
   testMoveLegalCheck : function() {  with( this )  {
     var logObj = makeLogObj('testMoveLegalCheck', {width:600, height:350, resizable:false});
     logObj.debug('test Move fromDelta');

@@ -116,6 +116,19 @@ var Move = Class.create({
     return ret;
   },
 	/*
+	 * minimalEqual(move)
+	 */
+	// 駒の動きの最小表現であるfrom,to,piece,promoteだけを比較する
+	// 入力 : Moveオブジェクト move  他の指し手
+	// 出力 : 論理値　moveと自身が最小レベルで等しければtrue
+	//                そうでなければfalse
+  minimalEqual : function minimalEqual(move){ // Move
+    return (this.from    == move.from
+         && this.to      == move.to
+         && this.piece   == move.piece
+         && this.promote == move.promote);
+  },
+	/*
 	 * toDelta()
 	 */
   toDelta : function toDelta(){ // Move
@@ -236,7 +249,6 @@ var Moves = Class.create(Hash, {
 	/*
 	 * search(m)
 	 */
-	// 指し手を渡すと、その指し手のmidを調べて返す
 	// 盤上で生成した指し手が、指し手候補にふくまれているかどうか調べるために使う関数
 	// 入力 : Moveオブジェクト
 	// 出力 : Moveオブジェクトまたはundefined
@@ -251,7 +263,6 @@ var Moves = Class.create(Hash, {
        && parseInt(m.to)   == pair.value.to
        && m.piece          == pair.value.piece
        && m.promote        == pair.value.promote);
-       //return pair.value;
     }.bind(this));
     // this.log.debug('returning : ' + res.value.toDelta());
     this.log.goOut();
