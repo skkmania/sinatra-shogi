@@ -259,10 +259,7 @@ var Moves = Class.create(Hash, {
     var res = this.find(function(pair){
       // this.log.debug('key : ' + pair.key);
       // this.log.debug('value : ' + Object.toJSON(pair.value));
-      return (parseInt(m.from) == pair.value.from
-       && parseInt(m.to)   == pair.value.to
-       && m.piece          == pair.value.piece
-       && m.promote        == pair.value.promote);
+      return pair.value.minimalEqual(m);
     }.bind(this));
     // this.log.debug('returning : ' + res.value.toDelta());
     this.log.goOut();
