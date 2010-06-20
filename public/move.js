@@ -18,7 +18,7 @@ var Move = Class.create({
   nxt_bid: null,
   toStr: null,
 
-  initialize : function initialize(log, str){
+  initialize : function initialize(log, str){ // Move
     this.log = log;
     this.log.getInto();
     if (str && str.length == 6){
@@ -33,7 +33,7 @@ var Move = Class.create({
   },
 
   // DBから取得したデータのオブジェクトを読み、とりいれる。
-  fromObj : function fromObj_Move(h){
+  fromObj : function fromObj_Move(h){ // Move
     this.bid     = h.bid;
     this.mid     = h.mid;
     this.from    = h.m_from;
@@ -145,13 +145,13 @@ var Move = Class.create({
 	 */
   fromDelta : function fromDelta(str){ // Move
     var ary = str.split(',');
-    this.bid     = parseInt(ary[0]);
-    this.mid     = parseInt(ary[1]);
+    this.bid     = (ary[0] == 'null' ? null : parseInt(ary[0]));
+    this.mid     = (ary[1] == 'null' ? null : parseInt(ary[1]));
     this.from    = parseInt(ary[2]);
     this.to      = parseInt(ary[3]);
     this.piece   = ary[4];
     this.promote = (ary[5] == 't');
-    this.nxt_bid = parseInt(ary[6]);
+    this.nxt_bid = (ary[6] == 'null' ? null : parseInt(ary[6]));
     return this;
   },
 	/*
@@ -274,19 +274,29 @@ var Moves = Class.create(Hash, {
 	 * toDelta()
 	 */
   toDelta : function toDelta(){ // Moves
-    return this.values().invoke('toDelta').join(':');
+    this.log.getInto('Moves#toDelta');
+    this.log.debug('values : ' + Object.toJSON(this.values()));
+    var res = this.values().invoke('toDelta').join(':');
+    this.log.debug('returuning : ' + res);
+    this.log.goOut();
+    return res;
   },
 	/*
 	 * fromDelta()
 	 */
+	// Moves#toDeltaの出力した文字列を自身に追加的に読み込む
+	// ただし、midがないmoveは読み込まない
+	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
   fromDelta : function fromDelta(str){ // Moves
-    this.clear();
+    this.log.getInto('Moves#fromDelta');
     var ary = str.split(':');
     ary.each(function(e){
-      var m = new Move();
+      var m = new Move(this.log);
       m.fromDelta(e);
-      this.set(m.mid, m);
-    });
+      if (m.mid) this.set(m.mid, m);
+    }.bind(this));
+    this.log.goOut();
+    return this;
   },
 
   // movesをmidの順に並べる

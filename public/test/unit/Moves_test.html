@@ -102,20 +102,6 @@
     assert(!ms.search(m5), 'ms not include m5');
   } },
 
-  testMovesToKanji : function() {  with( this )  {
-    var logObj = makeLogObj('testMovesToKanji', {width:600, height:350, resizable:false});
-    logObj.debug('test Moves toKanji');
-    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
-    new Resizable(window_link,{handle:resizable_id});
-    // 洋数字は半角
-    var m = new Moves(logObj, '8822Bt');
-    assertEqual( '▲2二角成(88)', m.toKanji() );
-    m = new Moves(logObj, '7776Pf');
-    assertEqual( '▲7六歩(77)', m.toKanji() );
-    m = new Moves(logObj, '3334pf');
-    assertEqual( '△3四歩(33)', m.toKanji() );
-  } },
-
   testMovesToDelta : function() {  with( this )  {
     var logObj = makeLogObj('testMovesToDelta', {width:600, height:350, resizable:false});
     logObj.debug('test Moves toDelta');
@@ -123,9 +109,24 @@
     new Resizable(window_link,{handle:resizable_id});
 
     var obj = { bid: 1, mid: 1, m_from: 33, m_to: 34, piece: 'P', promote: false, nxt_bid: 100 };
-    var m = (new Moves(logObj, '8822Bt')).fromObj(obj);
-    assertEqual( '1,1,33,34,P,f,100', m.toDelta() );
-    } },
+    var ms = new Moves(logObj);
+    var m1 = new Move(logObj, '8822Bt');
+    var m2 = new Move(logObj, '7776Pf');
+    var m3 = new Move(logObj, '9796Pf');
+    var m4 = new Move(logObj, '5958Kf');
+    var m5 = new Move(logObj, '4958Gf');
+    ms.set(1,m1);
+    ms.set(2,m2);
+    ms.set(3,m3);
+    ms.set(4,m4);
+    assertEqual( 4,    ms.size() );
+    logObj.debug('ms.keys : ' + Object.toJSON(ms.keys()));
+    logObj.debug('ms.values : ' + Object.toJSON(ms.values()));
+    assertEqual('null,null,88,22,B,t,null:null,null,77,76,P,f,null:null,null,97,96,P,f,null:null,null,59,58,K,f,null',   ms.toDelta(), 'ms.toDelta' );
+    var obj = { bid: 1, mid: 1, m_from: 33, m_to: 34, piece: 'P', promote: false, nxt_bid: 100 };
+    m1.fromObj(obj);
+    assertEqual('1,1,33,34,P,f,100:null,null,77,76,P,f,null:null,null,97,96,P,f,null:null,null,59,58,K,f,null',   ms.toDelta(), 'ms.toDelta' );
+  } },
 
   testMovesFromDelta : function() {  with( this )  {
     var logObj = makeLogObj('testMovesFromDelta', {width:600, height:350, resizable:false});
@@ -133,23 +134,31 @@
     $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
     new Resizable(window_link,{handle:resizable_id});
 
-    var m = (new Moves(logObj, '8822Bt')).fromDelta('1,1,33,34,P,f,100');
-    assertEqual( '1,1,33,34,P,f,100', m.toDelta() );
-    } },
+    var obj = { bid: 1, mid: 1, m_from: 33, m_to: 34, piece: 'P', promote: false, nxt_bid: 100 };
+    var ms = new Moves(logObj);
+    var m1 = new Move(logObj, '8822Bt');
+    var m2 = new Move(logObj, '7776Pf');
+    var m3 = new Move(logObj, '9796Pf');
+    var m4 = new Move(logObj, '5958Kf');
+    var m5 = new Move(logObj, '4958Gf');
+    var str = 'null,null,88,22,B,t,null:null,1,77,76,P,f,null:null,2,97,96,P,f,null:null,null,59,58,K,f,null';
+    ms.fromDelta(str);
+    assertEqual( 2,    ms.size() );
+    assert(!ms.search(m1),'not exist because mid of 1st is null' );
+    assert( ms.search(m2) );
 
-  testMovesLegalCheck : function() {  with( this )  {
-    var logObj = makeLogObj('testMovesLegalCheck', {width:600, height:350, resizable:false});
-    logObj.debug('test Moves fromDelta');
-    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
-    new Resizable(window_link,{handle:resizable_id});
+    var str2 = '1,1,33,34,P,f,100:null,null,77,76,P,f,null:null,null,97,96,P,f,null:null,null,59,58,K,f,null';
+    var ms2 = new Moves(logObj);
+    ms2.fromDelta(str2);
+    assertEqual( 1,    ms2.size() );
+    assertEqual('P', ms2.get(1).piece);
 
-    var m = (new Moves(logObj, '8822Bt')).fromDelta('1,1,33,34,p,f,100');
-    assertEqual( true, m.legalCheck(), 'legal Pawn move' );
-    m = (new Moves(logObj, '8822Bt')).fromDelta('1,1,33,34,P,f,100');
-    assertEqual( false, m.legalCheck(), 'illegal Pawn move because piece case is wrong' );
-    m = (new Moves(logObj, '8622Bt'));
-    assertEqual( false, m.legalCheck(), 'illegal Bishop move' );
-    } },
+    var str3 = 'null,2,77,76,P,f,null:null,3,99,98,L,f,null:null,null,59,58,K,f,null';
+    ms2.fromDelta(str3);
+    assertEqual( 3,    ms2.size(), 'add new moves' );
+    assertEqual('P', ms2.get(1).piece, 'old entry is reserved');
+    assertEqual('L', ms2.get(3).piece, 'new entry exists');
+  } },
 
   testToString : function() {  with( this )  {
     var logObj = makeLogObj('testToString', {width:500, height:150, resizable:false});
