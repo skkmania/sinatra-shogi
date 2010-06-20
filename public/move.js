@@ -15,20 +15,21 @@ var Move = Class.create({
   to: null,
   piece: null,
   promote: null,
-  nxtBid: null,
+  nxt_bid: null,
   toStr: null,
 
   initialize : function initialize(log, str){
     this.log = log;
     this.log.getInto();
     if (str && str.length == 6){
-      this.from    = str.slice(0,2);
-      this.to      = str.slice(2,4);
+      this.from    = parseInt(str.slice(0,2));
+      this.to      = parseInt(str.slice(2,4));
       this.piece   = str.slice(4,5);
       this.promote = str.slice(-1) == 't' ? true : false;
       this.toStr   = str;
     }
     this.log.goOut();
+    return this;
   },
 
   // DBから取得したデータのオブジェクトを読み、とりいれる。
@@ -39,7 +40,7 @@ var Move = Class.create({
     this.to      = h.m_to;
     this.piece   = h.piece;
     this.promote = h.promote;
-    this.nxtBid  = h.nxt_bid;
+    this.nxt_bid  = h.nxt_bid;
     return this;
   },
 
@@ -51,7 +52,7 @@ var Move = Class.create({
     this.to      = parseInt(h.m_to);
     this.piece   = h.piece;
     this.promote = (h.promote == 't');
-    this.nxtBid  = parseInt(h.nxt_bid);
+    this.nxt_bid  = parseInt(h.nxt_bid);
     return this;
   },
 
@@ -63,7 +64,7 @@ var Move = Class.create({
     this.to      = ary[3];
     this.piece   = ary[4];
     this.promote = (ary[5] == 't');
-    this.nxtBid  = ary[6];
+    this.nxt_bid  = ary[6];
     return this;
   },
 
@@ -72,6 +73,7 @@ var Move = Class.create({
   },
 
   toKanji : function(){
+    // 洋数字は半角
     var sankaku = (this.isBlack()) ?  '▲' : '△' ;
     var pro = this.promote ? '成' : '';
     if (typeof this.to == "String"){
@@ -87,18 +89,62 @@ var Move = Class.create({
     }
     return sankaku + to_x + '0一二三四五六七八九'[to_y] + Chr2Kanji[this.piece.toLowerCase()] + pro + '(' + this.from + ')';
   },
-
-  toDebugString : function toDebugString(){
+	/*
+	 * toDebugString()
+	 */
+  toDebugString : function toDebugString(){ // Move
     var ret;
     ret =  'bid : ' + this.bid;
+    ret += 'mid : ' + this.mid;
     ret += ', piece : ' + this.piece;
     ret += ', from : ' + this.from;
     ret += ', to : ' + this.to;
     ret += ', promote : ' + this.promote;
+    ret += ', nxt_bid : ' + this.nxt_bid;
     return ret;
   },
-
-  legalCheck : function legalCheck(){
+	/*
+	 * toMinimalString()
+	 */
+	// 駒の動きの最小表現、from,to,piece,promoteだけからなる６文字
+  toMinimalString : function toMinimalString(){ // Move
+    var ret;
+    ret =  '' + this.from;
+    ret += this.to;
+    ret += this.piece;
+    ret += (this.promote ? 't' : 'f');
+    return ret;
+  },
+	/*
+	 * toDelta()
+	 */
+  toDelta : function toDelta(){ // Move
+    var ret;
+    ret =  this.bid + ',' + this.mid;
+    ret += ',' + this.from + ',' + this.to;
+    ret += ',' + this.piece;
+    ret += ',' + (this.promote ? 't' : 'f');
+    ret += ',' + this.nxt_bid;
+    return ret;
+  },
+	/*
+	 * fromDelta()
+	 */
+  fromDelta : function fromDelta(str){ // Move
+    var ary = str.split(',');
+    this.bid     = parseInt(ary[0]);
+    this.mid     = parseInt(ary[1]);
+    this.from    = parseInt(ary[2]);
+    this.to      = parseInt(ary[3]);
+    this.piece   = ary[4];
+    this.promote = (ary[5] == 't');
+    this.nxt_bid = parseInt(ary[6]);
+    return this;
+  },
+	/*
+	 * legalCheck()
+	 */
+  legalCheck : function legalCheck(){ // Move
     this.log.getInto();
     if (typeof this.to == "String"){
       var to_x = this.to[0]-0;
@@ -172,13 +218,7 @@ var Move = Class.create({
         break;
     } // switch
     this.log.goOut();
-  }, // function legalCheck
-	/*
-	 * toDebugString()
-	 */
-  toDebugString: function toDebugString(){
-    return '
-  }
+  } // function legalCheck
 });
 
 
@@ -202,17 +242,39 @@ var Moves = Class.create(Hash, {
 	// 出力 : Moveオブジェクトまたはundefined
 	//        みつかったときはそのmove
 	//        みつからないときはundefined
-  search : function(m){
+  search : function(m){ // Moves
     this.log.getInto('Moves#search');
     var res = this.find(function(pair){
+      // this.log.debug('key : ' + pair.key);
+      // this.log.debug('value : ' + Object.toJSON(pair.value));
       return (parseInt(m.from) == pair.value.from
-           && parseInt(m.to)   == pair.value.to
-           && m.piece          == pair.value.piece
-           && m.promote        == pair.value.promote);
-    });
-    this.log.debug('returning : ' + res.toDebugString());
+       && parseInt(m.to)   == pair.value.to
+       && m.piece          == pair.value.piece
+       && m.promote        == pair.value.promote);
+       //return pair.value;
+    }.bind(this));
+    // this.log.debug('returning : ' + res.value.toDelta());
     this.log.goOut();
-    return res;
+    return res.value;
+  },
+
+	/*
+	 * toDelta()
+	 */
+  toDelta : function toDelta(){ // Moves
+    return this.values().invoke('toDelta').join(':');
+  },
+	/*
+	 * fromDelta()
+	 */
+  fromDelta : function fromDelta(str){ // Moves
+    this.clear();
+    var ary = str.split(':');
+    ary.each(function(e){
+      var m = new Move();
+      m.fromDelta(e);
+      this.set(m.mid, m);
+    });
   },
 
   // movesをmidの順に並べる
