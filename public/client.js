@@ -470,7 +470,7 @@ var Area = Class.create({
     var str = '<ul>';
     var dataAry = this.handler.dataStore.currentSlice().get(this.title);
     str += $A(dataAry).inject(ret, function(acc, e){
-      var m = new Move();
+      var m = new Move(this.logObj);
       var kanji = m.fromObj(e).toKanji();
       ret = acc + '<li id="' + this.container + m.mid + '">' + kanji + '</li>';
       return ret;
