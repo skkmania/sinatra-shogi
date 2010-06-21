@@ -32,7 +32,7 @@ var Slice = Class.create(Hash, {
   initialize : function initialize($super, logObj){
     logObj.getInto('Slice#initialize');
     $super();
-    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.logObj = logObj;
     logObj.goOut();
   },
@@ -76,7 +76,7 @@ var Slices = Class.create(Hash, {
   initialize : function initialize($super, logObj){
     logObj.getInto('Slices#initialize');
     $super();
-    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.logObj = logObj;
     logObj.goOut();
   },
@@ -112,7 +112,7 @@ var Store = Class.create(Hash, {
     this.logObj = logObj;
     this.logObj.getInto('Store#initialize');
     $super();
-    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices(this.logObj);
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
     this.logObj.goOut();
@@ -170,10 +170,6 @@ var Store = Class.create(Hash, {
 	// 出力 : なし
   read : function read(data) { // Store
     this.logObj.getInto('Store#read');
-    this.logObj.debug('data#bids before : '+Object.toJSON(data['bids']));
-    data['bids'] = data['bids'].map(function(e){
-           return this._toArray(e); }.bind(this));
-    this.logObj.debug('data#bids after : '+Object.toJSON(data['bids']));
     // this.merge(data); // なぜかmergeがうごかないので下記のようにした
     for (key in data) {
       this.set(key, data[key]);
@@ -246,8 +242,8 @@ var Store = Class.create(Hash, {
   arrangeByBid : function arrangeByBid(mask) { // Store
     var m = mask || 1023;
     this.logObj.getInto();
-    this.logObj.debug('bids : ' + Object.toJSON(this.get('bids')));
-    this.get('bids').pluck('bid').each(function(target){
+    this.logObj.debug('bids : ' + Object.toJSON(this.get('board').pluck('bid')));
+    this.get('board').pluck('bid').each(function(target){
       this.logObj.debug('target bid : ' + target);
       this.makeSlice(target, m);
     }.bind(this));
@@ -613,7 +609,7 @@ var Handler = Class.create({
   // cycle は garbage collectionの目安
     this.maxgCycle = 5;
 //    this.mask = 1023;
-    this.mask = 15;
+    this.mask = 7;
     this.gMask = this.mask;
    //        mask : どのデータを取得するかを示す２進数の10進表現
    // データの選択肢は下の9つ。下位ビットから順に、
@@ -687,8 +683,8 @@ var Handler = Class.create({
     if(!slice){
       this.logObj.debug('was not found in slices key, so try getMsg.');
       this.logObj.debug('slices key is : ' + this.dataStore.slices.keys().join(','));
-      this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
-      this.dataStore.arrangeByBid(15);
+      this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
     }
     this.logObj.debug('slice : ' + Object.toJSON(slice));
@@ -739,8 +735,8 @@ var Handler = Class.create({
     var slice = this.dataStore.slices.get(value);
     this.logObj.debug('slice['+value+'] : ' + Object.toJSON(slice));
     if(!slice){
-      this.dataStore.getMsg(value, 1, 3, 15, 'full', false);
-      this.dataStore.arrangeByBid(15);
+      this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
     }
     if(slice){
