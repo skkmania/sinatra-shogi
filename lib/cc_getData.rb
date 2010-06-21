@@ -20,7 +20,7 @@ class CacheTest
     @mask = @params['mask'].to_i
     @level = @params['level']
     @range = @params['range']
-    @data_name = %w|bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
+    @data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
     @masked_data_name = []
     @data_name.each_with_index{|e,i| @masked_data_name.push e if @mask[i] == 1 }
 
@@ -31,13 +31,7 @@ class CacheTest
 
   def queries
     bids_expr = @bids.join(',').gsub('bid','')
-    { "bids" => 
-	    case @range
-	      when 'full'
-	        "select bid, nxts, pres from cc_getBids(#{@bid}, #{@level});"
-	      when 'only'
-		"select bid, nxts, pres from cc_getBids(#{@bid}, #{@level}) where ll = #{@level};"
-	    end,
+    { 
       "board" => "select * from boards where bid in ( #{bids_expr} );",
       "nextMoves" => "select * from moves where bid in ( #{bids_expr} ) order by mid;",
       "prevMoves" => "select * from moves where nxt_bid in ( #{bids_expr} );",
@@ -82,6 +76,8 @@ class CacheTest
   def get_data
     kekka = nil
     begin
+     # @gottenというhashに、data nameをキーとして、
+     # そのquery結果をvalueとして格納していく
       @masked_data_name.each{|name|
         @logger.debug { "name : #{name}" } 
         @logger.debug { "query : #{queries[name]}" } 
