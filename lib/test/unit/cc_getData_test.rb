@@ -19,7 +19,7 @@ class CacheTestTest < Test::Unit::TestCase
 
   # get_msgの結果のログ表示を整形する
   def result_print(data)
-    ret = ''
+    ret = 'result of get_msg :'
     data.each do |key, value|
       ret += "\n" + key
       ret += "::\n"

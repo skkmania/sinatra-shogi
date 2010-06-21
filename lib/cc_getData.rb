@@ -82,7 +82,7 @@ class CacheTest
         @logger.debug { "name : #{name}" } 
         @logger.debug { "query : #{queries[name]}" } 
         kekka = DB[queries[name]]
-        @logger.debug { "kekka.inspect : #{kekka.inspect}" } 
+        # @logger.debug { "kekka.inspect : #{kekka.inspect}" } 
         @gotten[name] = []
         kekka.each do |row|
           @logger.debug { row.inspect.to_s }
@@ -107,11 +107,12 @@ class CacheTest
   def get_msg
     @gotten = @masked_data_name.inject({}){|res_hash, name|
       result = DB[queries[name]].all
-      @logger.debug { "#{name} : #{result.inspect}" } 
+      @logger.debug { "queries[#{name}] : #{queries[name]}" } 
+      # @logger.debug { "#{name} : #{result.inspect}" } 
       res_hash[name] = result
       res_hash
     }
-    @logger.debug { "gotten : #{@gotten.inspect}" } 
+    # @logger.debug { "gotten : #{@gotten.inspect}" } 
     return @gotten.to_msgpack
   end
 
