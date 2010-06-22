@@ -82,6 +82,21 @@
     assertEnumEqual( ['bid'], storeObj.keys() );
     assertEqual( 1, storeObj.get('bid') );
     } },
+
+  testStoreCurrentSlice : function() {  with( this )  {
+    var logObj = makeLogObj('testStoreCurrentSlice', {width:600, height:350, resizable:false});
+    logObj.debug('test Store currentSlice');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var storeObj = new Store(logObj);
+    logObj.debug('Store obj initialized');
+    assertEqual( 9, storeObj.names.size() );
+    logObj.debug('Store names size : '+storeObj.names.size());
+
+    assertEqual( 1, storeObj.currentBid );
+    assertEqual( undefined, storeObj.currentSlice(), 'slices is empty' );
+    } },
     
   testStoreMakeSlice : function() {  with( this )  {
     var logObj = makeLogObj('testStoreMakeSlice', {width:600, height:350, resizable:false});

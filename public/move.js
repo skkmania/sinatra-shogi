@@ -57,7 +57,7 @@ var Move = Class.create({
   },
 
   // moves テーブルのレコードを配列にしたものを受け取ってその値をとりいれる
-  fromRecord : function fromRecord_Move(ary){
+  fromRecord : function fromRecord_Move(ary){ // Move
     this.bid     = ary[0];
     this.mid     = ary[1];
     this.from    = ary[2];
@@ -68,7 +68,7 @@ var Move = Class.create({
     return this;
   },
 
-  isBlack : function() {
+  isBlack : function() { // Move
     return this.piece == this.piece.toUpperCase();
   },
 
@@ -315,6 +315,7 @@ var Moves = Class.create(Hash, {
       var m = (new Move(this.log)).fromObj(e);
       if (Object.isNumber(m.mid)) this.set(m.mid, m);
     }.bind(this));
+    this.log.debug('Moves became : ' + this.toDelta());
     this.log.goOut();
     return this;
   },

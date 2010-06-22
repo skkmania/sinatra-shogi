@@ -177,7 +177,7 @@ var Store = Class.create(Hash, {
     this.logObj.goOut();
   },
 	/**
-	 * readDB(data)
+	 * readDB(data, mask)
 	 */
 	// サーバからうけたデータを自身に格納する
 	// 入力 : data  DBからのresponseをunpackしたjavascriptのオブジェクト
@@ -207,9 +207,9 @@ var Store = Class.create(Hash, {
     this.logObj.getInto('Store#readState');
     this.currentBid = parseInt(state.get('bid'));
     var slice = new Slice(this.logObj);
-    slice.set('board',     state.get('board').fromDelta());
-    slice.set('nextMoves', state.get('next').fromDelta());
-    slice.set('prevMoves', state.get('prev').fromDelta());
+    slice.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board')));
+    slice.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next')));
+    slice.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev')));
     this.slices.set(this.currentBid, slice);
     this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
     this.logObj.goOut();
@@ -253,7 +253,8 @@ var Store = Class.create(Hash, {
       	         return obj.bid == bid;
       	       }.bind(this));
           this.logObj.debug('target : ' + Object.toJSON(target));
-          ret.set('nextMoves', (new Moves(this.logObj)).fromDB(target));
+          var obj = new Moves(this.logObj);
+          ret.set('nextMoves', obj.fromDB(target));
           break;
         case 'prevMoves':
           target = $A(data['prevMoves']).findAll(function(obj){
@@ -333,7 +334,7 @@ var Store = Class.create(Hash, {
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= MessagePack.unpack(response.responseText);
         this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
-        this.readDB(data);
+        this.readDB(data, 7);
         this.logObj.goOut();
         return data;
       }.bind(this),
@@ -509,11 +510,11 @@ var Area = Class.create({
     this.logObj.debug(this.container + ' area is to be displayed.');
     var ret = '';
     var str = '<ul>';
-    var dataAry = this.handler.dataStore.currentSlice().get(this.title);
-    str += $A(dataAry).inject(ret, function(acc, e){
-      var m = new Move(this.logObj);
-      var kanji = m.fromObj(e).toKanji();
-      ret = acc + '<li id="' + this.container + m.mid + '">' + kanji + '</li>';
+    var movesObj = this.handler.dataStore.currentSlice().get(this.title);
+    this.logObj.debug('title : ' + Object.toJSON(this.title));
+    str += movesObj.inject(ret, function(acc, pair){
+      var kanji = pair.value.toKanji();
+      ret = acc + '<li id="' + this.container + pair.value.mid + '">' + kanji + '</li>';
       return ret;
     }.bind(this));
     str += '</ul>';
@@ -729,7 +730,7 @@ var Handler = Class.create({
       this.logObj.debug('was not found in slices key, so try getMsg.');
       this.logObj.debug('slices key is : ' + this.dataStore.slices.keys().join(','));
       this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      this.dataStore.arrangeByBid(7);
+      //this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
     }
     this.logObj.debug('slice : ' + Object.toJSON(slice));
@@ -747,7 +748,8 @@ var Handler = Class.create({
       }.bind(this));
       delta['mode']  = 'review';
       delta['bid']   = value.toString();
-      delta['board'] = slice.get('board')[0].toDelta();
+      delta['turn']  = (slice.get('board').turn ? 't' : 'f');
+      delta['board'] = slice.get('board').toDelta();
       delta['next']  = slice.get('nextMoves').toDelta();
       delta['prev']  = slice.get('prevMoves').toDelta();
       this.logObj.debug('delta : ' + Object.toJSON(delta));
@@ -778,7 +780,7 @@ var Handler = Class.create({
     this.logObj.debug('slice['+value+'] : ' + Object.toJSON(slice));
     if(!slice){
       this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      this.dataStore.arrangeByBid(7);
+      //this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
     }
     if(slice){
@@ -797,7 +799,7 @@ var Handler = Class.create({
     this.logObj.debug('place -> ' + Object.toJSON(place) + ',  target -> ' + Object.toJSON(target));
     switch(place) {
       case 'nxts' :
-        var bid = this.dataStore.currentSlice().get('nextMoves').find(function(e){ return e.mid == target; }).nxt_bid;
+        var bid = this.dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
         this.logObj.debug('bid found : ' + bid);
         window.gameController.sendDelta( this.makeReviewDelta(bid) );
         //this.refreshBoard(bid);
