@@ -160,6 +160,28 @@
     assertEqual('L', ms2.get(3).piece, 'new entry exists');
   } },
 
+  testMovesFromDB : function() {  with( this )  {
+    var logObj = makeLogObj('testMovesFromDB', {width:600, height:350, resizable:false});
+    logObj.debug('test Moves fromDB');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var ms = new Moves(logObj);
+    var m1 = {"m_from": 33, "piece": "p", "m_to": 34, "promote": false, "nxt_bid": 3, "bid": 2, "mid": 0};
+    var m2 = {"m_from": 83, "piece": "p", "m_to": 84, "promote": false, "nxt_bid": 4, "bid": 2, "mid": 1};
+    ms.fromDB([m1, m2]);
+    assertEqual( 2,    ms.size() );
+    assert( ms.search( (new Move(logObj)).fromObj(m1)) );
+    assert( ms.search( (new Move(logObj)).fromObj(m2)) );
+
+    var m3 = {"m_from": 93, "piece": "l", "m_to": 94, "promote": false, "nxt_bid": 5, "bid": 2, "mid": 3};
+    var m4 = {"m_from": 13, "piece": "p", "m_to": 14, "promote": false, "nxt_bid": 6, "bid": 2, "mid": 4};
+    ms.fromDB([m3, m4]);
+    assertEqual( 4,    ms.size(), 'add new moves' );
+    assertEqual('p', ms.get(1).piece, 'old entry is reserved');
+    assertEqual('l', ms.get(3).piece, 'new entry exists');
+  } },
+
   testToString : function() {  with( this )  {
     var logObj = makeLogObj('testToString', {width:500, height:150, resizable:false});
     logObj.debug('test toString');

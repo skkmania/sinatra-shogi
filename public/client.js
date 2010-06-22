@@ -165,8 +165,7 @@ var Store = Class.create(Hash, {
 	 * read(data)
 	 */
 	// サーバからうけたデータを自身に格納する
-	//  単にHashのupdateですまないのは、bidsの内容を文字列から配列へ変換するためである
-	// 入力 : data  javascriptのオブジェクト
+	// 入力 : data  DBからのresponseをunpackしたjavascriptのオブジェクト
 	// 出力 : なし
   read : function read(data) { // Store
     this.logObj.getInto('Store#read');
@@ -178,6 +177,27 @@ var Store = Class.create(Hash, {
     this.logObj.goOut();
   },
 	/**
+	 * readDB(data)
+	 */
+	// サーバからうけたデータを自身に格納する
+	// 入力 : data  DBからのresponseをunpackしたjavascriptのオブジェクト
+	//        mask  dataNameの使用範囲を指定する数字, 省略時は511
+	// 出力 : なし
+  readDB : function readDB(data, mask) { // Store
+    this.logObj.getInto('Store#readDB');
+    // dataに含まれるbidを取り出して配列として保持
+    var bids = data['board'].pluck('bid');
+    this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
+    this.logObj.debug('bids : ' + Object.toJSON(bids));
+    var m = mask || 511;
+    bids.each(function(bid){
+      this.logObj.debug('bid : ' + Object.toJSON(bid));
+      this.slices.set(bid, this.makeSlice(bid, data, m));
+    }.bind(this));
+    //this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    this.logObj.goOut();
+  },
+	/**
 	 * readState(data)
 	 */
 	// stateのデータを自身に格納する
@@ -185,45 +205,70 @@ var Store = Class.create(Hash, {
 	// 出力 : なし
   readState : function readState(state) { // Store
     this.logObj.getInto('Store#readState');
-    this.currentBid = state.get('bid');
+    this.currentBid = parseInt(state.get('bid'));
     var slice = new Slice(this.logObj);
-    slice.set('board',     state.get('board').evalJSON());
-    slice.set('nextMoves', state.get('next').evalJSON());
-    slice.set('prevMoves', state.get('prev').evalJSON());
+    slice.set('board',     state.get('board').fromDelta());
+    slice.set('nextMoves', state.get('next').fromDelta());
+    slice.set('prevMoves', state.get('prev').fromDelta());
     this.slices.set(this.currentBid, slice);
     this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
     this.logObj.goOut();
   },
 	/**
-	 * makeSlice(bid, mask)
+	 * makeSlice(bid, data, mask)
 	 */
-	// １画面ぶんのデータを切り出してSliceオブジェクトとして返す
+	// １画面ぶんのデータをdataから切り出してSliceオブジェクトとして返す
 	// 入力 : 数値 bid
+	//        オブジェクト data DBからのresponse
 	//        数値 mask this.nameのうち何を結果に含めるかを指定する
 	//           指定方法：this.nameの添字をbitに見立てた二進から10進変換
 	// 出力 : Sliceオブジェクト(Hash)
-  makeSlice : function makeSlice(bid, mask) { // Store
+  makeSlice : function makeSlice(bid, data, mask) { // Store
     this.logObj.getInto('Store#makeSlice');
-    var m = mask || 1023;
+    var m = mask || 511;
+    this.logObj.debug('m : ' + Object.toJSON(m));
+    var target;
     var ret = new Slice(this.logObj);
     var dataNames = this.getMaskedDataName(m);
     this.logObj.debug('masked data name : ' + Object.toJSON(dataNames));
     // ほとんどの場合、あるbidの画面にはbidがそのbidのオブジェクトを集める
     dataNames.each(function(name){
-      if(name != 'prevMoves'){
-        this.logObj.debug('name : ' + Object.toJSON(name));
-        this.logObj.debug('this[name] : ' + Object.toJSON(this.get(name)));
-        ret.set(name, this.get(name).findAll(function(obj){
-      	       return obj.bid == bid;
-      	     }.bind(this)));
+      this.logObj.debug('name : ' + Object.toJSON(name));
+      switch(name){
+        case 'board':
+          target = data['board'].find(function(e){
+             return e.bid == bid;
+          });
+          this.logObj.debug('target : ' + Object.toJSON(target));
+          this.logObj.debug('target.bid : ' + Object.toJSON(target.bid));
+          this.logObj.debug('target.board : ' + Object.toJSON(target.board));
+          var obj = new BoardData(this.logObj);
+          this.logObj.debug('obj after initialize : ' + obj.toDelta());
+          ret.set('board',    obj.fromDB(target));
+          this.logObj.debug('obj after fromDB : ' + obj.toDelta());
+          this.logObj.debug('ret : ' + Object.toJSON(ret));
+          break;
+        case 'nextMoves':
+          target = $A(data['nextMoves']).findAll(function(obj){
+      	         return obj.bid == bid;
+      	       }.bind(this));
+          this.logObj.debug('target : ' + Object.toJSON(target));
+          ret.set('nextMoves', (new Moves(this.logObj)).fromDB(target));
+          break;
+        case 'prevMoves':
+          target = $A(data['prevMoves']).findAll(function(obj){
+    	       return obj.nxt_bid == bid;
+    	     }.bind(this));
+          ret.set('prevMoves', (new Moves(this.logObj)).fromDB(target));
+          break;
+        default:
+          this.logObj.fatal('Store#makeSlice : wrong data name arrived!');
+          break;
       }
+      return ret;
     }.bind(this));
     // prevMovesだけは、あるbidの画面にはnxt_bidがbidのオブジェクトを集める
-    ret.set('prevMoves', this.get('prevMoves').findAll(function(obj){
-    	       return obj.nxt_bid == bid;
-    	     }.bind(this)));
     this.logObj.debug('ret : ' + Object.toJSON(ret));
-    this.slices.set(bid, ret);
     this.logObj.goOut();
     return ret; 
   },
@@ -288,7 +333,7 @@ var Store = Class.create(Hash, {
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= MessagePack.unpack(response.responseText);
         this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
-        this.read(data);
+        this.readDB(data);
         this.logObj.goOut();
         return data;
       }.bind(this),
@@ -673,7 +718,7 @@ var Handler = Class.create({
         // 出力 : 作成されたdelta オブジェクト
   makeReviewDelta: function makeReviewDelta(bid){ // Handler
     var delta = {};
-    this.logObj.getInto();
+    this.logObj.getInto('Handler#makeReviewDelta');
     this.logObj.debug('bid : ' + bid);
     this.logObj.debug('typeof bid : ' + typeof bid);
     var value = bid || $('inputText').value;
@@ -700,14 +745,11 @@ var Handler = Class.create({
         this.logObj.debug('key : ' + Object.toJSON(pair.key));
         this.logObj.debug('value : ' + Object.toJSON(pair.value));
       }.bind(this));
-      this.boardObj  = slice.get('board')[0];
-      this.nextMoves = slice.get('nextMoves');
-      this.prevMoves = slice.get('prevMoves');
       delta['mode']  = 'review';
-      delta['bid']   = value;
-      delta['board'] = Object.toJSON(this.boardObj);
-      delta['next']  = Object.toJSON(this.nextMoves);
-      delta['prev']  = Object.toJSON(this.prevMoves);
+      delta['bid']   = value.toString();
+      delta['board'] = slice.get('board')[0].toDelta();
+      delta['next']  = slice.get('nextMoves').toDelta();
+      delta['prev']  = slice.get('prevMoves').toDelta();
       this.logObj.debug('delta : ' + Object.toJSON(delta));
     } else {
       this.logObj.fatal('cannot get slice');
@@ -740,13 +782,10 @@ var Handler = Class.create({
       slice = this.dataStore.slices.get(value);
     }
     if(slice){
-      this.boardObj = slice.get('board')[0];
-      this.nextMoves = slice.get('nextMoves');
-      this.prevMoves = slice.get('prevMoves');
-      window.gameController.game.boardReadFromDB(this.boardObj);
+      window.gameController.game.boardReadFromDB();
       window.gameController.game.board.show();
-      this.prevArea.show(this.prevMoves);
-      this.nextArea.show(this.nextMoves);
+      this.prevArea.show();
+      this.nextArea.show();
     } else {
       this.logObj.fatal('cannot get slice');
     }
@@ -758,14 +797,14 @@ var Handler = Class.create({
     this.logObj.debug('place -> ' + Object.toJSON(place) + ',  target -> ' + Object.toJSON(target));
     switch(place) {
       case 'nxts' :
-        var bid = this.nextMoves.find(function(e){ return e.mid == target; }).nxt_bid;
+        var bid = this.dataStore.currentSlice().get('nextMoves').find(function(e){ return e.mid == target; }).nxt_bid;
         this.logObj.debug('bid found : ' + bid);
         window.gameController.sendDelta( this.makeReviewDelta(bid) );
         //this.refreshBoard(bid);
         break;
       case 'pres' :
         // これはバグのもとだな。nextMovesと異なり、prevMovesではmidが一意とはかぎらないので、これだとクリックしたmoveからbidを読んだかどうかわからない。
-        var bid = this.prevMoves.find(function(e){ return e.mid == target; }).bid;
+        var bid = this.dataStore.currentSlice().get('prevMoves').find(function(e){ return e.mid == target; }).bid;
         this.logObj.debug('bid found : ' + bid);
         window.gameController.sendDelta( this.makeReviewDelta(bid) );
         //this.refreshBoard(bid);

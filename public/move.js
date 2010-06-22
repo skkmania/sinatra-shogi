@@ -293,7 +293,27 @@ var Moves = Class.create(Hash, {
     ary.each(function(e){
       var m = new Move(this.log);
       m.fromDelta(e);
-      if (m.mid) this.set(m.mid, m);
+      this.log.debug('m : ' + m.toDelta());
+      if (Object.isNumber(m.mid)){
+        this.set(m.mid, m);
+        this.log.debug('m was set to Moves : ' + m.toDelta());
+      }
+    }.bind(this));
+    this.log.goOut();
+    return this;
+  },
+
+	/*
+	 * fromDB()
+	 */
+	// DBからのresponseであるobjectの配列を自身に読み込む
+	// ただし、midがないmoveは読み込まない
+	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
+  fromDB : function fromDB(ary){ // Moves
+    this.log.getInto('Moves#fromDB');
+    ary.each(function(e){
+      var m = (new Move(this.log)).fromObj(e);
+      if (Object.isNumber(m.mid)) this.set(m.mid, m);
     }.bind(this));
     this.log.goOut();
     return this;

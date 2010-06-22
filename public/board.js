@@ -491,3 +491,58 @@ Board = Class.create({
     return ret;
   }
 });
+
+// Boardのbid, turn, board, black, whiteからなるデータのハッシュ
+// Hashの子クラス
+// key は、bid, turn, board, black, white
+var BoardData = Class.create(Hash, {
+
+  initialize : function($super, log){ // BoardData
+    this.log = log;
+    this.log.getInto('BoardData#initialize');
+    $super();
+    this.log.goOut();
+    return this;
+  },
+	/*
+	 * toDelta()
+	 */
+  toDelta : function toDelta(){ // BoardData
+    this.log.getInto('BoardData#toDelta');
+    var ret;
+    ret =  this.bid;
+    ret += ',' + (this.turn ? 't' : 'f');
+    ret += ',' + this.board;
+    ret += ',' + this.black;
+    ret += ',' + this.white;
+    this.log.goOut();
+    return ret;
+  },
+	/*
+	 * fromDelta()
+	 */
+	// BoardData#toDeltaの出力した文字列を自身に読み込む
+  fromDelta : function fromDelta(str){ // Move
+    var ary = str.split(',');
+    this.bid     = parseInt(ary[0]);
+    this.turn    = (ary[1] == 't');
+    this.board   = ary[2];
+    this.black   = ary[3];
+    this.white   = ary[4];
+    return this;
+  },
+	/*
+	 * fromDB()
+	 */
+	// DBのresponseに含まれるオブジェクトを自身に読み込む
+  fromDB : function fromDB(obj){ // Move
+    this.bid     = obj.bid;
+    this.turn    = obj.turn;
+    this.board   = obj.board;
+    this.black   = obj.black;
+    this.white   = obj.white;
+    return this;
+  },
+      
+});
+
