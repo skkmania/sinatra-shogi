@@ -37,7 +37,7 @@ window.gameController.game = this;
         // 機能 : 入力のactionを表すMoveオブジェクトを作成し返す
   makeMove: function makeMove(actionContents) { // ShogiGame
     this.log.getInto('ShogiGame#makeMove');
-    var ret = new Move();
+    var ret = new Move(this.log);
     ret.bid = this.board.bid;
     ret.piece = actionContents[0].chr;
     ret.from = actionContents[1].type == 'stand' ? 0 :
@@ -55,17 +55,14 @@ window.gameController.game = this;
 	 * findMove(move)
 	 */ 
         // 入力 : Moveオブジェクト 駒の動きをあらわしている
-	// 出力 : 論理値
+	// 出力 : Moveオブジェクトまたはundefined 
         // 機能 : 入力の動きがnextMovesの中にあるか探し
-	//        無ければfalseを返す
-	//        あればそのmoveのnxt_bidをtargetとしてsendDeltaする
+	//        無ければundefinedを返す
+	//        あればそのmove objectを返す
   findMove: function findMove(move) { // ShogiGame
     this.log.getInto('ShogiGame#findMove');
     this.log.debug('move : ' + Object.toJSON(move));
-    var ret = this.controller.handler.nextMoves.find(function(e){
-      return (e.piece == move.piece) && (e.m_from == move.from) &&
-             (e.m_to == move.to) && (e.promote == move.promote);
-    });
+    var ret = this.controller.handler.dataStore.findNextMove(move);
     this.log.debug('whether move was found or not : ' + Object.toJSON(ret));
     this.log.goOut();
     return ret;

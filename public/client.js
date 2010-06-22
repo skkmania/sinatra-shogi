@@ -306,10 +306,18 @@ var Store = Class.create(Hash, {
   ask : function ask(name, bid){
   },
 	/**
-	 * update
+	 * findNextMove(move)
 	 */
-        // DBに問い合わせ、自身のデータを更新する
-  update : function update(){
+	// 入力されたmoveがcurrentSliceのnextMovesに含まれるか調べ
+	// あればそのMoveオブジェクトを返し、無ければundefinedを返す
+        // 入力 : Moveオブジェクト
+	// 出力 : Moveオブジェクト または false
+  findNextMove : function findNextMove(move){ // Store
+    this.logObj.getInto('Store#findNextMove'); 
+    var ret = this.currentSlice().get('nextMoves').search(move);
+    this.logObj.debug('returning : ' + Object.toJSON(ret));
+    this.logObj.goOut();
+    return ret;
   },
 	/**
 	 * fit
