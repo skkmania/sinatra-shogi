@@ -153,31 +153,6 @@ var Store = Class.create(Hash, {
     return ret;
   },
 	/**
-	 * _toArray(obj)
-	 */
-	// オブジェクトの各プロパティの値を文字列から配列にして返す
-	// 入力例 : {"nxts": "{3,235}", "bid": 2, "pres": "{1}"}
-	// 出力例 : {"nxts": [3,235],   "bid": 2, "pres": [1]}
-  _toArray : function _toArray(obj) { // Store
-    var ret = {};
-    for (key in obj){
-      switch (typeof obj[key]){
-        case 'string':
-          if (obj[key].length == 2) {
-            ret[key] = [];
-          } else {
-            ret[key] = obj[key].slice(1,-1).split(',').map(function(e){ return parseInt(e); });
-          }
-          break;
-        case 'number': ret[key] = obj[key];
-          break;
-        default: throw 'Store#_toArray: unexpected type at an Object in bids'; 
-          break;
-      }
-    }
-    return ret;
-  },
-	/**
 	 * readDB(data, mask)
 	 */
 	// サーバからうけたデータを自身に格納する
@@ -309,12 +284,8 @@ var Store = Class.create(Hash, {
     return ret;
   },
 	/**
-	 * fit
+	 * getMsg(bid, uid, level, mask, range, async)
 	 */
-	// 
-  fit : function fit(){
-  },
-
   getMsg : function getMsg(bid, uid, level, mask, range, async){ // Store
     this.logObj.getInto(); 
     var request = new Ajax.Request('/getMsg', {
