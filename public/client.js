@@ -360,13 +360,6 @@ var Store = Class.create(Hash, {
           //  {"prevMoves": [{"promote": "f", "m_to": "96", "piece": "P", "bid": "1", "mid": 5, "m_from": "97", "nxt_bid": 73630}],
 // "nextMoves": [],
 // "board": [{"white": "", "black": "", "bid": "1", "board": "lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxPxxL", "turn": "f"}]}
-/*
-        this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
-        this.logObj.debug('data[board][0] : ' + Object.toJSON(data['board'][0]));
-        this.logObj.debug('data[board][0][bid] : ' + Object.toJSON(data['board'][0]['bid']));
-        this.logObj.debug('game.new_bid : ' + game.new_bid);
-      //  this.slices.read(game.new_bid, data);
-*/
         window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
               // DBからの返事である、盤面のbid
         this.readDB(data, 7);
