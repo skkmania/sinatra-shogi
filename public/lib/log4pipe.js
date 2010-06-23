@@ -232,6 +232,7 @@ Log = Class.create({
     this.addFoldButton(firstLine);
     this.addFoldAllButton(firstLine);
     this.addHideInsideButton(firstLine);
+    this.addGoUpButton(firstLine);
     var parent = this.currentDiv();
     if(parent)
       parent.appendChild(ret);
@@ -266,6 +267,14 @@ Log = Class.create({
     div.appendChild(button);
   },
 
+  addGoUpButton: function addGoUpButton(div) {
+    var button = new Element('span', { 'className':'upButton' });
+    button.div = div.up(); 
+    button.innerHTML = 'up';
+    button.onclick = this.goUp(div.up());
+    div.appendChild(button);
+  },
+
   fold: function fold(div) {
     return function() {
       var targets = div.childElements().findAll(function(e){ return e.hasClassName('logRow'); });
@@ -291,6 +300,16 @@ Log = Class.create({
       var targets = div.select('.logDiv');
       div.hideInsided ? targets.invoke('show') : targets.invoke('hide');
       div.hideInsided = !(div.hideInsided);
+    }
+  },
+
+	/*
+	 * up(div)
+	 */
+	// 自分の親divのタイトルへscrollする
+  goUp: function goUp(div) {
+    return function() {
+      div.up().scrollTo();
     }
   },
 	/**

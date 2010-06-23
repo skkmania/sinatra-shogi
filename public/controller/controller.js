@@ -344,7 +344,7 @@ GameController = Class.create({
 
     // 画面を更新する
     $('inputText').value = this.handler.dataStore.currentBid;
-    this.game.board.turn = this.readTurnFromState(state) || true;
+    this.game.board.turn = this.readTurnFromState(state);
     this.game.board.bid    = parseInt(state.get('bid') || 1);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.game.boardReadFromDB();
@@ -778,8 +778,8 @@ GameController = Class.create({
         ret = true;
       }
     }
-    if (ret == 'true' ) ret = true;
-    if (ret == 'false') ret = false;
+    if (ret == 't' || ret == 'true' ) ret = true;
+    if (ret == 'f'|| ret == 'false') ret = false;
     this.log.debug('returning : ' + Object.toJSON(ret));
     this.log.goOut();
     return ret;

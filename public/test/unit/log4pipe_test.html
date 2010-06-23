@@ -201,6 +201,27 @@
     assertEqual(TestCounter+1, Control.Window.windows.length);
   } },
 
+  testUpButton : function() {  with( this )  {
+    var logObj = makeLogObj('testUpButton', { resizable:false, height:'200px'});
+    logObj.debug('test up button');
+    logObj.getInto('------- 1 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 2 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 3 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 4 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 5 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.goOut();
+    logObj.goOut();
+    logObj.goOut();
+    logObj.goOut();
+    logObj.goOut();
+    assertEqual(TestCounter+1, Control.Window.windows.length);
+  } },
+
   testToString : function() {  with( this )  {
     var logObj = makeLogObj('testToString');
     logObj.debug('test toString');

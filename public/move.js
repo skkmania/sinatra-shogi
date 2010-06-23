@@ -289,6 +289,11 @@ var Moves = Class.create(Hash, {
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
   fromDelta : function fromDelta(str){ // Moves
     this.log.getInto('Moves#fromDelta');
+    if(!str || str.length == 0){
+      this.log.debug('nothing to do because argument str is invalid');
+      this.log.goOut();
+      return this;
+    }
     var ary = str.split(':');
     ary.each(function(e){
       var m = new Move(this.log);

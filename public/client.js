@@ -49,11 +49,11 @@ var Slice = Class.create(Hash, {
       this.logObj.debug('pair.value: ' + Object.toJSON(pair.value));
       ret += '<tr>';
       ret += '<td>' + pair.key + '</td>';
-      if (!pair.value.length){
+      if (!pair.value){
          ret += '[]';
       } else {
          ret += pair.value.map(function(e){
-                  return '<td>' + Object.toJSON(e) + '</td>';
+                  return '<td>' + e.toDelta() + '</td>';
                 }).join('');
       }
       ret += '</tr>';
@@ -389,10 +389,10 @@ var Store = Class.create(Hash, {
              }
          },
       parameters : this.getQueryStr(move),
-      asynchronous : true,
-      //asynchronous : false,
+      //asynchronous : true,
+      asynchronous : false,
       onSuccess : function onSuccess_registBoard(response){
-        this.logObj.getInto('onSuccess_registBoard');
+        this.logObj.getInto('Store#onSuccess_registBoard');
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= MessagePack.unpack(response.responseText);
         this.logObj.debug('result of registBoard :<br> unpacked responseText : ' + Object.toJSON(data));
@@ -400,20 +400,19 @@ var Store = Class.create(Hash, {
           //  {"prevMoves": [{"promote": "f", "m_to": "96", "piece": "P", "bid": "1", "mid": 5, "m_from": "97", "nxt_bid": 73630}],
 // "nextMoves": [],
 // "board": [{"white": "", "black": "", "bid": "1", "board": "lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxPxxL", "turn": "f"}]}
+/*
         this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
         this.logObj.debug('data[board][0] : ' + Object.toJSON(data['board'][0]));
         this.logObj.debug('data[board][0][bid] : ' + Object.toJSON(data['board'][0]['bid']));
-        var game = window.gameController.game;
-        game.new_bid = parseInt(data['board'][0]['bid']);
-              // DBからの返事である、盤面のbid
         this.logObj.debug('game.new_bid : ' + game.new_bid);
-        this.slices.read(game.new_bid, data);
+      //  this.slices.read(game.new_bid, data);
+*/
+        window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
+              // DBからの返事である、盤面のbid
+        this.readDB(data, 7);
         this.logObj.debug('slice read done : ');
-        this.logObj.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
+//        this.logObj.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
         //var delta =  window.gameController.handler.makeReviewDelta(game.new_bid);
-        var delta =  window.gameController.handler.makeDeltaFromSlice(game.new_bid, data);
-        this.logObj.debug('delta : ' + Object.toJSON(delta));
-        window.gameController.sendDelta(delta);
         this.logObj.goOut();
         return data;
       }.bind(this),
@@ -444,11 +443,13 @@ var Store = Class.create(Hash, {
     // slicesを表示
     var ret_slice = '<table class="storeTable">';
     this.slices.each(function(pair){
+      this.logObj.debug('pair.key : ' + Object.toJSON(pair.key));
+      this.logObj.debug('pair.value : ' + pair.value.bid);
       ret_slice += '<tr>'
       ret_slice += '<td>' + pair.key + '</td>';
       ret_slice += '<td>' + pair.value.toDebugHtml() + '</td>';
       ret_slice += '</tr>';
-    });
+    }.bind(this));
     ret_slice += '</table>';
     this.logObj.goOut();
     return ret + ret_slice;

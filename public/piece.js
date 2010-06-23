@@ -125,6 +125,7 @@ Piece = Class.create({
 	 */
   simpleToggleDraggable: function simpleToggleDraggable(){ // Piece
     this.game.log.getInto('Piece#simpleToggleDraggable');
+    this.game.log.debug('turn : '+this.game.board.turn);
     if (!this.drag){
       if (this.game.board.turn) {
         if (this.isBlack())
