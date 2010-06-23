@@ -35,8 +35,19 @@ var Slice = Class.create(Hash, {
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.logObj = logObj;
     logObj.goOut();
+    return this;
   },
-
+	/**
+	 * fromState()
+	 */
+  fromState : function fromState(state){ // Slice
+    this.logObj.getInto('Slice#fromState');
+    this.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board')));
+    this.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next')));
+    this.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev')));
+    logObj.goOut();
+    return this;
+  },
 	/**
 	 * toDebugHtml()
 	 */
@@ -115,6 +126,11 @@ var Store = Class.create(Hash, {
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices(this.logObj);
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
+       // stateを読むごとに更新される
+    this.nextBid = null; // 次に表示する画面のbidの値を格納する。
+       // 初期値はわからないのでnullとする。
+       // ユーザアクションを受けてはじめて決まり、
+       // 次の画面情報を作成するときに使われる
     this.logObj.goOut();
   },
 	/**
@@ -191,10 +207,15 @@ var Store = Class.create(Hash, {
   readState : function readState(state) { // Store
     this.logObj.getInto('Store#readState');
     this.currentBid = parseInt(state.get('bid'));
-    var slice = new Slice(this.logObj);
+      // stateから読んだbidは、これから表示しようとする画面のbid
+      // なので、currentBidという名をつけてアクセスを容易にする
+      // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
+    var slice = (new Slice(this.logObj)).fromState(state);
+/*
     slice.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board')));
     slice.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next')));
     slice.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev')));
+*/
     this.slices.set(this.currentBid, slice);
     this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
     this.logObj.goOut();
@@ -259,36 +280,19 @@ var Store = Class.create(Hash, {
     return ret; 
   },
 	/**
-	 * arrangeByBid()
-	 */
-	// 自身のデータをbidごとにアクセスしやすくするために再配置する
-	// Slicesのオブジェクトthis.slicesに格納する
-	// keyとしてbidの数値を指定できるようになる。その値としてsliceを持つ
-	// 入力 : なし
-	// 出力 : なし (this.slices の内容を変更する)
-	// 結果例 : { 1 : bidが1のsliceのデータ, 
-	//            2 : bidが2のsliceのデータ, 
-	//                ....
-	//            n : bidがnのsliceのデータ }
-  arrangeByBid : function arrangeByBid(mask) { // Store
-    var m = mask || 1023;
-    this.logObj.getInto();
-    this.logObj.debug('bids : ' + Object.toJSON(this.get('board').pluck('bid')));
-    this.get('board').pluck('bid').each(function(target){
-      this.logObj.debug('target bid : ' + target);
-      this.makeSlice(target, m);
-    }.bind(this));
-    this.logObj.debug('this.slices became : ' + Object.toJSON(this.slices));
-    this.logObj.goOut();
-  },
-	/**
 	 * ask(name, bid)
 	 */
-	// Storeから個別のname, bidごとのデータを取得する
+	// Storeから個別のname, bidごとのデータオブジェクトを取得する
         // 入力 : name  データの名前 this.namesの要素のいずれか。
 	//        bid   取得したいデータのbid
-	// 出力 : Storeが保持しているデータ。配列で返す。
-  ask : function ask(name, bid){
+	// 出力 : Storeが保持しているデータオブジェクト
+  ask : function ask(name, bid){ // Store
+    this.logObj.getInto('Store#ask');
+    var ret = this.slices.get(bid).get(name);
+    this.logObj.debug('asked bid : ' + bid + ',  name : ' + name);
+    this.logObj.debug('returning : ' + ret.toDelta());
+    this.logObj.goOut();
+    return ret;
   },
 	/**
 	 * findNextMove(move)
