@@ -277,7 +277,7 @@ var Moves = Class.create(Hash, {
     this.log.getInto('Moves#toDelta');
     this.log.debug('values : ' + Object.toJSON(this.values()));
     var res = this.values().invoke('toDelta').join(':');
-    this.log.debug('returuning : ' + res);
+    this.log.debug('returning : ' + res);
     this.log.goOut();
     return res;
   },

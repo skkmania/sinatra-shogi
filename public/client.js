@@ -45,7 +45,7 @@ var Slice = Class.create(Hash, {
     this.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board')));
     this.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next')));
     this.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev')));
-    logObj.goOut();
+    this.logObj.goOut();
     return this;
   },
 	/**
@@ -54,23 +54,46 @@ var Slice = Class.create(Hash, {
   toDebugHtml : function toDebugHtml(){ // Slice
     this.logObj.getInto('Slice#toDebugHtml');
     var ret = '<table class="slice">';
+    this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
     this.logObj.debug('values : ' + Object.toJSON(this.values()));
-    this.each(function(pair){
-      this.logObj.debug('pair.key: ' + Object.toJSON(pair.key));
-      this.logObj.debug('pair.value: ' + Object.toJSON(pair.value));
+    this.keys().each(function(key){
+      this.logObj.debug('pair.key: ' + Object.toJSON(key));
+      this.logObj.debug('pair.value: ' + Object.toJSON(this.get(key)));
       ret += '<tr>';
-      ret += '<td>' + pair.key + '</td>';
-      if (!pair.value){
+      ret += '<td>' + key + '</td>';
+      if (!this.get(key)){
          ret += '[]';
       } else {
-         ret += pair.value.map(function(e){
-                  return '<td>' + e.toDelta() + '</td>';
-                }).join('');
+         ret += ('<td>' + this.get(key).toDelta() + '</td>');
       }
       ret += '</tr>';
     }.bind(this));
     this.logObj.goOut();
     return ret + '</table>';
+  },
+	/**
+	 * toDebugString()
+	 */
+  toDebugString : function toDebugString(){ // Slice
+    this.logObj.getInto('Slice#toDebugString');
+    var ret = '';
+    this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
+    // this.logObj.debug('values : ' + Object.toJSON(this.values()));
+    this.keys().each(function(key){
+      var obj = this.get(key);
+      this.logObj.getInto();
+      this.logObj.debug('pair.key: ' + Object.toJSON(key));
+      this.logObj.debug('pair.value: ' + Object.toJSON(obj));
+      ret += key + '::';
+      if (!obj){
+         ret += '[]';
+      } else {
+         ret += obj.toDelta();
+      }
+      this.logObj.goOut();
+    }.bind(this));
+    this.logObj.goOut();
+    return ret;
   }
 });
 
@@ -397,7 +420,7 @@ var Store = Class.create(Hash, {
     var ret_slice = '<table class="storeTable">';
     this.slices.each(function(pair){
       this.logObj.debug('pair.key : ' + Object.toJSON(pair.key));
-      this.logObj.debug('pair.value : ' + pair.value.bid);
+      this.logObj.debug('pair.value : ' + pair.value.toDebugString());
       ret_slice += '<tr>'
       ret_slice += '<td>' + pair.key + '</td>';
       ret_slice += '<td>' + pair.value.toDebugHtml() + '</td>';
