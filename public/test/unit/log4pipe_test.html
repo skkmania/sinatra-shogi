@@ -39,6 +39,8 @@
   var elem = null;
   var HOST = 'http://skkmania.sakura.ne.jp/shogi/';
   var TestCounter = 0;
+  var window_link; 
+  var resizable_id;
 
   function getContainerId(){
     return 'cont' + TestCounter;
@@ -68,6 +70,8 @@
   var TestSuitePopup = {
   setup: function() { with( this ) {
     title = 'popup' + TestCounter;
+    window_link = "logger"  + TestCounter;
+    resizable_id = "handle" + TestCounter;
   } },
 
   teardown: function() { with( this ) {
@@ -202,7 +206,7 @@
   } },
 
   testUpButton : function() {  with( this )  {
-    var logObj = makeLogObj('testUpButton', { resizable:false, height:'200px'});
+    var logObj = makeLogObj('testUpButton', { height:'200px'});
     logObj.debug('test up button');
     logObj.getInto('------- 1 --------');
     $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
@@ -222,10 +226,35 @@
     assertEqual(TestCounter+1, Control.Window.windows.length);
   } },
 
+  testScroll : function() {  with( this )  {
+    var logObj = makeLogObj('testScroll', {width:600, height:350, resizable:false});
+    logObj.debug('test Scroll');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/lib/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    $R(1,40).each(function(n) { logObj.debug('test scroll' + n); });
+    logObj.getInto('------- 1 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 2 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 3 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 4 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.getInto('------- 5 --------');
+    $R(1,20).each(function(n) { logObj.debug('test up button' + n); });
+    logObj.goOut();
+    logObj.goOut();
+    logObj.goOut();
+    logObj.goOut();
+    logObj.goOut();
+    assertEqual(TestCounter+1, Control.Window.windows.length);
+    assertEqual(TestCounter+1, Control.Window.windows.length);
+  } },
+
   testToString : function() {  with( this )  {
     var logObj = makeLogObj('testToString');
     logObj.debug('test toString');
-    assertEqual(TestCounter+1, Control.Window.windows.length);
   } }
   };
   new Test.Unit.Runner(TestSuitePopup, "testlog");
@@ -289,6 +318,14 @@ function makeRectangle(logObj, x,y,w,h){
   <div id="logger9"></div>
   <div id="logger10"></div>
   <div id="logger11"></div>
+  <div id="logger12"></div>
+  <div id="logger13"></div>
+  <div id="logger14"></div>
+  <div id="logger15"></div>
+  <div id="logger16"></div>
+  <div id="logger17"></div>
+  <div id="logger18"></div>
+  <div id="logger19"></div>
   <div id="elmForHover">Element for hover test. when mouse is over here, a window should open.</div>
   <div id="elmForIndicator">Element for indicator test.</div>
 </body>

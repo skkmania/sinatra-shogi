@@ -162,21 +162,6 @@ var Store = Class.create(Hash, {
     return ret;
   },
 	/**
-	 * read(data)
-	 */
-	// サーバからうけたデータを自身に格納する
-	// 入力 : data  DBからのresponseをunpackしたjavascriptのオブジェクト
-	// 出力 : なし
-  read : function read(data) { // Store
-    this.logObj.getInto('Store#read');
-    // this.merge(data); // なぜかmergeがうごかないので下記のようにした
-    for (key in data) {
-      this.set(key, data[key]);
-    }
-    this.logObj.debug('merged');
-    this.logObj.goOut();
-  },
-	/**
 	 * readDB(data, mask)
 	 */
 	// サーバからうけたデータを自身に格納する
