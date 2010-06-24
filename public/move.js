@@ -34,13 +34,14 @@ var Move = Class.create({
 
   // DBから取得したデータのオブジェクトを読み、とりいれる。
   fromObj : function fromObj_Move(h){ // Move
-    this.bid     = h.bid;
-    this.mid     = h.mid;
-    this.from    = h.m_from;
-    this.to      = h.m_to;
+    this.bid     = (Object.isNumber(h.bid) ?  h.bid : parseInt(h.bid));
+    this.mid     = (Object.isNumber(h.mid) ?  h.mid : parseInt(h.mid));
+    this.from    = (Object.isNumber(h.m_from) ?  h.m_from : parseInt(h.m_from));
+    this.to      = (Object.isNumber(h.m_to) ?  h.m_to : parseInt(h.m_to));
     this.piece   = h.piece;
-    this.promote = h.promote;
-    this.nxt_bid  = h.nxt_bid;
+    this.promote = (h.promote === true) ? true :
+                   ((h.promote === false) ? false : (h.promote == 't'));
+    this.nxt_bid = (Object.isNumber(h.nxt_bid) ?  h.nxt_bid : parseInt(h.nxt_bid));
     return this;
   },
 
@@ -314,6 +315,8 @@ var Moves = Class.create(Hash, {
 	// DBからのresponseであるobjectの配列を自身に読み込む
 	// ただし、midがないmoveは読み込まない
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
+	// 入力 : 配列 要素はオブジェクト
+	// 出力 : 自身
   fromDB : function fromDB(ary){ // Moves
     this.log.getInto('Moves#fromDB');
     ary.each(function(e){

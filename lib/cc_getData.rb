@@ -112,7 +112,7 @@ class CacheTest
       res_hash[name] = result
       res_hash
     }
-    # @logger.debug { "gotten : #{@gotten.inspect}" } 
+    @logger.debug { "gotten : #{@gotten.inspect}" } 
     return @gotten.to_msgpack
   end
 

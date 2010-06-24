@@ -146,27 +146,30 @@ class DbAccessor
   end
 
   def regist_board
+    @logger.debug { 'into regist_board in DbAccessor' }
     query = "select regist_board('#{@turn}'::bool,'#{@board}'::char(81),\
       '#{@black}'::varchar(38),'#{@white}'::varchar(38),\
        #{@oldbid}::integer, #{@from}::smallint, #{@to}::smallint,\
       '#{@piece}'::char, '#{@promote}'::bool);"
     @logger.debug { "regist_board : query -> #{query}" }
     result = DB[query].all
-    @logger.debug { "result.inspect : #{result.inspect}" } 
+    @logger.debug { "query done." }
+    @logger.debug { "inspect of output of sequel (result.inspect) : #{result.inspect}" } 
     # 内容例：　 [{:regist_board=>"(10411,1,,,,,)"}]
     #    これは新しいボードの登録だったときで、 10411はnew_bid, 1はnew_mid
     # 内容例：　 [{:regist_board=>"(10411,,,,,,)"}]
     #    これは既存のの登録だったときで、 10411はnew_bid
-    @logger.debug { "result : #{result}" } 
     new_bid, new_mid = result[0][:regist_board].scan(/\d+/).map(&:to_i)
     @logger.debug { "new_bid : #{new_bid},  new_mid : #{new_mid}" } 
     if new_mid
       ret = {}
       # 新しい局面を登録した場合
       @logger.debug { "this board not found, so new board was registered.: #{new_bid}" } 
-      ret['board'] = [{"turn"=> @turn, "board"=> @board, "black"=> @black, "bid"=> new_bid, "white"=> @white}]
+      ret['board'] = [{"turn"=> @turn, "board"=> @board, "black"=> @black, "bid"=> new_bid.to_s, "white"=> @white}]
       ret['nextMoves'] = []
-      ret['prevMoves'] = [{"promote"=> @promote, "m_from"=> @from, "m_to"=> @to, "bid"=> @bid, "nxt_bid"=> new_bid, "mid"=> new_mid, "piece"=> @piece}]
+      ret['prevMoves'] = [{"promote"=> @promote, "m_from"=> @from, "m_to"=> @to, "bid"=> @bid, "nxt_bid"=> new_bid.to_s, "mid"=> new_mid.to_s, "piece"=> @piece}]
+         # わざとすべて文字列の値としている
+      @logger.debug { "returning hash : #{ret.inspect}" } 
       packed_ret = ret.to_msgpack
       @logger.debug { "ret.msgpack : #{packed_ret}" } 
       return packed_ret
