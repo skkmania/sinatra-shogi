@@ -490,6 +490,7 @@ var Area = Class.create({
 	 * show()
 	 */
 	// dataStoreのデータをもとに、自身のwindowに内容を表示する
+	// 現状では、(2010.6.24) nextMovesとprevMovesのAreaにのみ対応する
   show : function show(){ // Area
     this.logObj.getInto('Area#show');
     this.logObj.debug(this.container + ' area is to be displayed.');
@@ -508,7 +509,12 @@ var Area = Class.create({
     this.window_contents.update(str);
     this.logObj.goOut();
   },
-
+	/*
+	 * display(target)
+	 */
+	// Area のwindowの中身にデータを入力し、window.contentsをupdateする
+	// 入力 : 数値 target 表示したい画面のbid
+	// 出力 : なし
   display : function display_Area(target){ // Area
     this.logObj.getInto();
     this.logObj.debug(this.container + ' stand is to be displayed.');
@@ -517,6 +523,10 @@ var Area = Class.create({
     var str = '';
     switch (this.container){
       case 'pres':
+   	str = '<ul>';
+	this.handler.dataStore.currentSlice().get('prevMoves').each(function(paer){
+          });
+/*
 	 if(this.handler.dataStore.slices.get(target)){
    	      str = '<ul>';
 	   $A(this.handler.dataStore.slices.get(target).get('bids')[0]['pres']).each(function(e){
@@ -535,6 +545,7 @@ var Area = Class.create({
              });
            }
 	 }
+*/
            break;
       case 'board':
            this.handler.board.read();
@@ -590,7 +601,8 @@ var Area = Class.create({
         this.logObj.debug('id of clicked element : ' + evt.findElement('li').id);
         var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
         this.logObj.debug('mid of clicked element : ' + mid);
-        this.handler.areaClicked(this.container, mid);
+        var inner = evt.findElement('li').innerHTML;
+        this.handler.areaClicked(this.container, mid, inner);
         this.logObj.goOut();
       }.bind(this)
     );
@@ -778,23 +790,37 @@ var Handler = Class.create({
     }
     this.logObj.goOut();
   },
-
-  areaClicked : function areaClicked_Handler(place, target){ // Handler
-    this.logObj.getInto();
+	/*
+	 * areaClicked(place, target, inner)
+	 */
+	// クリックされた要素の情報をもとに必要な処理を行う
+	// 入力 : place  このエリアのコンテナの名前。どのエリアがクリックされた
+	//        target 数値 li要素のプロパティからとった数字
+	//        inner  クリックされた要素のinnnerHTML
+  areaClicked : function areaClicked(place, target, inner){ // Handler
+    this.logObj.getInto('Handler#areaClicked');
     this.logObj.debug('place -> ' + Object.toJSON(place) + ',  target -> ' + Object.toJSON(target));
     switch(place) {
       case 'nxts' :
+	// この場合、targetによりクリックされた要素のmidが渡されてくる
         var bid = this.dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
         this.logObj.debug('bid found : ' + bid);
         window.gameController.sendDelta( this.makeReviewDelta(bid) );
-        //this.refreshBoard(bid);
         break;
       case 'pres' :
-        // これはバグのもとだな。nextMovesと異なり、prevMovesではmidが一意とはかぎらないので、これだとクリックしたmoveからbidを読んだかどうかわからない。
-        var bid = this.dataStore.currentSlice().get('prevMoves').find(function(e){ return e.mid == target; }).bid;
-        this.logObj.debug('bid found : ' + bid);
-        window.gameController.sendDelta( this.makeReviewDelta(bid) );
-        //this.refreshBoard(bid);
+        // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
+        this.logObj.getInto('clicked innerHTML is : ' + inner);
+        var bid = this.dataStore.currentSlice().get('prevMoves').find(
+          function(pair){
+             this.logObj.debug('value.toKanji : ' + pair.value.toKanji());
+             return pair.value.toKanji() == inner;
+           }.bind(this)).value.bid;
+        if(bid) {
+          this.logObj.debug('bid found : ' + bid);
+          window.gameController.sendDelta( this.makeReviewDelta(bid) );
+        } else {
+          this.logObj.fatal('clicked move was not found');
+        }
         break;
       default :
         break;
