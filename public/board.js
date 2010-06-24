@@ -522,7 +522,7 @@ var BoardData = Class.create(Hash, {
 	 * fromDelta()
 	 */
 	// BoardData#toDeltaの出力した文字列を自身に読み込む
-  fromDelta : function fromDelta(str){ // Move
+  fromDelta : function fromDelta(str){ // BoardData
     var ary = str.split(',');
     this.bid     = parseInt(ary[0]);
     this.turn    = (ary[1] == 't');
@@ -535,14 +535,15 @@ var BoardData = Class.create(Hash, {
 	 * fromDB()
 	 */
 	// DBのresponseに含まれるオブジェクトを自身に読み込む
-  fromDB : function fromDB(obj){ // Move
-    this.bid     = obj.bid;
-    this.turn    = obj.turn;
+  fromDB : function fromDB(obj){ // BoardData
+    this.bid     = (Object.isNumber(obj.bid) ?  obj.bid : parseInt(obj.bid));
+    this.turn    = (obj.turn === true) ? true :
+                   ((obj.turn === false) ? false : (obj.turn == 't'));
     this.board   = obj.board;
     this.black   = obj.black;
     this.white   = obj.white;
     return this;
-  },
+  }
       
 });
 
