@@ -460,6 +460,7 @@ var Area = Class.create({
               height:500 };
     // window_headerにwindow_titleとwindow_closeを挿入してから
     this.options = Object.extend(this.default_options, options || {});
+    this.logObj.debug(container + ' window is opening');
     this.openWindow();
     this.logObj.goOut();
   },
@@ -507,6 +508,26 @@ var Area = Class.create({
     this.logObj.debug('str : ' + str);
     this.logObj.debug('container : ' + this.window.container.id);
     this.window_contents.update(str);
+    this.logObj.goOut();
+  },
+	/*
+	 * layoutContents()
+	 */
+	// boardArea のためのメソッド
+	// boardAreaに、駒台と盤のための要素を追加する
+  layoutContents : function layoutContents(){ // Area
+    this.logObj.getInto('Area#layoutContents');
+   // this.whiteStand = new Element('div',{ id: 'white-stand' });
+    this.topStand = new Element('div',{ id: 'top-stand' });
+   // this.topStand.appendChild(this.whiteStand);
+    this.window_contents.appendChild(this.topStand);
+    this.boardPanel = new Element('div',{ id: 'board-panel' });
+    this.window_contents.appendChild(this.boardPanel);
+   // this.blackStand = new Element('div',{ id: 'black-stand' });
+    this.bottomStand = new Element('div',{ id: 'bottom-stand' });
+    this.bottomStand.setStyle({ margin:'150px 0px 0px 400px' });
+   // this.bottomStand.appendChild(this.blackStand);
+    this.window_contents.appendChild(this.bottomStand);
     this.logObj.goOut();
   },
 	/*
@@ -635,12 +656,14 @@ var Handler = Class.create({
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
     this.logObj.debug('areas are being initialized');
-    this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:150, height:400});
+    this.boardArea = new Area(this, this.logObj,'boardArea', 'Board',{position:[170,100], width:520, height:440});
+    this.boardArea.layoutContents();
+    this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:130, height:300});
     this.prevArea.initOnClick();
-    this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[600,100], width:150, height:400});
+    this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[700,100], width:130, height:400});
     this.nextArea.initOnClick();
     // dataStoreのdebug dump用のエリア
-    this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[200,500], width:700, height:400});
+    this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[10,580], width:830, height:270});
     this.logObj.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';

@@ -8,6 +8,7 @@ Cell.prototype = {
 	 * initialize(board, x, y, top)
 	 */
   initialize: function initialize(board, x, y, top) {
+    board.game.log.getInto('Cell#initialize');
     Cell.all.push(this);
     this.board = board;
     this.type = 'cell';
@@ -20,6 +21,7 @@ Cell.prototype = {
     this.marginLeft = 0;
     this.width = 40;
     this.hight = 42;
+    this.log.goOut();
   },
 	/**
 	 * say()

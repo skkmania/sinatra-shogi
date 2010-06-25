@@ -71,13 +71,12 @@
 <div id="container">
   <div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>
   <div id="counter"><span class="t">count</span><span id="counterNum"><span></div>
-  <div id="top-stand"></div>
   <div id="shogi"></div>
+  <div id="boardArea"></div>
   <div id="promoteOrNot" class="confirmAction" style="display:none">
     <div id="yesElement">yes</div>
     <div id="noElement">no</div>
   </div>
-  <div id="bottom-stand"></div>
   <div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>
 </div>
 
@@ -131,6 +130,11 @@
    <div id="situationImage">
      <p id="siTitle"></p>
    </div>
+<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
+
+  </body>
+</html>
+<!--
    <div id="kifRead">
      <p id="krTitle"></p>
      <form method="POST" id="kifReadForm" action="./24kif.rb">
@@ -140,7 +144,4 @@
      </form>
    </div>
 
-<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
-
-  </body>
-</html>
+--!>

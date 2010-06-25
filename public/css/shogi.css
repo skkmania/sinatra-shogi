@@ -9,7 +9,7 @@ div#container {
   background-color: #cc8;
   float: left;
   width: 500px;
-  hight: 500px;
+  height: 500px;
 }
 div#top-stand {
   clear: both;
@@ -24,18 +24,36 @@ div#top-stand {
   position: relative;
   /*background-image: url(savanna.png);*/
 }
+div.window_contents {
+  float: left;
+  overflow: auto;
+  position: relative;
+}
+
+#board-panel {
+  width: 410px;
+  height: 420px;
+  margin: 10px 0px 10px 0px;
+  float: left;
+  overflow: auto;
+  position: relative;
+  /*background-image: url(savanna.png);*/
+}
 div#bottom-stand {
   background-color: #c8c;
+  margin: 100px 0px 0px 0px;
   float: left;
   width: 30px;
 }
 div#black-stand {
   background-color: #c80;
   width: 30px;
+  height: 100%;
 }
 div#white-stand {
   background-color: #c8c;
   width: 30px;
+  height: 100%;
 }
 div.cell {
   width: 40px;
@@ -45,6 +63,7 @@ div.cell {
   /*padding: 1px;*/
   border-left: 1px solid black;
   border-bottom: 1px solid black;
+  /*float: left;*/
   position: absolute;
   /*background-image: url(savanna.png);*/
 }
