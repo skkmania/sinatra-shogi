@@ -66,7 +66,7 @@ var Book = Class.create({
   regist : function regist(move){ // Book
     this.log.getInto(); 
     var game = window.gameController.game;
-    var request = new Ajax.Request('/registBook', {
+    var request = new Ajax.Request('/book', {
          method: 'post',
          onCreate: function(request, response){
              if(request.transport.overrideMimeType){
