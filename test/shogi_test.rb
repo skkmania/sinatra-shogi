@@ -76,6 +76,13 @@ class ShogiTest < Test::Unit::TestCase
     delete_board({ 'black'=>'','board'=>'lxxpxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL','turn'=>'t','white'=>''})
     post '/bid', { 'level' => 3,'range' => 'full', 'black'=>'','board'=>'lxxpxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL','from'=>13,'oldbid'=>20,'piece'=>'p','promote'=>'f','to'=>14,'turn'=>'t','white'=>''}
     assert last_response.ok?
-    assert last_response.body.include?('bid')
+    assert MessagePack.unpack(last_response.body)['prevMoves'][0]['m_from'] == "13"
+    assert MessagePack.unpack(last_response.body)['prevMoves'][0]['m_to'] == "14"
+    assert MessagePack.unpack(last_response.body)['prevMoves'][0]['promote'] == "f"
+  end
+
+  def test_get_book
+    get '/book', { 'kid' => 1 }
+    assert last_response.ok?
   end
 end

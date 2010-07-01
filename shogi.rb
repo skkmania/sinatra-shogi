@@ -8,7 +8,7 @@ require 'lib/db_accessor.rb'
 
 configure do
   LOGGER = Logger.new("log/sinatra.log") 
-  LOGGER2 = Logger.new('log/cc_getData.log')
+  LOGGER2 = Logger.new('log/shogi.log')
 end
  
 helpers do
@@ -21,7 +21,7 @@ helpers do
 end
 
 get '/hi' do
-  logger.debug { 'into hi' }
+  logger.debug { ' ----------  into hi' }
   "Hello World!"
 end
 
@@ -54,7 +54,7 @@ end
 =begin
 # これは上の条件にあわなかったすべての文字列にヒットすることに注意
 get '/:bid' do |bid|
-  logger.debug { 'into bid' }
+  logger.debug { ' ----------  into bid' }
   bid.to_s
   dataset = DB["select * from boards where bid = #{bid.to_s}"]
   dataset.inject('') do |all, row|
@@ -64,8 +64,8 @@ end
 =end
 
 get '/getData' do
-    logger.debug { 'into getData' }
-    logger2.debug { 'into getData' }
+    logger.debug { ' ----------  into getData' }
+    logger2.debug { ' ----------  into getData' }
   ct = CacheTest.new( params, logger2 )
     logger2.debug { 'ct initialized' }
   ct.determine_bid_range
@@ -83,7 +83,7 @@ get '/getData' do
 end
 
 post '/getData' do
-    logger2.debug { 'into getData' }
+    logger2.debug { ' ----------  into getData' }
   ct = CacheTest.new( params, logger2 )
     logger2.debug { 'ct initialized' }
   ct.determine_bid_range
@@ -132,7 +132,7 @@ get %r{/msg/board/([\d]+)} do
 end
 
 get '/getMsg' do
-    logger2.debug { 'into getMsg' }
+    logger2.debug { ' ----------  into getMsg' }
   ct = CacheTest.new( params, logger2 )
     logger2.debug { 'ct initialized' }
   ct.determine_bid_range
@@ -144,7 +144,7 @@ get '/getMsg' do
 end
 
 get '/getBids' do
-    logger2.debug { 'into getBids' }
+    logger2.debug { ' ----------  into getBids' }
   ct = CacheTest.new( params, logger2 )
     logger2.debug { 'ct initialized' }
   ct.determine_bid_range
@@ -158,10 +158,33 @@ end
 # パラメータ：board, moveの情報
 # 機能：DBにそれらを登録
 post '/bid' do
-    logger2.debug { 'into post bid' }
+    logger2.debug { '-------  into post bid --------' }
     logger2.debug { 'params : ' + params.inspect }
   da = DbAccessor.new( params, logger2 )
   body = da.regist_board
-  r = Sinatra::Response.new(body,201,{"Content-Type" => "text/plain"})
+    logger2.debug { 'response.body : ' + MessagePack.unpack(body).inspect }
+  r = Sinatra::Response.new(body,200,{"Content-Type" => "text/plain"})
   r.finish
+end
+
+# 棋譜を出力
+# parameter : kid 棋譜のid
+# 機能： kifsテーブルにあるkidの棋譜をmoveの羅列にして返す
+# 出力形式： 
+get '/book' do
+    logger2.debug { ' ----------  into get book' }
+    logger2.debug { 'params : ' + params.inspect }
+  da = DbAccessor.new( params, logger2 )
+    logger2.debug { 'DbAccessor initialized : ' + da.inspect }
+  body = da.get_book
+    logger2.debug { 'response.body : ' + MessagePack.unpack(body).inspect }
+  #r = Sinatra::Response.new(body,200,{"Content-Type" => "text/html"})
+  r = Sinatra::Response.new(body,200,{"Content-Type" => "text/plain"})
+  r.finish
+end
+
+# 棋譜を入力
+post '/book' do
+    logger2.debug { ' ----------  into post book' }
+    logger2.debug { 'params : ' + params.inspect }
 end

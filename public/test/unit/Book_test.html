@@ -76,9 +76,83 @@
     $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
     new Resizable(window_link,{handle:resizable_id});
 
-    var b = new Book(logObj);
+    var areaObj = new Area({}, logObj, 'book0', 'testInitialize', {position:[170,200], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test0');
     assertEqual( '', b.toDebugString() );
-    } }
+  } },
+
+  testBookShowInputBox : function() {  with( this )  {
+    var logObj = makeLogObj('testBookShowInputBox', {width:600, height:350, resizable:false});
+    logObj.debug('test Book showInputBox');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var areaObj = new Area({}, logObj, 'book1', 'testShowInputBox', {position:[170,300], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test1');
+    assertEqual( '', b.toDebugString() );
+    b.showInputBox();
+  } },
+
+  testBookReadInputBox : function() {  with( this )  {
+    var logObj = makeLogObj('testBookReadInputBox', {width:600, height:350, resizable:false});
+    logObj.debug('test Book readInputBox');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var areaObj = new Area({}, logObj, 'book1', 'testReadInputBox', {position:[170,300], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test2');
+    assertEqual( '', b.toDebugString() );
+    b.showInputBox();
+    $('test2').value = 'abc';
+    var result = b.readInputBox();
+    assertEqual( 'abc', result );
+  } },
+
+  testBookLegalCheck : function() {  with( this )  {
+    var logObj = makeLogObj('testBookLegalCheck', {width:600, height:350, resizable:false});
+    logObj.debug('test Book legalCheck');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var areaObj = new Area({}, logObj, 'book1', 'testLegalCheck', {position:[170,300], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test3');
+    assertEqual( '', b.toDebugString() );
+    b.showInputBox();
+    // false test
+    $('test3').value = 'abc';
+    assertEqual( false, b.legalCheck() );
+    // true test
+    $('test3').value = '開始日時：2010/06/29 11:46:55
+棋戦：レーティング対局室
+手合割：平手
+先手：black
+後手：white
+手数----指手---------消費時間--
+1 ７六歩(77)   ( 0:02/00:00:02)
+2 ３四歩(33)   ( 0:02/00:00:02)
+3 ２六歩(27)   ( 0:02/00:00:04)
+4 ８四歩(83)   ( 0:04/00:00:06)
+5 ２五歩(26)   ( 0:02/00:00:06)
+6 ８五歩(84)   ( 0:02/00:00:08)
+7 ７八金(69)   ( 0:02/00:00:08)
+8 ３二金(41)   ( 0:02/00:00:10)
+9 ２四歩(25)   ( 0:01/00:00:09)
+10 ２四歩(23)   ( 0:03/00:00:13)
+11 ２四飛(28)   ( 0:01/00:00:10)
+12 ８六歩(85)   ( 0:03/00:00:16)
+13 ８六歩(87)   ( 0:01/00:00:11)
+14 ８六飛(82)   ( 0:03/00:00:19)
+';
+    assertEqual( true, b.legalCheck() );
+  } }
 
   }, "testlog");
 // ]]>

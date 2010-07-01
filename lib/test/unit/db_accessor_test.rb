@@ -31,14 +31,17 @@ class DbAccessorTest < Test::Unit::TestCase
     DB[query].all
   end
 
+  def test_get_book
+    param = { 'kid' => 1 }
+    dbA = DbAccessor.new(param, LOGGER)
+    res = dbA.get_book
+    unpacked = MessagePack.unpack res
+    LOGGER.debug(unpacked.inspect)
+    assert unpacked.size > 0
+  end
 end  # of class DbAccessorTest
 
 =begin
-  def test_get_msg
-    get '/getMsg',{ 'bid' => 1 , 'uid' =>1, 'level' => 3, 'mask' => 15, 'range' => 'full' }
-    assert last_response.ok?
-    assert last_response.body.include?('bid')
-  end
 
   # post bidには２つの機能がある。それぞれを以下でテストする
   # なぜこんなことになっているか

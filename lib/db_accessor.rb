@@ -11,8 +11,8 @@
 class DbAccessor
   def initialize(param, logger)
     @logger = logger
-    @logger.debug { param.to_s }
-    @logger.debug { param['bid'] }
+    @logger.debug { 'DbAccessor new : param : ' + param.to_s }
+    @logger.debug { 'DbAccessor new : param bid : ' + (param['bid'] or 'nothing') }
     @params	= param
     @bid	= @params['oldbid']
     @name	= @params['name']
@@ -29,6 +29,7 @@ class DbAccessor
     @piece	= @params['piece']
     @promote	= @params['promote']
     @oldbid	= @params['oldbid']
+    @kid	= @params['kid']
 
     @data_name = %w|bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
     @masked_data_name = []
@@ -37,6 +38,7 @@ class DbAccessor
     @bids = []
     @res = ''
     @gotten = {}
+    @logger.debug { 'DbAccessor new : leaving : ' }
   end
 
   def queries
@@ -48,17 +50,18 @@ class DbAccessor
 	      when 'only'
 		"select bid, nxts, pres from cc_getBids(#{@bid}, #{@level}) where ll = #{@level};"
 	    end,
-      "board" => "select * from boards where bid in ( #{bids_expr} );",
-      "nextMoves" => "select * from moves where bid in ( #{bids_expr} ) order by mid;",
-      "prevMoves" => "select * from moves where nxt_bid in ( #{bids_expr} );",
-      "movePointsByUser" => "select bid, mid, point as personal from move_point_user
+      "board"		=> "select * from boards where bid in ( #{bids_expr} );",
+      "nextMoves"	=> "select * from moves where bid in ( #{bids_expr} ) order by mid;",
+      "prevMoves"	=> "select * from moves where nxt_bid in ( #{bids_expr} );",
+      "movePointsByUser"=> "select bid, mid, point as personal from move_point_user
 				 where bid in ( #{bids_expr} ) and userid = #{@uid} order by bid,mid;",
-      "movePointsAverage" => "select bid, mid, point as total from move_points
+      "movePointsAverage"=> "select bid, mid, point as total from move_points
 				 where bid in ( #{bids_expr} ) order by bid,mid;",
-      "moveComments" => "select bid,mid,mcomment,userid,uname from move_comments natural inner join users where bid in ( #{bids_expr} ) order by mid;",
-      "boardPointByUser" => "select bid, coalesce(sum(pbpoint), 0) as pbpoint from boardp_users where bid in ( #{bids_expr} ) and userid = #{@uid} group by bid;",
-      "boardPointAverage" => "select bid, coalesce(sum(bpoint), 0) as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
-      "boardComments" => "select bid, bcomment,userid,uname from board_comments natural inner join users where bid in ( #{bids_expr} ) order by userid;"
+      "moveComments"	=> "select bid,mid,mcomment,userid,uname from move_comments natural inner join users where bid in ( #{bids_expr} ) order by mid;",
+      "boardPointByUser"=> "select bid, coalesce(sum(pbpoint), 0) as pbpoint from boardp_users where bid in ( #{bids_expr} ) and userid = #{@uid} group by bid;",
+      "boardPointAverage"=> "select bid, coalesce(sum(bpoint), 0) as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
+      "boardComments"	=> "select bid, bcomment,userid,uname from board_comments natural inner join users where bid in ( #{bids_expr} ) order by userid;",
+      "book"		=> "select * from get_book(#{@kid});"
     }
   end
 
@@ -134,6 +137,13 @@ class DbAccessor
     @logger.debug { "result.inspect : #{result.inspect}" } 
     @logger.debug { "result : #{result}" } 
     @logger.debug { "result.msgpack : #{result.to_msgpack}" } 
+    return result.to_msgpack
+  end
+
+  def get_book
+    @logger.debug { "get_book : query : #{queries['book']}" } 
+    result = DB[queries['book']].all
+    @logger.debug { "get_book : result.inspect : #{result.inspect}" } 
     return result.to_msgpack
   end
 
