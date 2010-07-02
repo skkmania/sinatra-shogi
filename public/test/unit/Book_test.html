@@ -114,6 +114,39 @@
     assertEqual( 'abc', result );
   } },
 
+  testBookReadDB : function() {  with( this )  {
+    var logObj = makeLogObj('testBookReadDB', {width:600, height:350, resizable:false});
+    logObj.debug('test Book readDB');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var areaObj = new Area({}, logObj, 'book1', 'testReadDB', {position:[170,300], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test3');
+    assertEqual( '', b.toDebugString() );
+    var ary =  [{"promote":false, "m_to":76, "bid":1, "piece":"P", "m_from":77, "mid":0, "cnt":1, "nxt_bid":2}, {"promote":false, "m_to":34, "bid":2, "piece":"p", "m_from":33, "mid":0, "cnt":2, "nxt_bid":3}, {"promote":false, "m_to":26, "bid":3, "piece":"P", "m_from":27, "mid":0, "cnt":3, "nxt_bid":4}];
+    var result = b.readDB(ary);
+    assertEqual( 1, result[0].bid );
+    assertEqual( 2, result[1].bid );
+  } },
+
+  testBookGetBook : function() {  with( this )  {
+    var logObj = makeLogObj('testBookGetBook', {width:600, height:350, resizable:false});
+    logObj.debug('test Book getBook');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var areaObj = new Area({}, logObj, 'book1', 'testGetBook', {position:[170,300], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test4');
+    assertEqual( '', b.toDebugString() );
+    var result = b.getBook(1);
+    assertEqual( 1, result[0].bid );
+    assertEqual( 2, result[1].bid );
+  } },
+
   testBookLegalCheck : function() {  with( this )  {
     var logObj = makeLogObj('testBookLegalCheck', {width:600, height:350, resizable:false});
     logObj.debug('test Book legalCheck');
@@ -123,7 +156,7 @@
     var areaObj = new Area({}, logObj, 'book1', 'testLegalCheck', {position:[170,300], width:220, height:440});
     var handler = { logObj: logObj, readBookArea: areaObj };
     areaObj.handler = handler;
-    var b = new Book(handler, 'test3');
+    var b = new Book(handler, 'test5');
     assertEqual( '', b.toDebugString() );
     b.showInputBox();
     // false test

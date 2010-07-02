@@ -62,7 +62,68 @@ var Book = Class.create({
     this.log.goOut();
     return ret;
   },
-
+	/*
+	 * readDB
+	 */
+	// DBからのresponseTextをmoveの配列として読む
+	// 入力 配列 要素はmoveを意味するjsのオブジェクト DBからのレスポンス
+	//    順序は棋譜の手数順である。DBのselectでそう並べているので。
+	//     例 : 
+	//  [{"promote":false, "m_to":76, "bid":1, "piece":"P",
+	//    "m_from":77, "mid":0, "cnt":1, "nxt_bid":2},
+	//   {"promote":false, "m_to":34, "bid":2, "piece":"p",
+	//    "m_from":33, "mid":0, "cnt":2, "nxt_bid":3},
+	//   {"promote":false, "m_to":26, "bid":3, "piece":"P",
+	//    "m_from":27, "mid":0, "cnt":3, "nxt_bid":4}]
+	// 出力 配列 moveオブジェクトの配列
+  readDB : function readDB(ary){ // Book
+    this.log.getInto('Book#readDB'); 
+    var ret = ary.map(function(e){
+      return new Move(this.log).fromObj(e);
+    }.bind(this));
+    this.log.debug('returning : ' + ret.invoke('toDelta').join(':'));
+    this.log.goOut();
+    return ret;
+  },
+	/*
+	 * getBook
+	 */
+  getBook : function getBook(arg_kid){ // Book
+    this.log.getInto(); 
+    var request = new Ajax.Request('/book', {
+         method: 'get',
+         onCreate: function(request, response){
+             if(request.transport.overrideMimeType){
+                 request.transport.overrideMimeType("text/plain; charset=x-user-defined");
+             }
+         },
+      parameters : { kid : arg_kid },
+      asynchronous : false,
+      onSuccess : function onSuccess_getBook(response){
+        this.log.getInto('Book#onSuccess_getBook');
+        var data= MessagePack.unpack(response.responseText);
+        this.log.debug('result of getBook :<br> unpacked responseText : ' + Object.toJSON(data));
+          // この出力例：
+              // DBからの返事である、盤面のbid
+        var ret = this.readDB(data);
+        this.log.debug('response read done : ');
+        this.log.goOut();
+        return ret;
+      }.bind(this),
+      onFailure : function onFailure_getBook(response){
+        this.log.getInto();
+        this.log.debug('onFailure : ' + response.status + response.statusText);
+        this.log.goOut();
+        return false;
+      }.bind(this)
+    });
+    var response = new Ajax.Response(request);
+    this.log.goOut();
+    return response;
+  },
+	/*
+	 * regist
+	 */
   regist : function regist(move){ // Book
     this.log.getInto(); 
     var game = window.gameController.game;
@@ -100,6 +161,7 @@ var Book = Class.create({
     var response = new Ajax.Response(request);
     this.log.goOut();
   },
+
   toDebugString: function toDebugString(){
     return '';
   }
