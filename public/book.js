@@ -91,6 +91,37 @@ var Book = Class.create({
     return ret;
   },
 	/*
+	 * showBookForm
+	 */
+	// showBookのためのformをAreaに表示する
+	// 入力 なし
+	// 出力 なし
+  showBookForm : function showBookForm(){ // Book
+    this.log.getInto(); 
+    //var form = new Element('form',{ id:'getBookForm' });
+    var label  = Builder.node('label',{ htmlFor:'kidInput', className:'book' }, 'kid');
+    var input   = new Element('input',{ id:'kidInput', type:'text', size: 8, className:'book' });
+    var button = new Element('input',{ id:'kidInput', type:'button', value:'get',className:'book' });
+    button.observe('click', function(){
+      var v = parseInt($('kidInput').value);
+      alert('button clicked' + v);
+      this.getBook(v);
+      this.showBook();
+      return false;
+    }.bind(this));
+    //this.log.debug('input created : ' + form.className);
+    this.area.window_contents.appendChild(label);
+/*
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(button);
+*/
+    //this.area.window_contents.appendChild(form);
+    this.area.window_contents.appendChild(input);
+    this.area.window_contents.appendChild(button);
+    this.log.goOut();
+  },
+	/*
 	 * showBook
 	 */
 	// this.bookの内容をAreaに表示する
@@ -114,6 +145,10 @@ var Book = Class.create({
 	/*
 	 * getBook
 	 */
+	// サーバにkifの内容をAjaxで問い合わせる
+	// 入力 数値 kidの値
+	// 出力 なし
+	//   だが、ajaxのresponsが帰ってきたらthis.bookに値を格納する
   getBook : function getBook(arg_kid){ // Book
     this.log.getInto(); 
     this.kid = arg_kid;
@@ -125,7 +160,7 @@ var Book = Class.create({
              }
          },
       parameters : { kid : arg_kid },
-      asynchronous : true,
+      asynchronous : false,
       onSuccess : function onSuccess_getBook(response){
         this.log.getInto('Book#onSuccess_getBook');
         var data= MessagePack.unpack(response.responseText);

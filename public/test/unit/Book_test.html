@@ -147,6 +147,20 @@
     b.showBook();
   } },
 
+  testBookShowBookForm : function() {  with( this )  {
+    var logObj = makeLogObj('testBookShowBookForm', {width:600, height:350, resizable:false});
+    logObj.debug('test Book showBookForm');
+    $(window_link).insert(new Element('img',{id:resizable_id,src:"../../img/window_close.gif"}));
+    new Resizable(window_link,{handle:resizable_id});
+
+    var areaObj = new Area({}, logObj, 'book5', 'testShowBookForm', {position:[170,300], width:220, height:440});
+    var handler = { logObj: logObj, readBookArea: areaObj };
+    areaObj.handler = handler;
+    var b = new Book(handler, 'test5');
+    assertEqual( '', b.toDebugString() );
+    b.showBookForm();
+  } },
+
   testBookGetBook : function() {  with( this )  {
     var logObj = makeLogObj('testBookGetBook', {width:600, height:350, resizable:false});
     logObj.debug('test Book getBook');

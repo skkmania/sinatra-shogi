@@ -665,6 +665,7 @@ var Handler = Class.create({
     // 棋譜読み込み用のエリア
     this.readBookArea = new Area(this, this.logObj,'readBook', 'ReadBook',{position:[900,50], width:130, height:600});
     this.book = new Book(this);
+    this.book.showBookForm();
     // dataStoreのdebug dump用のエリア
     this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[10,580], width:830, height:270});
     this.logObj.debug('areas were initialized');
