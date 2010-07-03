@@ -130,6 +130,18 @@ var Move = Class.create({
          && this.promote == move.promote);
   },
 	/*
+	 * toLinkElement(kid, cnt)
+	 */
+  toLinkElement : function toLinkElement(kid, cnt) { // Move
+    var ret = new Element('a',{ href:'/book/' + kid + '/' + cnt });
+    ret =  this.bid + ',' + this.mid;
+    ret += ',' + this.from + ',' + this.to;
+    ret += ',' + this.piece;
+    ret += ',' + (this.promote ? 't' : 'f');
+    ret += ',' + this.nxt_bid;
+    return ret;
+  },
+	/*
 	 * toDelta()
 	 */
   toDelta : function toDelta(){ // Move

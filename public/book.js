@@ -14,6 +14,9 @@ var Book = Class.create({
     this.area    = handler.readBookArea;
     this.textAreaId  = id;
     this.log.getInto('Book#initialize');
+    this.book = [];
+    this.kid = null;
+       // Moveオブジェクトの配列
 
     this.log.goOut();
   },
@@ -66,6 +69,7 @@ var Book = Class.create({
 	 * readDB
 	 */
 	// DBからのresponseTextをmoveの配列として読む
+	// それは、自身のbookプロパティとして参照する。
 	// 入力 配列 要素はmoveを意味するjsのオブジェクト DBからのレスポンス
 	//    順序は棋譜の手数順である。DBのselectでそう並べているので。
 	//     例 : 
@@ -81,15 +85,38 @@ var Book = Class.create({
     var ret = ary.map(function(e){
       return new Move(this.log).fromObj(e);
     }.bind(this));
+    this.book = ret;
     this.log.debug('returning : ' + ret.invoke('toDelta').join(':'));
     this.log.goOut();
     return ret;
+  },
+	/*
+	 * showBook
+	 */
+	// this.bookの内容をAreaに表示する
+	// 個々の手はそのbidの局面へのリンクアンカーとする
+	// 入力 なし
+	// 出力 なし
+  showBook : function showBook(){ // Book
+    this.log.getInto(); 
+    var ul = new Element('ul',{ className:'book',listStyleType:'decimal' });
+    this.log.debug('ul created : ' + ul.className);
+    this.book.each(function(m, idx){
+      this.log.debug('idx : ' + idx + ', m : ' + m.toDelta());
+      var elm = new Element('li',{ className:'book' });
+      elm.innerHTML = m.toKanji();
+      ul.appendChild(elm);
+    }.bind(this));
+    $(this.area.window_contents).update(ul);
+    this.area.window_contents.appendChild(this.backButton);
+    this.log.goOut();
   },
 	/*
 	 * getBook
 	 */
   getBook : function getBook(arg_kid){ // Book
     this.log.getInto(); 
+    this.kid = arg_kid;
     var request = new Ajax.Request('/book', {
          method: 'get',
          onCreate: function(request, response){
@@ -98,17 +125,16 @@ var Book = Class.create({
              }
          },
       parameters : { kid : arg_kid },
-      asynchronous : false,
+      asynchronous : true,
       onSuccess : function onSuccess_getBook(response){
         this.log.getInto('Book#onSuccess_getBook');
         var data= MessagePack.unpack(response.responseText);
         this.log.debug('result of getBook :<br> unpacked responseText : ' + Object.toJSON(data));
           // この出力例：
               // DBからの返事である、盤面のbid
-        var ret = this.readDB(data);
+        this.readDB(data);
         this.log.debug('response read done : ');
         this.log.goOut();
-        return ret;
       }.bind(this),
       onFailure : function onFailure_getBook(response){
         this.log.getInto();
@@ -119,7 +145,6 @@ var Book = Class.create({
     });
     var response = new Ajax.Response(request);
     this.log.goOut();
-    return response;
   },
 	/*
 	 * regist

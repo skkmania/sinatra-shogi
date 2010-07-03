@@ -80,3 +80,7 @@ div#data {
   clear: both;
   text-align: right;
 }
+
+ul.book {
+  list-style-type:decimal;
+}
