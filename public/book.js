@@ -25,29 +25,18 @@ var Book = Class.create({
 	 */
   showInputBox: function showInputBox(){
     this.log.getInto('Book#showInputBox');
-    var str = 
-   '<div id="kifRead">\
-     <p id="krTitle">copy kif below</p>\
-     <form method="POST" id="kifReadForm" action="">\
-       <textarea name="kifText" cols="20" rows="20" id="';
-    str += this.textAreaId + '"></textarea>\
-         <input type="submit" name="submit" value="post" />\
-         <input type="reset" name="reset" value="reset" />\
-         <input type="range" name="range0" value="0" />\
-     </form>\
-   </div>';
-    this.area.window_contents.update(str);
+    var textarea = new Element('textarea',{ id:this.textAreaId, cols:20, rows:20,className:'book' });
+    var button = new Element('input',{ id:'bookBack', type:'button', value:'post',className:'book' });
+    button.observe('click', function(){
+      if(this.legalCheck()){
+        this.postBook();
+      } else {
+      }
+      return false;
+    }.bind(this));
+    this.area.window_contents.appendChild(button);
+    this.area.window_contents.appendChild(textarea);
     this.log.goOut();
-  },
-	/*
-	 * readInputBox()
-	 */
-  readInputBox: function readInputBox(){
-    this.log.getInto('Book#readInputBox');
-    this.kif = $(this.textAreaId).value;
-    this.log.debug('read input box : ' + this.kif);
-    this.log.goOut();
-    return this.kif;
   },
 	/*
 	 * legalCheck()
@@ -59,8 +48,8 @@ var Book = Class.create({
 	// 出力例 : 7776Pf3334pf2726Pf8384pf8822Bt
   legalCheck: function legalCheck(){ // Book
     this.log.getInto('Book#legalCheck');
-    this.kif = $(this.textAreaId).value;
-    var ret = false;
+    var bookText = $(this.textAreaId).value;
+    var ret = true;
     this.log.debug('returning : ' + ret);
     this.log.goOut();
     return ret;
@@ -104,9 +93,10 @@ var Book = Class.create({
     var button = new Element('input',{ id:'kidInput', type:'button', value:'get',className:'book' });
     button.observe('click', function(){
       var v = parseInt($('kidInput').value);
-      alert('button clicked' + v);
+      // alert('button clicked' + v);
       this.getBook(v);
       this.showBook();
+      this.showBackButton();
       return false;
     }.bind(this));
     //this.log.debug('input created : ' + form.className);
@@ -122,19 +112,38 @@ var Book = Class.create({
     this.log.goOut();
   },
 	/*
+	 * showBackButton
+	 */
+	// showBookのためのformをAreaに表示する
+	// 入力 なし
+	// 出力 なし
+  showBackButton : function showBackButton(){ // Book
+    this.log.getInto(); 
+    var button = new Element('input',{ id:'bookBack', type:'button', value:'back',className:'book' });
+    button.observe('click', function(){
+      this.showBookForm();
+      this.showInputBox();
+      return false;
+    }.bind(this));
+    this.area.window_contents.appendChild(button);
+    this.log.goOut();
+  },
+	/*
 	 * showBook
 	 */
 	// this.bookの内容をAreaに表示する
 	// 個々の手はそのbidの局面へのリンクアンカーとする
-	// 入力 なし
+	// 入力 数値 foundCnt 既存の手の手数
 	// 出力 なし
-  showBook : function showBook(){ // Book
+  showBook : function showBook(foundCnt){ // Book
     this.log.getInto(); 
     var ul = new Element('ul',{ className:'book',listStyleType:'decimal' });
     this.log.debug('ul created : ' + ul.className);
     this.book.each(function(m, idx){
       this.log.debug('idx : ' + idx + ', m : ' + m.toDelta());
-      var elm = new Element('li',{ className:'book' });
+      var cn = 'book';
+      if(foundCnt && idx <= foundCnt) cn += ' found';
+      var elm = new Element('li',{ className: cn });
       elm.innerHTML = m.toKanji();
       ul.appendChild(elm);
     }.bind(this));
@@ -165,8 +174,6 @@ var Book = Class.create({
         this.log.getInto('Book#onSuccess_getBook');
         var data= MessagePack.unpack(response.responseText);
         this.log.debug('result of getBook :<br> unpacked responseText : ' + Object.toJSON(data));
-          // この出力例：
-              // DBからの返事である、盤面のbid
         this.readDB(data);
         this.log.debug('response read done : ');
         this.log.goOut();
@@ -182,11 +189,12 @@ var Book = Class.create({
     this.log.goOut();
   },
 	/*
-	 * regist
+	 * postBook
 	 */
-  regist : function regist(move){ // Book
-    this.log.getInto(); 
-    var game = window.gameController.game;
+	// getBookとの違い : 何手目までが既存手であったかをserverから教えてもらっている
+  postBook : function postBook(){ // Book
+    this.log.getInto('Book#postBook'); 
+    var bookText = $(this.textAreaId).value;
     var request = new Ajax.Request('/book', {
          method: 'post',
          onCreate: function(request, response){
@@ -194,24 +202,21 @@ var Book = Class.create({
                  request.transport.overrideMimeType("text/plain; charset=x-user-defined");
              }
          },
-      parameters : this.getQueryStr(),
+      parameters : { text: bookText },
       asynchronous : true,
-      onSuccess : function onSuccess_regist(response){
-        this.log.getInto('Book#onSuccess_regist');
+      onSuccess : function onSuccess_postBook(response){
+        this.log.getInto('Book#onSuccess_postBook');
         this.log.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= MessagePack.unpack(response.responseText);
-        this.log.debug('result of regist :<br> unpacked responseText : ' + Object.toJSON(data));
-          // この出力例：
-        window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
-              // DBからの返事である、盤面のbid
-        this.readDB(data, 7);
+        this.log.debug('result of postBook :<br> unpacked responseText : ' + Object.toJSON(data));
+        this.readDB(data);
+        this.showBook(data.foundCnt);
+        this.showBackButton();
         this.log.debug('slice read done : ');
-//        this.log.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
-        //var delta =  window.gameController.handler.makeReviewDelta(game.new_bid);
         this.log.goOut();
         return data;
       }.bind(this),
-      onFailure : function onFailure_regist(response){
+      onFailure : function onFailure_postBook(response){
         this.log.getInto();
         this.log.debug('onFailure : ' + response.status + response.statusText);
         this.log.goOut();
