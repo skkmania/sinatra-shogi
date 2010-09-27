@@ -235,7 +235,7 @@ var Store = Class.create(Hash, {
     var ret = new Slice(this.logObj);
     var dataNames = this.getMaskedDataName(m);
     this.logObj.debug('masked data name : ' + Object.toJSON(dataNames));
-    // ほとんどの場合、あるbidの画面にはbidがそのbidのオブジェクトを集める
+    // ほとんどの場合、あるbidの画面にはそのbidを自身のbidとして持つオブジェクトを集める
     dataNames.each(function(name){
       this.logObj.debug('name : ' + Object.toJSON(name));
       switch(name){
@@ -615,10 +615,11 @@ var Area = Class.create({
   },
 
   initOnClick : function initOnClick_Area(){ // Area
-    this.logObj.getInto();
+    this.logObj.getInto('Area#initOnClick');
+    this.logObj.goOut();
     this.window_contents.observe('click',
       function(evt){ 
-        this.logObj.getInto('observe@Area');
+        this.logObj.getInto('Area#initOnClick#observe');
         this.logObj.debug('id of clicked element : ' + evt.findElement('li').id);
         var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
         this.logObj.debug('mid of clicked element : ' + mid);
@@ -627,7 +628,6 @@ var Area = Class.create({
         this.logObj.goOut();
       }.bind(this)
     );
-    this.logObj.goOut();
   },
 
 });
@@ -739,7 +739,7 @@ var Handler = Class.create({
 	 */
 	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
 	// 入力 : bid 数値 表示したい局面のbid
-	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
+	//  ただし、これはnullでも可。そのときは画面上のbid入力エリアの値を使う
         // 出力 : 作成されたdelta オブジェクト
   makeReviewDelta: function makeReviewDelta(bid){ // Handler
     var delta = {};

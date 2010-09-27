@@ -187,4 +187,10 @@ end
 post '/book' do
     logger2.debug { ' ----------  into post book' }
     logger2.debug { 'params : ' + params.inspect }
+  da = DbAccessor.new( params, logger2 )
+    logger2.debug { 'DbAccessor initialized : ' + da.inspect }
+  body = da.post_book
+    logger2.debug { 'response.body : ' + MessagePack.unpack(body).inspect }
+  r = Sinatra::Response.new(body,200,{"Content-Type" => "text/plain"})
+  r.finish
 end

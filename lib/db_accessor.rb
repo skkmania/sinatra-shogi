@@ -61,7 +61,8 @@ class DbAccessor
       "boardPointByUser"=> "select bid, coalesce(sum(pbpoint), 0) as pbpoint from boardp_users where bid in ( #{bids_expr} ) and userid = #{@uid} group by bid;",
       "boardPointAverage"=> "select bid, coalesce(sum(bpoint), 0) as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
       "boardComments"	=> "select bid, bcomment,userid,uname from board_comments natural inner join users where bid in ( #{bids_expr} ) order by userid;",
-      "book"		=> "select * from get_book(#{@kid});"
+      "book"		=> "select * from get_book(#{@kid});",
+      "pbook"		=> "select * from post_book(#{@params['pbook']});"
     }
   end
 
@@ -144,6 +145,17 @@ class DbAccessor
     @logger.debug { "get_book : query : #{queries['book']}" } 
     result = DB[queries['book']].all
     @logger.debug { "get_book : result.inspect : #{result.inspect}" } 
+    return result.to_msgpack
+  end
+
+# 入力(params) paramsのpbookキーで渡される。moveの配列を意味する文字列
+# 出力 配列(をmsgpackで固めた文字列)
+#   配列の要素 0 数字 foundCnt
+#              1 以降 movesレコードのハッシュ
+  def post_book
+    @logger.debug { "post_book : query : #{queries['pbook']}" } 
+    result = DB[legal_check].all
+    @logger.debug { "post_book : result.inspect : #{result.inspect}" } 
     return result.to_msgpack
   end
 
