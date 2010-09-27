@@ -337,8 +337,8 @@ var Store = Class.create(Hash, {
 
       }.bind(this)
     });
-    var response = new Ajax.Response(request);
     this.logObj.goOut();
+    var response = new Ajax.Response(request);
   },
 
   getQueryStr : function getQueryStr(move){ // Store
