@@ -310,7 +310,7 @@ var Store = Class.create(Hash, {
 	 * getMsg(bid, uid, level, mask, range, async)
 	 */
   getMsg : function getMsg(bid, uid, level, mask, range, async){ // Store
-    this.logObj.getInto(); 
+    this.logObj.getInto('Store#getMsg'); 
     var request = new Ajax.Request('/getMsg', {
          method: 'get',
          onCreate: function(request, response){
@@ -385,7 +385,11 @@ var Store = Class.create(Hash, {
 // "board": [{"white": "", "black": "", "bid": "1", "board": "lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxPxxL", "turn": "f"}]}
         window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
               // DBからの返事である、盤面のbid
+        // 新しいbidのデータをdataStoreに追加する
         this.readDB(data, 7);
+        // registBoardの場合、それだけでは追加が足りない。新局面に至った新手の情報がまだ追加されていないから、それを追加する。
+        // 新手の情報とは、この新局面にとってのprevMoves[0]にほかならない。
+        this.addMovesAsNextMoves(data['prevMoves'])
         this.logObj.debug('slice read done : ');
 //        this.logObj.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
         //var delta =  window.gameController.handler.makeReviewDelta(game.new_bid);
@@ -400,6 +404,23 @@ var Store = Class.create(Hash, {
       }.bind(this)
     });
     var response = new Ajax.Response(request);
+    this.logObj.goOut();
+  },
+	/**
+	 * addMovesAsNextMoves(ary)
+	 */
+        // 入力 : ary Moveを表すJSON文字列の配列
+        // 出力 : なし
+        // 機能 : 受け取った配列の各要素を、そのMoveのbidのNextMovesに追加する。
+  addMovesAsNextMoves: function addMovesAsNextMoves(ary) { // Store
+    this.logObj.getInto('Store#addMovesAsNextMoves'); 
+    this.logobj.debug('ary : ' + Object.toJSON(ary));
+    ary.each(function(m){
+      this.logobj.debug('m : ' + m);
+      var obj = evalJSON(m);
+      var bid = obj['bid'];
+      this.slices.get(bid).get('nextMoves').push(obj);
+    });
     this.logObj.goOut();
   },
 	/**
