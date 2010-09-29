@@ -250,7 +250,7 @@ var Move = Class.create({
 
 // 指し手の集合 
 // Hashの子クラス
-// 指し手のmidをkeyとする
+// 指し手のmidをkeyとする。このmidはNumberでなければならない。
 var Moves = Class.create(Hash, {
 
   initialize : function($super, log){ // Moves
@@ -324,10 +324,11 @@ var Moves = Class.create(Hash, {
 	/*
 	 * fromDB()
 	 */
-	// DBからのresponseであるobjectの配列を自身に読み込む
+	// DBからのresponseであるjsのobjectの配列を自身に読み込む
+        // そのとき、Moveオブジェクトを生成しそれに変換してからとりこむ
 	// ただし、midがないmoveは読み込まない
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
-	// 入力 : 配列 要素はオブジェクト
+	// 入力 : 配列 要素はjsのオブジェクト
 	// 出力 : 自身
   fromDB : function fromDB(ary){ // Moves
     this.log.getInto('Moves#fromDB');

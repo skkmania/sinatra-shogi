@@ -495,6 +495,12 @@ Board = Class.create({
 // Boardのbid, turn, board, black, whiteからなるデータのハッシュ
 // Hashの子クラス
 // key は、bid, turn, board, black, white
+// その型は
+//   this.bid   : 数値(Number)
+//   this.turn  : Boolean
+//   this.board : 文字列
+//   this.black : 文字列
+//   this.white : 文字列
 var BoardData = Class.create(Hash, {
 
   initialize : function($super, log){ // BoardData
