@@ -179,6 +179,9 @@ var Store = Class.create(Hash, {
 	 * readDB(data, mask)
 	 */
 	// サーバからうけたデータを自身に格納する
+        // makeSliceを使い、jsのオブジェクトをそれぞれの型のオブジェクトに
+        // 変換しまとめてSliceオブジェクトとしてから、
+        // このStoreのslicesプロパティに格納する。
 	// 入力 : data  DBからのresponseをunpackしたjavascriptのオブジェクト
 	//        mask  dataNameの使用範囲を指定する数字, 省略時は511
 	// 出力 : なし
@@ -186,7 +189,9 @@ var Store = Class.create(Hash, {
     this.logObj.getInto('Store#readDB');
     // dataに含まれるbidを取り出して配列として保持
     var bids = data['board'].pluck('bid');
+    // data[board]は、dataが保持しているjsオブジェクトの配列
     this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
+    // bidsは、数値の配列
     this.logObj.debug('bids : ' + Object.toJSON(bids));
     var m = mask || 511;
     bids.each(function(bid){
@@ -222,7 +227,7 @@ var Store = Class.create(Hash, {
 	 * makeSlice(bid, data, mask)
 	 */
 	// １画面ぶんのデータをdataから切り出してSliceオブジェクトとして返す
-	// 入力 : 数値 bid
+	// 入力 : 数値 bid このbidのSliceを作れ、という意味
 	//        オブジェクト data DBからのresponse
 	//        数値 mask this.nameのうち何を結果に含めるかを指定する
 	//           指定方法：this.nameの添字をbitに見立てた二進から10進変換
@@ -273,7 +278,7 @@ var Store = Class.create(Hash, {
       return ret;
     }.bind(this));
     // prevMovesだけは、あるbidの画面にはnxt_bidがbidのオブジェクトを集める
-    this.logObj.debug('ret : ' + Object.toJSON(ret));
+    this.logObj.debug('ret : ' + ret.toDebugString());
     this.logObj.goOut();
     return ret; 
   },
@@ -414,13 +419,20 @@ var Store = Class.create(Hash, {
         // 機能 : 受け取った配列の各要素を、そのMoveのbidのNextMovesに追加する。
   addMovesAsNextMoves: function addMovesAsNextMoves(ary) { // Store
     this.logObj.getInto('Store#addMovesAsNextMoves'); 
-    this.logobj.debug('ary : ' + Object.toJSON(ary));
-    ary.each(function(m){
-      this.logobj.debug('m : ' + m);
-      var obj = evalJSON(m);
-      var bid = obj['bid'];
-      this.slices.get(bid).get('nextMoves').push(obj);
-    });
+    this.logObj.debug('ary : ' + Object.toJSON(ary));
+    $A(ary).each(function(m){
+      this.logObj.debug('m : ' + Object.toJSON(m));
+      // var obj = evalJSON(m);
+      var bid = parseInt(m['bid']);
+      this.logObj.debug('bid : ' + Object.toJSON(bid));
+      var slice = this.slices.get(bid);
+      this.logObj.debug('slice : ' + Object.toJSON(slice));
+      var nm = slice.get('nextMoves');
+      this.logObj.debug('nextMoves before : ' + Object.toJSON(nm));
+      nm.set(m['mid'], m);
+      this.logObj.debug('nextMoves after : ' + Object.toJSON(nm));
+      //this.slices.get(bid).get('nextMoves').push(m);
+    }.bind(this));
     this.logObj.goOut();
   },
 	/**
