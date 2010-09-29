@@ -282,7 +282,17 @@ var Moves = Class.create(Hash, {
     else
       return false;
   },
-
+	/*
+	 * toDebugString()
+	 */
+  toDebugString : function toDebugString(){ // Moves
+    this.log.getInto('Moves#toDebugString');
+    this.log.debug('values : ' + Object.toJSON(this.values()));
+    var res = this.values().invoke('toDebugString').join(':');
+    this.log.debug('returning : ' + res);
+    this.log.goOut();
+    return res;
+  },
 	/*
 	 * toDelta()
 	 */
@@ -324,7 +334,7 @@ var Moves = Class.create(Hash, {
 	/*
 	 * fromDB()
 	 */
-	// DBからのresponseであるjsのobjectの配列を自身に読み込む
+	// DBからのresponseであるjsのobjectの配列を自身に追加的に読み込む
         // そのとき、Moveオブジェクトを生成しそれに変換してからとりこむ
 	// ただし、midがないmoveは読み込まない
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる

@@ -414,7 +414,7 @@ var Store = Class.create(Hash, {
 	/**
 	 * addMovesAsNextMoves(ary)
 	 */
-        // 入力 : ary Moveを表すJSON文字列の配列
+        // 入力 : ary Moveを表すjsオブジェクトの配列
         // 出力 : なし
         // 機能 : 受け取った配列の各要素を、そのMoveのbidのNextMovesに追加する。
   addMovesAsNextMoves: function addMovesAsNextMoves(ary) { // Store
@@ -426,12 +426,15 @@ var Store = Class.create(Hash, {
       var bid = parseInt(m['bid']);
       this.logObj.debug('bid : ' + Object.toJSON(bid));
       var slice = this.slices.get(bid);
-      this.logObj.debug('slice : ' + Object.toJSON(slice));
+      this.logObj.debug('slice : ' + slice.toDebugString());
       var nm = slice.get('nextMoves');
-      this.logObj.debug('nextMoves before : ' + Object.toJSON(nm));
-      nm.set(m['mid'], m);
-      this.logObj.debug('nextMoves after : ' + Object.toJSON(nm));
-      //this.slices.get(bid).get('nextMoves').push(m);
+      if (!nm) {
+        nm =  new Moves(this.logObj);
+        slice.set('nextMoves',nm);
+      }
+      this.logObj.debug('nextMoves before : ' + nm.toDebugString());
+      nm.fromDB([m]); // mをMoveオブジェクトにしてからNextMovesに追加してくれる
+      this.logObj.debug('nextMoves after : ' + nm.toDebugString());
     }.bind(this));
     this.logObj.goOut();
   },
