@@ -81,15 +81,14 @@ var Slice = Class.create(Hash, {
     // this.logObj.debug('values : ' + Object.toJSON(this.values()));
     this.keys().each(function(key){
       var obj = this.get(key);
-      this.logObj.getInto();
-      this.logObj.debug('pair.key: ' + Object.toJSON(key));
-      this.logObj.debug('pair.value: ' + Object.toJSON(obj));
+      this.logObj.getInto('key : ' + key);
       ret += key + '::';
       if (!obj){
          ret += '[]';
       } else {
          ret += obj.toDelta();
       }
+      this.logObj.debug('value: ' + ret);
       this.logObj.goOut();
     }.bind(this));
     this.logObj.goOut();

@@ -20,7 +20,7 @@ var Move = Class.create({
 
   initialize : function initialize(log, str){ // Move
     this.log = log;
-    this.log.getInto();
+    this.log.getInto('Move#initialize');
     if (str && str.length == 6){
       this.from    = parseInt(str.slice(0,2));
       this.to      = parseInt(str.slice(2,4));
@@ -287,7 +287,6 @@ var Moves = Class.create(Hash, {
 	 */
   toDebugString : function toDebugString(){ // Moves
     this.log.getInto('Moves#toDebugString');
-    this.log.debug('values : ' + Object.toJSON(this.values()));
     var res = this.values().invoke('toDebugString').join(':');
     this.log.debug('returning : ' + res);
     this.log.goOut();
@@ -298,7 +297,6 @@ var Moves = Class.create(Hash, {
 	 */
   toDelta : function toDelta(){ // Moves
     this.log.getInto('Moves#toDelta');
-    this.log.debug('values : ' + Object.toJSON(this.values()));
     var res = this.values().invoke('toDelta').join(':');
     this.log.debug('returning : ' + res);
     this.log.goOut();
