@@ -104,6 +104,19 @@ class CacheTest
     return @gotten
   end
 
+  # @gottenの出力を読みやすく整形する
+  def log_format(obj)
+    ret = ''
+    # obj は hash
+    obj.each{|k, v|
+      ret += k + " :\n"
+      # v は array. その要素はhash
+      ret += v.map{|h| h.values.map{|e| e.to_s }.join(',') }.join('::')
+      ret += "\n"
+    }
+      ret
+  end
+
   def get_msg
     @gotten = @masked_data_name.inject({}){|res_hash, name|
       result = DB[queries[name]].all
@@ -112,7 +125,7 @@ class CacheTest
       res_hash[name] = result
       res_hash
     }
-    @logger.debug { "gotten : #{@gotten.inspect}" } 
+    @logger.debug { "gotten : #{log_format(@gotten)}" } 
     return @gotten.to_msgpack
   end
 

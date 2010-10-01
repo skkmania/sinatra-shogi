@@ -549,7 +549,21 @@ var BoardData = Class.create(Hash, {
     this.black   = obj.black;
     this.white   = obj.white;
     return this;
+  },
+	/*
+	 * toDebugString()
+	 */
+  toDebugString : function toDebugString(){ // BoardData
+    this.log.getInto('BoardData#toDebugString');
+    var ret;
+    ret =  this.bid;
+    ret += ',' + (this.turn ? 't' : 'f');
+    ret += ',' + this.board;
+    ret += ',' + this.black;
+    ret += ',' + this.white;
+    this.log.debug('returning : ' + ret);
+    this.log.goOut();
+    return ret;
   }
-      
 });
 

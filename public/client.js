@@ -55,10 +55,10 @@ var Slice = Class.create(Hash, {
     this.logObj.getInto('Slice#toDebugHtml');
     var ret = '<table class="slice">';
     this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
-    this.logObj.debug('values : ' + Object.toJSON(this.values()));
+    this.logObj.debug('values : ' + this.values().invoke('toDebugString').join('::'));
     this.keys().each(function(key){
       this.logObj.debug('pair.key: ' + Object.toJSON(key));
-      this.logObj.debug('pair.value: ' + Object.toJSON(this.get(key)));
+      this.logObj.debug('pair.value: ' + this.get(key).toDebugString());
       ret += '<tr>';
       ret += '<td>' + key + '</td>';
       if (!this.get(key)){
@@ -792,18 +792,18 @@ var Handler = Class.create({
       //this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
     }
-    this.logObj.debug('slice : ' + Object.toJSON(slice));
+    this.logObj.debug('slice : ' + slice.toDebugString());
     this.logObj.debug('slice constructor : ' + Object.toJSON(slice.constructor));
     this.logObj.debug('slice.keys : ' + (slice.keys().join(',')));
     //slice = $H(slice);
     //if(slice && !slice.constructor) slice = $H(slice);
     //this.logObj.debug('slice constructor 2 : ' + Object.toJSON(slice.constructor));
     if(slice){
-      this.logObj.debug('slices[' + value + '] : ' + Object.toJSON(slice));
+      this.logObj.debug('slices[' + value + '] : ' + slice.toDebugString());
       this.logObj.debug('slice.keys : ' + (slice.keys().join(',')));
       slice.each(function(pair){
         this.logObj.debug('key : ' + Object.toJSON(pair.key));
-        this.logObj.debug('value : ' + Object.toJSON(pair.value));
+        this.logObj.debug('value : ' + pair.value.toDebugString());
       }.bind(this));
       delta['mode']  = 'review';
       delta['bid']   = value.toString();
