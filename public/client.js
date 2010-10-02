@@ -327,7 +327,7 @@ var Store = Class.create(Hash, {
       onSuccess : function onSuccess_getMsg(response){
         this.logObj.getInto('onSuccess_getMsg');
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
-        var data= MessagePack.unpack(response.responseText);
+        var data= msgpack.unpack(response.responseText);
         this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data, 7);
         this.logObj.goOut();
@@ -381,7 +381,7 @@ var Store = Class.create(Hash, {
       onSuccess : function onSuccess_registBoard(response){
         this.logObj.getInto('Store#onSuccess_registBoard');
         this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
-        var data= MessagePack.unpack(response.responseText);
+        var data= msgpack.unpack(response.responseText);
         this.logObj.debug('result of registBoard :<br> unpacked responseText : ' + Object.toJSON(data));
           // この出力例：
           //  {"prevMoves": [{"promote": "f", "m_to": "96", "piece": "P", "bid": "1", "mid": 5, "m_from": "97", "nxt_bid": 73630}],
@@ -1063,7 +1063,7 @@ var DbAccessor = Class.create({
        onSuccess : function onSuccess_getBids(response){
          logObj.getInto('onSuccess_getBids');
          logObj.debug('responseText : ' + Object.toJSON(response.responseText));
-         var data = MessagePack.unpack(response.responseText);
+         var data = msgpack.unpack(response.responseText);
          logObj.debug('unpacked responseText : ' + Object.toJSON(data));
          $('bids').update(Object.toJSON(data));
 	 logObj.goOut();

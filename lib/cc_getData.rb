@@ -106,12 +106,22 @@ class CacheTest
 
   # @gottenの出力を読みやすく整形する
   def log_format(obj)
-    ret = ''
+    ret = "board :\n"
     # obj は hash
-    obj.each{|k, v|
-      ret += k + " :\n"
-      # v は array. その要素はhash
-      ret += v.map{|h| h.values.map{|e| e.to_s }.join(',') }.join('::')
+      # obj['board'] は array. その要素はhash
+    ret += obj['board'].map{|bh| bh.to_a_with_order([:bid,:turn,:board,:black,:white]).join(',') }.join("\n")
+
+    ret += "\nnextMoves :\n"
+    nmgrp = obj['nextMoves'].group_by{|m| m[:bid] }.sort
+    nmgrp.each{|bid, moves|
+      ret += moves.map{|bh| bh.to_a_with_order([:bid,:mid,:m_from,:m_to,:piece,:promote,:nxt_bid]).join(',') }.join("::")
+      ret += "\n"
+    }
+
+    ret += "\nprevMoves :\n"
+    nmgrp = obj['prevMoves'].group_by{|m| m[:bid] }.sort
+    nmgrp.each{|bid, moves|
+      ret += moves.map{|bh| bh.to_a_with_order([:bid,:mid,:m_from,:m_to,:piece,:promote,:nxt_bid]).join(',') }.join("::")
       ret += "\n"
     }
       ret
