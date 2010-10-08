@@ -77,7 +77,8 @@ var Slice = Class.create(Hash, {
   toDebugString : function toDebugString(){ // Slice
     this.logObj.getInto('Slice#toDebugString');
     var ret = '';
-    this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
+    this.logObj.debug('keys : ' + JSON.stringify(this.keys()));
+    //this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
     // this.logObj.debug('values : ' + Object.toJSON(this.values()));
     this.keys().each(function(key){
       var obj = this.get(key);
