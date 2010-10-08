@@ -159,7 +159,8 @@ var Book = Class.create({
 	// 出力 なし
 	//   だが、ajaxのresponsが帰ってきたらthis.bookに値を格納する
   getBook : function getBook(arg_kid){ // Book
-    this.log.getInto(); 
+    this.log.getInto('Book#getBook'); 
+    this.log.debug('kid : ' + arg_kid);
     this.kid = arg_kid;
     var request = new Ajax.Request('/book', {
          method: 'get',
@@ -172,7 +173,7 @@ var Book = Class.create({
       asynchronous : false,
       onSuccess : function onSuccess_getBook(response){
         this.log.getInto('Book#onSuccess_getBook');
-        var data= MessagePack.unpack(response.responseText);
+        var data= msgpack.unpack(response.responseText);
         this.log.debug('result of getBook :<br> unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data);
         this.log.debug('response read done : ');
@@ -207,7 +208,7 @@ var Book = Class.create({
       onSuccess : function onSuccess_postBook(response){
         this.log.getInto('Book#onSuccess_postBook');
         this.log.debug('responseText : ' + Object.toJSON(response.responseText));
-        var data= MessagePack.unpack(response.responseText);
+        var data= msgpack.unpack(response.responseText);
         this.log.debug('result of postBook :<br> unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data);
         this.showBook(data.foundCnt);
