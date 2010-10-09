@@ -30,6 +30,11 @@ class DbAccessor
     @promote	= @params['promote']
     @oldbid	= @params['oldbid']
     @kid	= @params['kid']
+    @moves	= @params['moves']
+    @player1	= @params['player1']
+    @player2	= @params['player2']
+    @win	= @params['win']
+    @date	= @params['date']
 
     @data_name = %w|bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
     @masked_data_name = []
@@ -154,7 +159,7 @@ class DbAccessor
 #              1 以降 movesレコードのハッシュ
   def post_book
     @logger.debug { "post_book : query : #{queries['pbook']}" } 
-    result = DB[legal_check].all
+    result = DB[queries['pbook']].all
     @logger.debug { "post_book : result.inspect : #{result.inspect}" } 
     return result.to_msgpack
   end

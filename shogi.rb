@@ -192,6 +192,15 @@ get '/book' do
 end
 
 # 棋譜を入力
+# parameter : 棋譜とメタデータのテキスト
+#   moves : 指し手を羅列した文字列
+#   player1 : 先手の名前の文字列
+#   player2 : 後手の名前の文字列
+#   win     : 数値、1 -> 先手勝ち、2 -> 後手勝ち
+#   date    : 対局日
+# 機能： クライアントから送られた棋譜をkifsに登録する
+# 出力形式： 
+# 
 post '/book' do
     logger2.debug { ' ----------  into post book' }
     logger2.debug { 'params : ' + params.inspect }

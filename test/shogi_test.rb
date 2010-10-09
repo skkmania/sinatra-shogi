@@ -1,6 +1,8 @@
+require 'rubygems'
 require 'shogi'
 require 'test/unit'
 require 'rack/test'
+require 'mocha'
 
 set :environment, :test
 
@@ -84,5 +86,18 @@ class ShogiTest < Test::Unit::TestCase
   def test_get_book
     get '/book', { 'kid' => 1 }
     assert last_response.ok?
+  end
+
+  def test_post_book
+    param = [[77,76,'P',false],[33,34,'p',false]]
+    m = MessagePack.pack(param)
+    DB.stubs(:[]).returns(param)
+    Array.any_instance.stubs(:all).returns(param)
+    post '/book', { 'moves' => m, 'player1' => 'sente', 'player2' => 'gote',
+                    'win' => 1, 'date' => '2010/5/5' }
+    assert last_response.ok?
+    assert MessagePack.unpack(last_response.body)[0][0] == 77
+    #assert MessagePack.unpack(last_response.body)['player1'] == "sente"
+    #assert MessagePack.unpack(last_response.body)['player2'] == "gote"
   end
 end
