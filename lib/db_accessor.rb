@@ -12,7 +12,7 @@ class DbAccessor
   def initialize(param, logger)
     @logger = logger
     @logger.debug { 'DbAccessor new : param : ' + param.to_s }
-    @logger.debug { 'DbAccessor new : param bid : ' + (param['bid'] or 'nothing') }
+    @logger.debug { "DbAccessor new : param bid : #{param['bid'] or 'nothing'}" }
     @params	= param
     @bid	= @params['oldbid']
     @name	= @params['name']
@@ -45,6 +45,8 @@ class DbAccessor
     @gotten = {}
     @logger.debug { 'DbAccessor new : leaving : ' }
   end
+
+  attr_accessor :gotten, :logger, :masked_data_name
 
   def queries
     bids_expr = @bids.join(',').gsub('bid','')
