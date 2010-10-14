@@ -58,11 +58,28 @@ class DbAccessorTest < Test::Unit::TestCase
     assert MessagePack.unpack(last_response.body)['prevMoves'][0]['promote'] == "f"
   end
 
+  def test_send_query
+    params = { 'kid' => 1 }
+    dba = DbAccessor.new(params, @@logger)
+    result = dba.send_query('select 1 as one;')
+    puts result.inspect
+    assert_equal 1, result.size
+  end
+
+  def test_get_kifs_data
+    params = { 'kid' => 1 }
+    dba = DbAccessor.new(params, @@logger)
+    result = dba.send_query('select * from kifs where kid = 1;')
+    puts result.inspect
+    assert_equal 1, result.size
+  end
+
   def test_get_book
     params = { 'kid' => 1 }
     dba = DbAccessor.new(params, @@logger)
-    assert_equal  "select * from get_book(1);", dba.queries['book']
+    assert_equal  "select * from get_book_with_meta(1);", dba.queries['book']
     res = MessagePack.unpack(dba.get_book)
+    puts res.inspect
     assert res.size > 0
   end
 
