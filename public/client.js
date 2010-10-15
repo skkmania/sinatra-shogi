@@ -703,6 +703,10 @@ var Handler = Class.create({
     this.readBookArea.initOnClick();
     this.book = new Book(this);
     this.book.showBookForm();
+    // 棋譜登録用のエリア
+    this.postBookArea = new Area(this, this.logObj,'postBook', 'PostBook',{position:[1050,50], width:130, height:600});
+    this.postBookArea.initOnClick();
+    this.book.showInputBox();
     // dataStoreのdebug dump用のエリア
     this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[10,580], width:830, height:270});
     this.logObj.debug('areas were initialized');

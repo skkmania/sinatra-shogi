@@ -111,7 +111,7 @@ def txt2ary(txt)
                     /反則/ =~ line }
   $logger.error { "after delete : ar.size -> #{ar.size} : ar.to_s -> #{ar.to_s}" }
 
-  ar.each{|e| $logger.error { e.to_s } }
+  ar.each{|e| $logger.debug { e.to_s } }
 
 
   sb = Shougiban.new

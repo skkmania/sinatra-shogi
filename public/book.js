@@ -28,9 +28,12 @@ var Book = Class.create({
     var textarea = new Element('textarea',{ id:this.textAreaId, cols:20, rows:20,className:'book' });
     var button = new Element('input',{ id:'bookBack', type:'button', value:'post',className:'book' });
     button.observe('click', function(){
+      this.writtenContent = textarea.value;
+      this.log.debug('content: ' + this.writtenContent);
       if(this.legalCheck()){
         this.postBook();
       } else {
+        this.showError();
       }
       return false;
     }.bind(this));
@@ -48,11 +51,23 @@ var Book = Class.create({
 	// 出力例 : 7776Pf3334pf2726Pf8384pf8822Bt
   legalCheck: function legalCheck(){ // Book
     this.log.getInto('Book#legalCheck');
-    var bookText = $(this.textAreaId).value;
+    //var bookText = $(this.textAreaId).value;
+    //this.log.debug('written content: ' + bookText);
     var ret = true;
     this.log.debug('returning : ' + ret);
     this.log.goOut();
     return ret;
+  },
+	/*
+	 * showError()
+	 */
+	// 機能：this.kifがルールに則っていないときにエラーを表示する
+	// 入力 : なし
+	// 出力 : なし
+  showError: function showError(){ // Book
+    this.log.getInto('Book#showError');
+    $(this.textAreaId).value = 'Error!';
+    this.log.goOut();
   },
 	/*
 	 * readDB
@@ -231,7 +246,7 @@ var Book = Class.create({
 	// getBookとの違い : 何手目までが既存手であったかをserverから教えてもらっている
   postBook : function postBook(){ // Book
     this.log.getInto('Book#postBook'); 
-    var bookText = $(this.textAreaId).value;
+    //var bookText = $(this.textAreaId).value;
     var request = new Ajax.Request('/book', {
          method: 'post',
          onCreate: function(request, response){
@@ -239,7 +254,8 @@ var Book = Class.create({
                  request.transport.overrideMimeType("text/plain; charset=x-user-defined");
              }
          },
-      parameters : { text: bookText },
+      parameters : { text: this.writtenContent },
+      //parameters : { text: bookText },
       asynchronous : true,
       onSuccess : function onSuccess_postBook(response){
         this.log.getInto('Book#onSuccess_postBook');

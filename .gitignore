@@ -6,3 +6,4 @@ log/*.*
 img/*.*
 public/lib/*.*
 public/lib
+test/unit/sample/*.*
