@@ -164,14 +164,22 @@ var Book = Class.create({
 	// 入力 数値 foundCnt 既存の手の手数
 	// 出力 なし
   showBook : function showBook(foundCnt){ // Book
-    this.log.getInto(); 
+    this.log.getInto("Book#showBook"); 
     var ul = new Element('ul',{ className:'book',listStyleType:'decimal' });
     this.log.debug('ul created : ' + ul.className);
-    this.book.each(function(m, idx){
+    // add metadata
+    $w('kid gdate black white tesu result').each(function(e){
+      var elm = new Element('li', { className: "metabookdata" }); 
+      elm.innerHTML = this[e];
+      ul.appendChild(elm);
+    }.bind(this));
+    // add moves 
+    this.log.debug('moves size : ' + this.moves.size());
+    this.moves.each(function(m, idx){
       this.log.debug('idx : ' + idx + ', m : ' + m.toDelta());
       var cn = 'book';
       if(foundCnt && idx <= foundCnt) cn += ' found';
-      var elm = new Element('li',{ className: cn });
+      var elm = new Element('li',{ id: 'km_'+m.nxt_bid, className: cn });
       elm.innerHTML = m.toKanji();
       ul.appendChild(elm);
     }.bind(this));

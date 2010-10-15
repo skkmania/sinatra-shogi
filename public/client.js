@@ -700,6 +700,7 @@ var Handler = Class.create({
     this.nextArea.initOnClick();
     // 棋譜読み込み用のエリア
     this.readBookArea = new Area(this, this.logObj,'readBook', 'ReadBook',{position:[900,50], width:130, height:600});
+    this.readBookArea.initOnClick();
     this.book = new Book(this);
     this.book.showBookForm();
     // dataStoreのdebug dump用のエリア
@@ -884,6 +885,10 @@ var Handler = Class.create({
         } else {
           this.logObj.fatal('clicked move was not found');
         }
+        break;
+      case 'readBook' :
+        this.logObj.getInto('clicked innerHTML is : ' + inner);
+        window.gameController.sendDelta( this.makeReviewDelta(target) );
         break;
       default :
         break;
