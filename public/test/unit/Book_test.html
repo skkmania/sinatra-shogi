@@ -9,7 +9,7 @@
       google.load("prototype", "1.6.0.3");
       google.load("scriptaculous", "1.8.2");
     </script>
-<script src="../../lib/MessagePack-JS/msgpack.js"></script>
+<script src="../../lib/msgpack.js"></script>
 <script src="../../lib/scriptaculous/resizable.js"></script>
 <script src="../../lib/livepipe/livepipe.js"></script>
 <script src="../../lib/livepipe/window.js"></script>
@@ -108,10 +108,13 @@
     areaObj.handler = handler;
     var b = new Book(handler, 'test3');
     assertEqual( '', b.toDebugString() );
-    var ary =  [{"promote":false, "m_to":76, "bid":1, "piece":"P", "m_from":77, "mid":0, "cnt":1, "nxt_bid":2}, {"promote":false, "m_to":34, "bid":2, "piece":"p", "m_from":33, "mid":0, "cnt":2, "nxt_bid":3}, {"promote":false, "m_to":26, "bid":3, "piece":"P", "m_from":27, "mid":0, "cnt":3, "nxt_bid":4}];
+    var ary =  [{"kid" : 1, "tesu" : 126, "result" : "w", "black" : "羽生善治", "white" : "谷川浩司", "gdate" : "2003-09-08", "kif" : "0,0,77,76,P,f,2:2,0,33,34,p,f,3:3,0,27,26,P,f,4:4,0,41,32,g,f,5:5,0,69,78,G,f,6"}];
     var result = b.readDB(ary);
-    assertEqual( 1, result[0].bid );
-    assertEqual( 2, result[1].bid );
+    logObj.debug('moves : ' + JSON.stringify(b.moves));
+    assertEqual( 1, b.kid );
+    assertEqual( 126, b.tesu );
+    assertEqual( "w", b.result );
+    assertEqual( 5, b.moves.size() );
   } },
 
   testBookShowBook : function() {  with( this )  {
@@ -170,10 +173,10 @@
     var b = new Book(handler, 'test7');
     assertEqual( '', b.toDebugString() );
     b.getBook(1);
-    if (b.book[0])
-      assertEqual( 1, b.book[0].bid );
-    if (b.book[1])
-      assertEqual( 2, b.book[1].bid );
+    assertEqual( 1, b.kid );
+    assertEqual( 126, b.tesu );
+    assertEqual( "w", b.result );
+    assertEqual( 126, b.moves.size() );
   } },
 
   testBookPostBook : function() {  with( this )  {

@@ -81,6 +81,13 @@ class DbAccessorTest < Test::Unit::TestCase
     res = MessagePack.unpack(dba.get_book)
     puts res.inspect
     assert res.size > 0
+    assert_equal 1,   res[0]["kid"]
+    assert_equal 126, res[0]["tesu"]
+    assert_equal 'w', res[0]["result"]
+    assert_equal 126, res[0]["kif"].split(':').size
+    assert_equal '羽生善治', res[0]["black"]
+    assert_equal '谷川浩司', res[0]["white"]
+    assert_equal '2003-09-08', res[0]["gdate"]
   end
 
   def test_post_book

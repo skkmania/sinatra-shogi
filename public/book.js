@@ -57,6 +57,34 @@ var Book = Class.create({
 	/*
 	 * readDB
 	 */
+	// DBからのresponseTextを解釈してメタデータとmoveの配列として読む
+	// それは、自身のbookプロパティとして参照する。
+	// 入力 配列 要素はjsのオブジェクトひとつだけ
+        //    key : value
+        //    kid : 数値
+        //    tesu:
+        //    result:
+        //    black:
+        //    white:
+        //    gdate
+        //    kif: 文字列 指し手を:区切りで並べてある。
+	//    順序は棋譜の手数順である。
+	//     例 : "1,0,77,76,P,f,2:2,0,33,34,p,f,3:3,0,27,26,P,f,4:4,0,41,32,g,f,5:5,0,69,78,G,f,6"
+	// 出力 配列 moveオブジェクトの配列
+  readDB : function readDB(ary){ // Book
+    this.log.getInto('Book#readDB'); 
+    Object.extend(this, ary[0]);
+    this.moves = this.kif.split(':').map(function(e){
+      return new Move(this.log).fromRecord(e.split(','));
+    }.bind(this));
+    this.log.debug('returning : ' + this.moves.invoke('toDelta').join(':'));
+    this.log.goOut();
+    return this.moves;
+  },
+	/*
+	 * readDB_old
+	 */
+        // 2010.10.14 仕様変更への対応
 	// DBからのresponseTextをmoveの配列として読む
 	// それは、自身のbookプロパティとして参照する。
 	// 入力 配列 要素はmoveを意味するjsのオブジェクト DBからのレスポンス
@@ -69,7 +97,7 @@ var Book = Class.create({
 	//   {"promote":false, "m_to":26, "bid":3, "piece":"P",
 	//    "m_from":27, "mid":0, "cnt":3, "nxt_bid":4}]
 	// 出力 配列 moveオブジェクトの配列
-  readDB : function readDB(ary){ // Book
+  readDB_old : function readDB_old(ary){ // Book
     this.log.getInto('Book#readDB'); 
     var ret = ary.map(function(e){
       return new Move(this.log).fromObj(e);
@@ -174,7 +202,7 @@ var Book = Class.create({
       onSuccess : function onSuccess_getBook(response){
         this.log.getInto('Book#onSuccess_getBook');
         var data= msgpack.unpack(response.responseText);
-        this.log.debug('result of getBook :<br> unpacked responseText : ' + Object.toJSON(data));
+        this.log.debug('result of getBook :<br> unpacked responseText : ' + JSON.stringify(data));
         this.readDB(data);
         this.log.debug('response read done : ');
         this.log.goOut();

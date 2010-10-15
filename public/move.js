@@ -59,13 +59,13 @@ var Move = Class.create({
 
   // moves テーブルのレコードを配列にしたものを受け取ってその値をとりいれる
   fromRecord : function fromRecord_Move(ary){ // Move
-    this.bid     = ary[0];
-    this.mid     = ary[1];
-    this.from    = ary[2];
-    this.to      = ary[3];
+    this.bid     = parseInt(ary[0]);
+    this.mid     = parseInt(ary[1]);
+    this.from    = parseInt(ary[2]);
+    this.to      = parseInt(ary[3]);
     this.piece   = ary[4];
     this.promote = (ary[5] == 't');
-    this.nxt_bid  = ary[6];
+    this.nxt_bid  = parseInt(ary[6]);
     return this;
   },
 
