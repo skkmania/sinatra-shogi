@@ -3,6 +3,7 @@
 */*/.swp
 ../log/*.*
 log/*.*
+lib/log/*.*
 img/*.*
 public/lib/*.*
 public/lib
