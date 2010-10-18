@@ -277,3 +277,46 @@ def bytes_to_query_text_type(kifu_data, tesu_of_this)
   ret
 end
 
+# bytes_to_array_of_hash
+#   sequelのmulti_insertに渡すハッシュの配列を作成して返す
+# 入力
+# kifu_data
+# tesu_of_this
+# 出力
+def bytes_to_array_of_hash(kifu_data, tesu_of_this)
+  ret = []
+  old_board = $board_2ch.clone
+  old_black = ''
+  old_white = ''
+  1.upto(tesu_of_this) do |i|
+
+    from_pos_2ch = kifu_data[(i-1)*2].to_i
+    to_pos_2ch = kifu_data[(i-1)*2+1].to_i
+    turn = (i%2 == 1)
+    piece, promote = move(from_pos_2ch, to_pos_2ch, turn)
+
+    from_pos_db = henkan(from_pos_2ch)
+    to_pos_db = henkan(to_pos_2ch)
+
+    ret.push( {:tesu => i, :m_from => from_pos_db, :m_to => to_pos_db,
+               :piece => piece, :promote => promote, :turn => turn,
+               :black_hand => old_black, :board => old_board[1..-1].join(''),
+               :white_hand => old_white } )
+    
+    old_black = stand_to_str($black_stand)
+    old_white = stand_to_str($white_stand)
+    old_board = $board_2ch.clone
+
+  end
+
+  $black_hand = stand_to_str($black_stand)
+  $white_hand = stand_to_str($white_stand)
+  $board_2ch.shift
+  ret.push( {:tesu => tesu_of_this+1, :m_from => nil, :m_to => nil,
+             :piece => nil, :promote => nil,
+             :turn => (tesu_of_this + 1).odd? ,
+             :black_hand => $black_hand, :board => $board_2ch.join(''),
+             :white_hand => $white_hand } )
+  ret
+end
+

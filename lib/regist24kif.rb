@@ -10,21 +10,21 @@
 #     file_nameは24の棋譜のテキストファイル。utf8で記述されていること。
 
 require  '24kifu_tools.rb'
-require  '../db2ch/2chkifutools.rb'
-require  '../lib/db_connect.rb'
+require  '2chkifutools.rb'
+require  'db_connect.rb'
 $logger24 = Logger.new('log/regist24kif.log')
 
 
 def create_query(meta_data, kifu_bytedata)
-  query = 'delete from kifread;'
-  query += 'delete from new_boards;'
-  query += 'delete from new_moves;'
-  query += bytes_to_query_text_type(kifu_bytedata, kifu_bytedata.length/2)
-  query += "select kif_insert(null, '#{meta_data['g']}', '#{meta_data['b']}', '#{meta_data['w']}', '#{meta_data['r']}');"
+  r1 = 'delete from kifread;'
+  r1 += 'delete from new_boards;'
+  r1 += 'delete from new_moves;'
+  r1 += bytes_to_query_text_type(kifu_bytedata, kifu_bytedata.length/2)
+  r2 = "select into workrow * from kif_insert(null, '#{meta_data['g']}', '#{meta_data['b']}', '#{meta_data['w']}', '#{meta_data['r']}');"
     # こちらから登録するときは最初の引数（id on 2ch)は null とする
-  query += 'delete from kifread;'
-  $logger24.debug { query }
-  query
+  $logger24.debug { "r1 : #{r1}\nr2 : #{r2}" }
+  #[r1, r2]
+  r1 + r2
 end
 
 def insert_on_db(query)
@@ -40,6 +40,28 @@ def insert_on_db(query)
   end
 end
 
+def touroku(meta_data, kifu_bytedata)
+  begin
+    r1 = 'delete from kifread;'
+    r1 += 'delete from new_boards;'
+    r1 += 'delete from new_moves;'
+    db = connect_db
+    kekka = db.run(r1)
+    $logger24.debug { "regist24kif.rb: kekka of r1 is #{kekka}" }
+    ha = bytes_to_array_of_hash(kifu_bytedata, kifu_bytedata.length/2)
+    $logger24.debug { "ha is #{ha.inspect}" }
+    db[:kifread].insert_multiple(ha)
+    r2 = "select * from kif_insert(null, '#{meta_data['g']}', '#{meta_data['b']}', '#{meta_data['w']}', '#{meta_data['r']}');"
+    kekka = db.run(r2)
+    $logger24.debug { "regist24kif.rb: kekka of r2 is #{kekka}" }
+  rescue
+    db.disconnect
+  else
+    print kekka
+    db.disconnect
+  end
+end
+  
 # main
 unless FileTest.exist?(  filename = ARGV[0] )
   puts '#{filename} not found.'
@@ -59,10 +81,11 @@ else
   $logger24.debug { "the length of this byte is : #{kifu_bytedata.length}" }
 
   # メタデータとバイト列を渡してSQL queryに変換
-  query = create_query(meta_data, kifu_bytedata)
-  $logger24.debug { "those data is made into a query: \n #{query}" }
+  #query = create_query(meta_data, kifu_bytedata)
+  #$logger24.debug { "those data is made into a query: \n #{query}" }
 
   # 生成したqueryをSQLサーバにて実行
-  insert_on_db(query)
+  #insert_on_db(query)
+  touroku(meta_data, kifu_bytedata)
 end
 

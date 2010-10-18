@@ -1,4 +1,4 @@
-require 'shogi'
+require 'shogi.rb'
 require 'test/unit'
 require 'rack/test'
 

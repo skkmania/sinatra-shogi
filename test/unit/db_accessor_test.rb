@@ -1,5 +1,5 @@
 require 'rubygems'
-#require 'get84.rb'
+require 'get84.rb'
 #require 'lib/db_accessor.rb'
 require 'shogi.rb'
 require 'test/unit'
@@ -104,13 +104,13 @@ class DbAccessorTest < Test::Unit::TestCase
   end
 =end
   def test_post_book
-    params = { 'text' => File.open("test/unit/sample/s02.kif","r").readlines.join }
+    params = { 'text' => File.open("/home/skkmania/Dropbox/shogi/kif/vs3ken/2009051801-fiasco-kati.kif","r").readlines.join }
     dba = DbAccessor.new(params, @@logger)
     res = MessagePack.unpack(dba.post_book)
     puts res.inspect
     assert res.size > 0
-    assert_equal 1,   res[0]["kid"]
-    assert_equal 126, res[0]["tesu"]
+    # assert_equal 1,   res[0]["kid"]
+    assert_equal  72, res[0]["tesu"]
     assert_equal 'w', res[0]["result"]
   end
 end

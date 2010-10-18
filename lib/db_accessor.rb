@@ -79,7 +79,8 @@ class DbAccessor
     "boardPointAverage"=> "select bid, coalesce(sum(bpoint), 0) as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
     "boardComments"	=> "select bid, bcomment,userid,uname from board_comments natural inner join users where bid in ( #{bids_expr} ) order by userid;",
     "book"		=> "select * from get_book_with_meta(#{@kid});",
-    "pbook"		=> "select * from post_book(#{@post_book_query});"
+    "pbook"		=> "select * from post_book(E'#{@post_book_moves_query.gsub(/'/,%q|\\\\'|)}', '#{@post_book_meta_query}');"
+    #"pbook"		=> "select * from post_book(E'#{@post_book_moves_query.gsub(/'/,%q|\\\\'|)}', '#{@post_book_meta_query.gsub(/'/,%q|\\\\'|)}');"
     }
   end
   
@@ -173,10 +174,24 @@ class DbAccessor
   def post_book
     @logger.debug { "into post_book" } 
     @logger.debug { "kif text : " + @params['text'] }
-    @post_book_query = create_query(kif_info(@params['text']), txt2movebytes(@params['text']))
-    @logger.debug { "query : " + @post_book_query }
-    result = DB[@post_book_query].all
+    meta_data = kif_info(@params['text'])
+    byte_data = txt2movebytes(@params['text'])
+
+    r1 = 'delete from kifread;'
+    r1 += 'delete from new_boards;'
+    r1 += 'delete from new_moves;'
+    result = DB.run(r1)
+    @logger.debug { "result of r1 : #{result.inspect}" } 
+
+    ha = bytes_to_array_of_hash(byte_data, byte_data.length/2)
+    result = DB[:kifread].insert_multiple(ha)
+
+    r2 = "select * from kif_insert(null, '#{meta_data['g']}', '#{meta_data['b']}', '#{meta_data['w']}', '#{meta_data['r']}');"
+    result = DB[r2].all
+    @logger.debug { "result of r2 : #{result.inspect}" } 
+    result = DB["select * from get_book_with_meta(#{result[0][:kid]});"].all
     @logger.debug { "post_book : result.inspect : #{result.inspect}" } 
+    result[0][:gdate] = result[0][:gdate].to_s
     return result.to_msgpack
   end
 
