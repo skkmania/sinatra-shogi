@@ -1,21 +1,23 @@
+require 'rubygems'
+require 'get84.rb'
+#require 'lib/db_accessor.rb'
 require 'shogi.rb'
 require 'test/unit'
-require 'rack/test'
-
-LOGGER = Logger.new("log/test_db_accessor.log")
+require 'mocha'
 
 class DbAccessorTest < Test::Unit::TestCase
 
-  def test_regist_board
-    delete_move({'from'=>13,'bid'=>20,'piece'=>'p','promote'=>'f','to'=>14})
-    delete_board({ 'black'=>'','board'=>'lxxpxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL','turn'=>'t','white'=>''})
-    param = { 'level' => 3,'range' => 'full', 'black'=>'','board'=>'lxxpxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL','from'=>13,'oldbid'=>20,'piece'=>'p','promote'=>'f','to'=>14,'turn'=>'t','white'=>''}
-    dbA = DbAccessor.new(param, LOGGER)
-    res = dbA.regist_board
-    unpacked = MessagePack.unpack res
-    LOGGER.debug(unpacked.inspect)
-    assert unpacked.size > 0
-    assert unpacked['board'][0]['bid'] == unpacked['prevMoves'][0]['nxt_bid']
+  @@logger = Logger.new('log/db_accessor_test.log')
+
+  def test_get_data
+    params = { 'bid' => 1, 'oldbid' => 1 , 'uid' =>1, 'level' => 3, 'mask' => 15, 'range' => 'full' }
+    dba = DbAccessor.new(params, @@logger)
+    assert_equal ['bids','board','nextMoves','prevMoves'], dba.masked_data_name
+    dba.get_data
+    assert dba.gotten['bids'].size > 0
+    assert dba.gotten['board'].size > 0
+    assert dba.gotten['nextMoves'].size > 0
+    assert dba.gotten['prevMoves'].size > 0
   end
 
   def delete_board(b)
@@ -30,19 +32,6 @@ class DbAccessorTest < Test::Unit::TestCase
              piece = '#{m['piece']}' and promote = '#{m['promote']}'"
     DB[query].all
   end
-
-  def test_get_book
-    param = { 'kid' => 1 }
-    dbA = DbAccessor.new(param, LOGGER)
-    res = dbA.get_book
-    unpacked = MessagePack.unpack res
-    LOGGER.debug(unpacked.inspect)
-    assert unpacked.size > 0
-  end
-end  # of class DbAccessorTest
-
-=begin
-
   # post bidには２つの機能がある。それぞれを以下でテストする
   # なぜこんなことになっているか
   #   board情報をDBに投げてみないと、それが新規か既存かわからない
@@ -64,7 +53,64 @@ end  # of class DbAccessorTest
     delete_board({ 'black'=>'','board'=>'lxxpxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL','turn'=>'t','white'=>''})
     post '/bid', { 'level' => 3,'range' => 'full', 'black'=>'','board'=>'lxxpxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL','from'=>13,'oldbid'=>20,'piece'=>'p','promote'=>'f','to'=>14,'turn'=>'t','white'=>''}
     assert last_response.ok?
-    assert last_response.body.include?('bid')
+    assert MessagePack.unpack(last_response.body)['prevMoves'][0]['m_from'] == "13"
+    assert MessagePack.unpack(last_response.body)['prevMoves'][0]['m_to'] == "14"
+    assert MessagePack.unpack(last_response.body)['prevMoves'][0]['promote'] == "f"
+  end
+
+  def test_send_query
+    params = { 'kid' => 1 }
+    dba = DbAccessor.new(params, @@logger)
+    result = dba.send_query('select 1 as one;')
+    puts result.inspect
+    assert_equal 1, result.size
+  end
+
+  def test_get_kifs_data
+    params = { 'kid' => 1 }
+    dba = DbAccessor.new(params, @@logger)
+    result = dba.send_query('select * from kifs where kid = 1;')
+    puts result.inspect
+    assert_equal 1, result.size
+  end
+
+  def test_get_book
+    params = { 'kid' => 1 }
+    dba = DbAccessor.new(params, @@logger)
+    assert_equal  "select * from get_book_with_meta(1);", dba.queries['book']
+    res = MessagePack.unpack(dba.get_book)
+    puts res.inspect
+    assert res.size > 0
+    assert_equal 1,   res[0]["kid"]
+    assert_equal 126, res[0]["tesu"]
+    assert_equal 'w', res[0]["result"]
+    assert_equal 126, res[0]["kif"].split(':').size
+    assert_equal '羽生善治', res[0]["black"]
+    assert_equal '谷川浩司', res[0]["white"]
+    assert_equal '2003-09-08', res[0]["gdate"]
+  end
+=begin
+  def test_post_book
+    param = [[77,76,'P',false],[33,34,'p',false]]
+    m = MessagePack.pack(param)
+    DB.stubs(:[]).returns(param)
+    Array.any_instance.stubs(:all).returns(param)
+    post '/book', { 'moves' => m, 'player1' => 'sente', 'player2' => 'gote',
+                    'win' => 1, 'date' => '2010/5/5' }
+    assert last_response.ok?
+    assert MessagePack.unpack(last_response.body)[0][0] == 77
+    #assert MessagePack.unpack(last_response.body)['player1'] == "sente"
+    #assert MessagePack.unpack(last_response.body)['player2'] == "gote"
+  end
+=end
+  def test_post_book
+    params = { 'text' => File.open("/home/skkmania/Dropbox/shogi/kif/vs3ken/2009051801-fiasco-kati.kif","r").readlines.join }
+    dba = DbAccessor.new(params, @@logger)
+    res = MessagePack.unpack(dba.post_book)
+    puts res.inspect
+    assert res.size > 0
+    # assert_equal 1,   res[0]["kid"]
+    assert_equal  72, res[0]["tesu"]
+    assert_equal 'w', res[0]["result"]
   end
 end
-=end
