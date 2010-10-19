@@ -192,14 +192,20 @@ get '/book' do
 end
 
 # 棋譜を入力
-# parameter : 棋譜とメタデータのテキスト
-#   moves : 指し手を羅列した文字列
-#   player1 : 先手の名前の文字列
-#   player2 : 後手の名前の文字列
-#   win     : 数値、1 -> 先手勝ち、2 -> 後手勝ち
-#   date    : 対局日
-# 機能： クライアントから送られた棋譜をkifsに登録する
-# 出力形式： 
+# parameter : 24形式の棋譜テキスト（棋譜とメタデータを含む）
+#   text : 文字列 .kifファイル全文
+# 機能： クライアントから送られた棋譜をkifs, boards, moves に登録し、
+#        レスポンスとして、kifsの１レコード（のhashのpack)を返す
+# 出力形式：以下の例をMessagePackでpackして得られる文字列
+#    [{"white"=>"fiasco",
+#      "result"=>"w",
+#      "gdate"=>"2009-12-11",
+#      "black"=>"sisi0531",
+#      "new_move"=>"111111",
+#      "id2ch"=>nil,
+#      "kid"=>202,
+#      "kif"=>"1,0,77,76,P,f,2:2,0,33,34,p,f,3:3,..と、:区切りで手数ぶん
+#      "tesu"=>98}]
 # 
 post '/book' do
     logger2.debug { ' ----------  into post book' }

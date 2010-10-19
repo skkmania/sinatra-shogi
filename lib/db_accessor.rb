@@ -79,8 +79,6 @@ class DbAccessor
     "boardPointAverage"=> "select bid, coalesce(sum(bpoint), 0) as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
     "boardComments"	=> "select bid, bcomment,userid,uname from board_comments natural inner join users where bid in ( #{bids_expr} ) order by userid;",
     "book"		=> "select * from get_book_with_meta(#{@kid});",
-    "pbook"		=> "select * from post_book(E'#{@post_book_moves_query.gsub(/'/,%q|\\\\'|)}', '#{@post_book_meta_query}');"
-    #"pbook"		=> "select * from post_book(E'#{@post_book_moves_query.gsub(/'/,%q|\\\\'|)}', '#{@post_book_meta_query.gsub(/'/,%q|\\\\'|)}');"
     }
   end
   
@@ -167,31 +165,44 @@ class DbAccessor
     return result.to_msgpack
   end
 
-# 入力(params) paramsのpbookキーで渡される。moveの配列を意味する文字列
-# 出力 配列(をmsgpackで固めた文字列)
-#   配列の要素 0 数字 foundCnt
-#              1 以降 movesレコードのハッシュ
+  #
+  # post_book
+  # 入力(params) paramsのtextキーで渡される。24kifファイルの全文
+  # 出力 kifsのレコードのハッシュ(をmsgpackで固めた文字列)
+  #
   def post_book
     @logger.debug { "into post_book" } 
-    @logger.debug { "kif text : " + @params['text'] }
-    meta_data = kif_info(@params['text'])
-    byte_data = txt2movebytes(@params['text'])
+    @logger.debug { "given kif text : " + @params['text'] }
 
+    # 受け取った棋譜ファイルを、メタデータと、指し手をバイト列にならべたものにする
+    meta_data = kif_info(@params['text'])
+    @logger.debug { "meta_data from kif : " + meta_data.inspect }
+    byte_data = txt2movebytes(@params['text'])
+    @logger.debug { "byte_data from kif : " + byte_data.inspect }
+
+    # DBに棋譜を登録する前準備
     r1 = 'delete from kifread;'
     r1 += 'delete from new_boards;'
     r1 += 'delete from new_moves;'
     result = DB.run(r1)
     @logger.debug { "result of r1 : #{result.inspect}" } 
 
+    # バイトデータをkifreadに登録するためのハッシュに変換
     ha = bytes_to_array_of_hash(byte_data, byte_data.length/2)
+    @logger.debug { "hash from byte_data : #{ha.inspect}" } 
+    # それをkifreadに登録
     result = DB[:kifread].insert_multiple(ha)
 
-    r2 = "select * from kif_insert(null, '#{meta_data['g']}', '#{meta_data['b']}', '#{meta_data['w']}', '#{meta_data['r']}');"
-    result = DB[r2].all
-    @logger.debug { "result of r2 : #{result.inspect}" } 
-    result = DB["select * from get_book_with_meta(#{result[0][:kid]});"].all
-    @logger.debug { "post_book : result.inspect : #{result.inspect}" } 
+    # kif_insertにより、kifreadからmoves,boards,kifsにデータを移す
+    result = DB[:kif_insert.sql_function(nil, meta_data['g'], meta_data['b'], meta_data['w'], meta_data['r'])].all
+    @logger.debug { "result of kif_insert : #{result.inspect}" } 
+
+    # responseを作成するために、登録した棋譜を改めて取得
+    result = DB[:get_book_with_meta.sql_function(result[0][:kid])].all
     result[0][:gdate] = result[0][:gdate].to_s
+    @logger.debug { "result of post_book : #{result.inspect}" } 
+
+    # msgpackして返す
     return result.to_msgpack
   end
 
