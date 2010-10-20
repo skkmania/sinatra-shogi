@@ -692,23 +692,35 @@ var Handler = Class.create({
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
     this.logObj.debug('areas are being initialized');
-    this.boardArea = new Area(this, this.logObj,'boardArea', 'Board',{position:[170,100], width:520, height:440});
-    this.boardArea.layoutContents();
-    this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:130, height:300});
+    // 前の手のエリア
+    this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:120, height:300});
     this.prevArea.initOnClick();
-    this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[700,100], width:130, height:400});
+    // 盤面のエリア
+    this.boardArea = new Area(this, this.logObj,'boardArea', 'Board',{position:[160,100], width:520, height:440});
+    this.boardArea.layoutContents();
+    // 次の手のエリア
+    this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
     this.nextArea.initOnClick();
+    // nextMovePoint用のエリア
+    this.nextMovePointArea = new Area(this, this.logObj,'nextMovePoint', 'NextMovePoint',{position:[850,100], width:130, height:400});
+    this.nextMovePointArea.initOnClick();
+    // nextMoveComment用のエリア
+    this.nextMoveCommentArea = new Area(this, this.logObj,'nextMoveComment', 'NextMoveComment',{position:[1010,100], width:180, height:400});
+    this.nextMoveCommentArea.initOnClick();
+    // boardPoint用のエリア
+    this.boardPointArea = new Area(this, this.logObj,'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
+    this.boardPointArea.initOnClick();
+    // boardComment用のエリア
+    this.boardCommentArea = new Area(this, this.logObj,'boardComment', 'BoardComment',{position:[10,580], width:700, height:100});
+    this.boardCommentArea.initOnClick();
     // 棋譜読み込み用のエリア
-    this.readBookArea = new Area(this, this.logObj,'readBook', 'ReadBook',{position:[900,50], width:130, height:600});
+    this.readBookArea = new Area(this, this.logObj,'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
     this.readBookArea.initOnClick();
     this.book = new Book(this);
     this.book.showBookForm();
-    // 棋譜登録用のエリア
-    this.postBookArea = new Area(this, this.logObj,'postBook', 'PostBook',{position:[1050,50], width:130, height:600});
-    this.postBookArea.initOnClick();
     this.book.showInputBox();
     // dataStoreのdebug dump用のエリア
-    this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[10,580], width:830, height:270});
+    this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[10,680], width:830, height:270});
     this.logObj.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';
