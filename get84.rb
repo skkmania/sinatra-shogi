@@ -2,7 +2,7 @@
   require 'sequel'
 
   # localhostへの接続
-  DB = Sequel.connect("postgres://skkmania:skkmania@localhost:5432/shogi84",
+  DB = Sequel.connect("postgres://skkmania:skkmania@ubu-pg84:5432/shogi84",
     :max_connections => 10, :logger => Logger.new('log/db.log'))
 
 =begin
