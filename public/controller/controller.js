@@ -200,6 +200,8 @@ GameController = Class.create({
         this.lookForParticipants();
         this.game = new ShogiGame(settings, this);
         break;
+      case 'gpsclient': // GPS将棋クライアントモード
+        break;
       case 'viewer': // 観戦モード
         break;
       default:
