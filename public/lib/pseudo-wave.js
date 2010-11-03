@@ -1,4 +1,12 @@
-// TODO
+ WS_URL = "ws://ubu-pg84:8081";
+        //WS_URL = "ws://localhost:8081";
+
+          function debug(message) {
+                  html = "<p><span class='time'>"+new Date()+"</span>"+message+"</p>"
+                  if ($('debug')){ $('debug').insert(html); }
+          }
+          debug("connecting to "+WS_URL+"...");
+
 gadgets = {};
 gadgets.util = {
   addEventListener: function(element, event, handler) {
@@ -31,6 +39,7 @@ Wave.prototype = {
     this.time = opt.time;
     this.viewer = opt.viewer;
     this.isInWaveContainer = opt.isInWaveContainer || false;
+    this.ws = new WebSocket(WS_URL);
   },
   getHost: function() {
     return this.host;
@@ -75,6 +84,26 @@ Wave.prototype = {
   }
 };
 wave = new Wave();
+          wave.ws.onopen = function() {
+                  debug("connected.");
+
+                  text = "first message from client";
+                  wave.ws.send(text);
+                  debug("message sent: "+text);
+          }
+
+          wave.ws.onclose = function() {
+                  debug("disconnected...");
+          }
+
+          wave.ws.onerror = function(msg) {
+                  debug("failed to connect："+msg);
+          }
+
+          wave.ws.onmessage = function(event) {
+                  debug("message received: "+event.data);
+                  $("#message").append("<p>"+event.data+"</p>");
+          }
 
 wave.Callback = function(callback, optContext) {
   this.initialize(callback, optContext);
