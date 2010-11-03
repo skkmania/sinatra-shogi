@@ -912,7 +912,7 @@ var Handler = Class.create({
     this.logObj.goOut();
   },
 
-  updateData : function updateData(target, uid, range, async){
+  updateData : function updateData(target, uid, range, async){ // Handler
       this.logObj.getInto(); 
       this.logObj.debug('target: ' + arguments[0]);
       this.logObj.debug('uid: ' + arguments[1]);
