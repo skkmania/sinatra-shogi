@@ -37,9 +37,11 @@
          {id:'handle0', src:"img/lib/window_close.gif"}));
         new Resizable('logger0',{handle:'handle0'});
         //logObj.setLevel(Log.ERROR);
-        if(wave) 
+        if(wave){
+          wave.log = logObj;
           window.gameController = new GameController({containerId:'shogi',
                'playerSetting':'review', 'gameConstructor':'shogi'}, logObj);
+        }
         // if (wave && wave.isInWaveContainer())
         if(wave) 
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
@@ -56,6 +58,7 @@
   </head>
   <body>
   <div id="debug"></div>
+  <div id="message"></div>
 
     <div id="test">
     </div>

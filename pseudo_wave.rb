@@ -47,7 +47,7 @@ class PseudoWaveConnection < Rev::WebSocket
 		@sid = $pubsub.subscribe {|data|
 			send_message data
 		}
-		$pubsub.publish("server: Hello, world!")
+		# $pubsub.publish("server: Hello, world!")
 		$record.each {|data| send_message data }
 	end
 

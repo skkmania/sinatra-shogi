@@ -5,7 +5,6 @@
                   html = "<p><span class='time'>"+new Date()+"</span>"+message+"</p>"
                   if ($('debug')){ $('debug').insert(html); }
           }
-          debug("connecting to "+WS_URL+"...");
 
 gadgets = {};
 gadgets.util = {
@@ -71,8 +70,10 @@ Wave.prototype = {
   isInWaveContainer: function() {
     return this.isInWaveContainer;
   },
+/*
   log: function(message) {
   },
+*/
   setModeCallback: function(callback, optContext) {
     this.modeCallback = callback;
   },
@@ -84,26 +85,31 @@ Wave.prototype = {
   }
 };
 wave = new Wave();
-          wave.ws.onopen = function() {
-                  debug("connected.");
+if(wave.log) wave.log.debug("connecting to "+WS_URL+"...");
+wave.ws.onopen = function() {
+  wave.log.debug("connected.");
 
-                  text = "first message from client";
-                  wave.ws.send(text);
-                  debug("message sent: "+text);
-          }
+  //text = "first message from client";
+  //wave.ws.send(text);
+  //wave.log.debug("message sent: "+text);
+}
 
-          wave.ws.onclose = function() {
-                  debug("disconnected...");
-          }
+wave.ws.onclose = function() {
+  wave.log.debug("disconnected...");
+}
 
-          wave.ws.onerror = function(msg) {
-                  debug("failed to connect："+msg);
-          }
+wave.ws.onerror = function(msg) {
+  wave.log.debug("failed to connect："+msg);
+}
 
-          wave.ws.onmessage = function(event) {
-                  debug("message received: "+event.data);
-                  $("#message").append("<p>"+event.data+"</p>");
-          }
+wave.ws.onmessage = function(event) {
+  wave.log.debug("message received: "+event.data);
+  if ($("message")){ $("message").insert("<p>"+event.data+"</p>"); }
+  if (wave.stateCallback) {
+    wave.state = event.data;
+    wave.stateCallback(event.data);
+  }
+}
 
 wave.Callback = function(callback, optContext) {
   this.initialize(callback, optContext);
@@ -163,13 +169,15 @@ wave.State.prototype = {
   submitDelta: function(state) {
     if (wave.stateCallback) {
       this.state = state;
-      wave.stateCallback(state);
+      //wave.stateCallback(state);
+      wave.ws.send(state);
     }
   },
   submitValue: function(key, value) {
     this.state[key] = value;
     if (wave.stateCallback) {
-      wave.stateCallback(this.state);
+      //wave.stateCallback(this.state);
+      wave.ws.send(state);
     }
   },
   toString: function() {
