@@ -1046,7 +1046,7 @@ var DbAccessor = Class.create({
    //		  }
    //        以下、levelがひとつ増えるごとに、展開が一段階増える	
 
-  getData : function getData(bid, uid, range, async){
+  getData : function getData(bid, uid, range, async){ // DbAccessor 
      logObj.getInto(); 
      var request = new Ajax.Request('/getData', {
        method : 'post',
@@ -1071,7 +1071,7 @@ var DbAccessor = Class.create({
      logObj.goOut();
    },
 
-   getBids : function getBids(bid, uid, range, async){
+   getBids : function getBids(bid, uid, range, async){ // DbAccessor 
      logObj.getInto(); 
      var request = new Ajax.Request('/getBids', {
           method: 'get',
