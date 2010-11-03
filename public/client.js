@@ -334,7 +334,7 @@ var Store = Class.create(Hash, {
         this.logObj.goOut();
         return data;
       }.bind(this),
-      onFailure : function onFailure_getData(response){
+      onFailure : function onFailure_getMsg(response){
         this.logObj.getInto();
         this.logObj.debug('onFailure : ' + response.status + response.statusText);
         this.logObj.goOut();
@@ -1028,82 +1028,6 @@ var Handler = Class.create({
     this.logObj.goOut();
   }
 });
-
-var DbAccessor = Class.create({
-
-   // 入力 : bid, uid, range, async
-   //   range : 
-   //        
-   // 出力 : levelまでの深さのbids配列に対応するデータ
-   //   例 : level = 0  とは自分だけを指すので{ bid : [[n0, n1, ..],[p0, p1, ..] }
-   //        level = 1  のとき、bidのnxtBidsも展開する
-   //             { bid : [[n0, n1, ..],[p0, p1, ..]]
-   //                n0 : [[m0, m1, ..],[j0, j1, ..]]
-   //		     n1 : [[l0, l1, ..],[i0, i1, ..]]
-   //		     ...
-   //                p0 : [[x0, x1, ..],[y0, y1, ..]]
-   //                ...
-   //		  }
-   //        以下、levelがひとつ増えるごとに、展開が一段階増える	
-
-  getData : function getData(bid, uid, range, async){ // DbAccessor 
-     logObj.getInto(); 
-     var request = new Ajax.Request('/getData', {
-       method : 'post',
-       parameters : { 'bid' : bid , 'uid' :uid, 'level' : gLevel, 'mask' : gMask, 'range' : range },
-       asynchronous : async,
-       onSuccess : function onSuccess_getData(response){
-         logObj.getInto('onSuccess_getData');
-//         logObj.debug(arguments);
-//         logObj.debug(Object.toJSON(response.responseJSON));
-         hand.set_data_by_bid(bid,response.responseJSON);
-	 logObj.goOut();
-	 return;
-       },
-       onFailure : function onFailure_getData(response){
-         logObj.getInto();
-         logObj.debug('onFailure : ' + response.status + response.statusText, 3);
-         logObj.goOut();
-         return false;
-       }
-     });
-     var response = new Ajax.Response(request);
-     logObj.goOut();
-   },
-
-   getBids : function getBids(bid, uid, range, async){ // DbAccessor 
-     logObj.getInto(); 
-     var request = new Ajax.Request('/getBids', {
-          method: 'get',
-          onCreate: function(request, response){
-              if(request.transport.overrideMimeType){
-                  request.transport.overrideMimeType("text/plain; charset=x-user-defined");
-              }
-          },
-       parameters : { 'bid' : bid , 'uid' :uid, 'level' : gLevel, 'mask' : gMask, 'range' : range },
-       asynchronous : async,
-       onSuccess : function onSuccess_getBids(response){
-         logObj.getInto('onSuccess_getBids');
-         logObj.debug('responseText : ' + Object.toJSON(response.responseText));
-         var data = msgpack.unpack(response.responseText);
-         logObj.debug('unpacked responseText : ' + Object.toJSON(data));
-         $('bids').update(Object.toJSON(data));
-	 logObj.goOut();
-	 return;
-       },
-       onFailure : function onFailure_getData(response){
-         logObj.getInto();
-         logObj.debug('onFailure : ' + response.status + response.statusText, 3);
-         logObj.goOut();
-         return false;
-       }
-     });
-     var response = new Ajax.Response(request);
-     logObj.goOut();
-   }
-
-});
-
 //-----------------------------------------------------------------
 //  main
 //-----------------------------------------------------------------
