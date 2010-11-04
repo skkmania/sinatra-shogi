@@ -106,8 +106,8 @@ wave.ws.onmessage = function(event) {
   wave.log.debug("message received: "+event.data);
   if ($("message")){ $("message").insert("<p>"+event.data+"</p>"); }
   if (wave.stateCallback) {
-    wave.state = event.data;
-    wave.stateCallback(event.data);
+    wave.state.fromString(event.data);
+    wave.stateCallback(wave.state);
   }
 }
 
@@ -170,7 +170,7 @@ wave.State.prototype = {
     if (wave.stateCallback) {
       this.state = state;
       //wave.stateCallback(state);
-      wave.ws.send(state);
+      wave.ws.send(this.toString());
     }
   },
   submitValue: function(key, value) {
@@ -183,10 +183,17 @@ wave.State.prototype = {
   toString: function() {
     var ret = '{';
     for (var key in this.state) {
-      ret += key + ':' + this.state[key] + ',\n';
+      ret += key + '|' + this.state[key] + ',\n';
     }
     ret += '}';
     return ret;
+  },
+  fromString: function(str) {
+    str.split(",\n").forEach(function(e){
+      var a = e.split("|");
+      this.state[a[0]] = a[1];
+    }.bind(this));
+    return this.state;
   }
 };
 

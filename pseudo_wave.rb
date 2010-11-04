@@ -1,7 +1,11 @@
+# vim: set ts=2
 # WebSocket pseudo wave server
 
 require 'rubygems'
 require 'lib/rev/websocket'
+require 'logger'
+
+Log = Logger.new("log/pseudo-wave.log")
 
 class PubSub
 	def initialize
@@ -41,7 +45,7 @@ $record = []
 class PseudoWaveConnection < Rev::WebSocket
 	def on_open
 		@host = peeraddr[2]
-		puts "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
+		Log.debug "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
 		# send_message
 
 		@sid = $pubsub.subscribe {|data|
@@ -52,12 +56,12 @@ class PseudoWaveConnection < Rev::WebSocket
 	end
 
 	def on_message(data)
-		puts "state received: '#{data}'"
+		Log.debug "state received: '#{data}'"
                 $pubsub.publish(data)
 	end
 
 	def on_close
-		puts "connection closed: <#{@host}>"
+		Log.debug "connection closed: <#{@host}>"
 
 		$pubsub.unsubscribe(@sid)
 		$pubsub.publish("bye, I'm closing...")
@@ -71,6 +75,6 @@ $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
 $server.attach(Rev::Loop.default)
 $pubsub.publish("this connection was attached to Psuedo Wave Server")
 
-puts "start on #{host}:#{port}"
+Log.debug "start on #{host}:#{port}"
 
 Rev::Loop.default.run

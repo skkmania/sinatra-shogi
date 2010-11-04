@@ -71,6 +71,7 @@ end
 
 get '/getMsg' do
     logger2.debug { ' ----------  into getMsg' }
+    logger2.debug { 'params : ' + params.inspect }
   #ct = CacheTest.new( params, logger2 )
   # 動作確認できたらここはすぐに消すこと。
   ct = DbAccessor.new( params, logger2 )

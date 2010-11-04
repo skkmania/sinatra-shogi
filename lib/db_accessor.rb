@@ -19,7 +19,7 @@ class DbAccessor
     @logger.debug { 'DbAccessor new : param : ' + param.to_s }
     @logger.debug { "DbAccessor new : param bid : #{param['bid'] or 'nothing'}" }
     @params	= param
-    @bid	= @params['oldbid']
+    @bid	= @params['oldbid'] || @params['bid'] || 1
     @name	= @params['name']
     @uid	= @params['uid']
     @mask	= @params['mask'].to_i
@@ -98,7 +98,7 @@ class DbAccessor
       @bids = kekka.map(:bid)
       @logger.debug { 'bid_range : ' + @bids.join(',') } 
     rescue => error
-      @logger.error { "cc_getData : error !" + error.message } 
+      @logger.error { "determine_bid_range : error !" + error.message } 
       print 'error'
     ensure
       #kekka.clear if kekka
@@ -163,12 +163,12 @@ class DbAccessor
   
   def get_msg
     @gotten = @masked_data_name.inject({}){|res_hash, name|
-    result = DB[queries[name]].all
-    @logger.debug { "#{name} : #{result.inspect}" } 
-    res_hash[name] = result
-    res_hash
+      result = DB[queries[name]].all
+      @logger.debug { "#{name} : #{result.inspect}" } 
+      res_hash[name] = result
+      res_hash
     }
-    @logger.debug { "gotten : #{log_format(@gotten)}" } 
+#    @logger.debug { "gotten : #{log_format(@gotten)}" } 
     return @gotten.to_msgpack
   end
   
