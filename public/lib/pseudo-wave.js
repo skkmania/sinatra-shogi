@@ -1,3 +1,4 @@
+// vim: set expandtab ts=2 :
  WS_URL = "ws://ubu-pg84:8081";
         //WS_URL = "ws://localhost:8081";
 
@@ -169,14 +170,12 @@ wave.State.prototype = {
   submitDelta: function(state) {
     if (wave.stateCallback) {
       this.state = state;
-      //wave.stateCallback(state);
       wave.ws.send(this.toString());
     }
   },
   submitValue: function(key, value) {
     this.state[key] = value;
     if (wave.stateCallback) {
-      //wave.stateCallback(this.state);
       wave.ws.send(state);
     }
   },
