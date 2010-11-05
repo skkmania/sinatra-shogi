@@ -40,13 +40,14 @@
         if(wave){
           wave.log = logObj;
           window.gameController = new GameController({containerId:'shogi',
-               //'playerSetting':'playGame', 'gameConstructor':'shogi'}, logObj);
-               'playerSetting':'review', 'gameConstructor':'shogi'}, logObj);
+               'playerSetting':'playGame', 'gameConstructor':'shogi'}, logObj);
+               //'playerSetting':'review', 'gameConstructor':'shogi'}, logObj);
         }
         // if (wave && wave.isInWaveContainer())
         if(wave) 
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
-        window.gameController.handler.refreshBoard(1);
+        if(window.gameController.settings['playerSetting'] != 'playGame')
+          window.gameController.handler.refreshBoard(1);
       });
 
       function addPlayer(name) {
@@ -138,7 +139,11 @@
    <div id="situationImage">
      <p id="siTitle"></p>
    </div>
+<input id="inputViewerId" type="text" name="viewerId" maxlength="10" />
+<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed($F('inputViewerId')); this.hide();">join</button>
+<!--
 <button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed(wave.getViewer().getId()); this.hide();">join</button>
+--!>
 
   </body>
 </html>

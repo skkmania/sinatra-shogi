@@ -180,15 +180,14 @@ wave.State.prototype = {
     }
   },
   toString: function() {
-    var ret = '{';
+    var ret = '';
     for (var key in this.state) {
-      ret += key + '|' + this.state[key] + ',\n';
+      ret += key + '|' + this.state[key] + '!!';
     }
-    ret += '}';
     return ret;
   },
   fromString: function(str) {
-    str.split(",\n").forEach(function(e){
+    str.split("!!").forEach(function(e){
       var a = e.split("|");
       this.state[a[0]] = a[1];
     }.bind(this));

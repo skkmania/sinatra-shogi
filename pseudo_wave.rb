@@ -143,15 +143,14 @@ class Wave::State < Hash
     publish
   end
   def toString
-    ret = '{'
+    ret = ''
     self.each{|k,v|
-      ret += k + '|' + v + ',\n'
+      ret += k + '|' + v + '!!'
     }
-    ret += '}'
     ret
   end
   def fromString(str)
-    str.gsub(/\{\s*|\s*\}/,'').split(",\n").each{|e|
+    str.split("!!").each{|e|
       a = e.split("|")
       self[a[0]] = a[1]
     }
