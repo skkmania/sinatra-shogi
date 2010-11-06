@@ -165,20 +165,30 @@ class PseudoWaveConnection < Rev::WebSocket
 			send_message data
 		}
 		$record.each {|data| send_message data }
+    #open_msg = $wave.state.toString
+		#Log.debug "sending open message : #{open_msg}"
+    #send_message open_msg
 	end
 
 	def on_message(data)
 		Log.debug "state received: '#{data}'"
-    $wave.state.fromString(data)
-    Log.debug "read state done : #{$wave.state.inspect}"
-    $pubsub.publish($wave.state.toString)
+    case data
+      when /^sync/
+        Log.debug "sync request arrived : #{data}"
+        send_message 'sync' + $wave.state.toString
+        Log.debug "sent sync reply : #{'sync' + $wave.state.toString}"
+      else
+        $wave.state.fromString(data)
+        Log.debug "read state done : #{$wave.state.inspect}"
+        $pubsub.publish($wave.state.toString)
+    end
 	end
 
 	def on_close
 		Log.debug "connection closed: <#{@host}>"
 
 		$pubsub.unsubscribe(@sid)
-		$pubsub.publish("bye, I'm closing...")
+		$pubsub.publish("msg:bye, I'm closing...")
 	end
 end
 

@@ -35,7 +35,7 @@ Wave.prototype = {
     this.host = opt.host;
     this.mode = opt.mode;
     this.participants = opt.participants;
-    this.state = opt.state;
+    //this.state = opt.state || {};
     this.time = opt.time;
     this.viewer = opt.viewer;
     this.isInWaveContainer = opt.isInWaveContainer || false;
@@ -88,11 +88,12 @@ Wave.prototype = {
 wave = new Wave();
 if(wave.log) wave.log.debug("connecting to "+WS_URL+"...");
 wave.ws.onopen = function() {
-  wave.log.debug("connected.");
+  if(wave.log) wave.log.debug("ws onopen : connected.");
 
   //text = "first message from client";
   //wave.ws.send(text);
   //wave.log.debug("message sent: "+text);
+  wave.ws.send("sync");
 }
 
 wave.ws.onclose = function() {
@@ -100,16 +101,29 @@ wave.ws.onclose = function() {
 }
 
 wave.ws.onerror = function(msg) {
-  wave.log.debug("failed to connect："+msg);
+  wave.log.debug("failed to connect"+msg);
 }
 
 wave.ws.onmessage = function(event) {
+  wave.log.getInto("wave.ws.onmessage");
   wave.log.debug("message received: "+event.data);
+  wave.log.debug("message.slice(0,4) : "+event.data.slice(0,4));
   if ($("message")){ $("message").insert("<p>"+event.data+"</p>"); }
   if (wave.stateCallback) {
-    wave.state.fromString(event.data);
-    wave.stateCallback(wave.state);
+    switch(event.data.slice(0,4)){
+      case "sync" :
+        wave.log.debug("sync reply arrived : " + event.data);
+        wave.getState().fromString(event.data.slice(4));
+        break;
+      case "msg:" :
+        break;
+      default :
+        wave.getState().fromString(event.data);
+        wave.stateCallback(wave.getState());
+        break;
+    }
   }
+  wave.log.goOut();
 }
 
 wave.Callback = function(callback, optContext) {
@@ -199,6 +213,22 @@ wave.State.prototype = {
       this.state[a[0]] = a[1];
     }.bind(this));
     return this.state;
+  },
+  sync: function(){
+    try{
+      if (wave.stateCallback) {
+        if (wave.ws) {
+          wave.ws.send("sync");
+        } else {
+          throw("wave.ws seems not defined.");
+        }
+      } else {
+        throw("wave.stateCallback seems not defined.");
+      }
+    }
+    catch(e){
+      if(wave.log) wave.log.debug("sync fail : " + e);
+    }
   }
 };
 

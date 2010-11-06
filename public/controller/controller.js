@@ -610,13 +610,16 @@ GameController = Class.create({
   joinButtonPressed: function joinButtonPressed(name) { // GameController
     this.log.getInto('GameController#joinButtonPressed');
     this.log.debug('arguments : ' + name);
+    if (wave.getState().get('players')) this.players = wave.getState().get('players').split(',');
+    if (wave.getState().get('mode')) this.mode = wave.getState().get('mode');
     this.log.debug('this.players : ' + this.players.length + ' : ' + this.players.join(', '));
+    this.log.debug('this.mode : ' + this.mode);
     var deltakey = null; 
     var delta = {};
     if (this.mode) {
       switch (this.mode){
         case  'noPlayers':
-          this.log.debug('first player added');
+          this.log.debug('noPlayers: first player added');
           this.players.push(name);
           this.message(t('waiting'));
           deltakey = 'players';
@@ -625,7 +628,7 @@ GameController = Class.create({
           delta['mode'] = this.mode;
           break;
         case 'onePlayer':
-          this.log.debug('second player added');
+          this.log.debug('onePlayer: second player added');
           this.players.push(name);
           this.log.debug('players: ' + this.players.join(','));
           delta = this.setPlayersOrder();
@@ -635,7 +638,7 @@ GameController = Class.create({
           break;
       }
     } else {
-        this.log.debug('first player added');
+        this.log.debug('mode not found: first player added');
         this.players.push(name);
         this.message(t('waiting'));
         deltakey = 'players';
@@ -667,7 +670,7 @@ GameController = Class.create({
       this.player1 = new Player('player1', this.players[1], this.players[1]==viewer);
       this.player2 = new Player('player2', this.players[0], this.players[0]==viewer);
     }
-    var delta = addPlayersToDelta();
+    var delta = this.addPlayersToDelta();
     this.log.goOut();
     return delta;
   },
