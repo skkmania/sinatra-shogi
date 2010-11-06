@@ -143,11 +143,7 @@ class Wave::State < Hash
     publish
   end
   def toString
-    ret = ''
-    self.each{|k,v|
-      ret += k + '|' + v + '!!'
-    }
-    ret
+    self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
   end
   def fromString(str)
     str.split("!!").each{|e|

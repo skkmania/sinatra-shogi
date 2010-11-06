@@ -167,9 +167,14 @@ wave.State.prototype = {
   reset: function() {
     this.state = {};
   },
-  submitDelta: function(state) {
+  merge: function(delta) {
+    for (var key in delta) {
+      this.state[key] = delta[key];
+    }
+  },
+  submitDelta: function(delta) {
     if (wave.stateCallback) {
-      this.state = state;
+      this.merge(delta);
       wave.ws.send(this.toString());
     }
   },
@@ -184,6 +189,8 @@ wave.State.prototype = {
     for (var key in this.state) {
       ret += key + '|' + this.state[key] + '!!';
     }
+    // 最後の!!は余計なので取り除いて返す
+    ret = ret.slice(0,-2);
     return ret;
   },
   fromString: function(str) {
