@@ -501,7 +501,7 @@ var Area = Class.create({
     this.logObj.goOut();
   },
 
-  openWindow: function openWindow(){
+  openWindow: function openWindow(){ // Area
     this.logObj.getInto('Area#openWindow');
     if (!this.window || !this.window.document) {
       this.anchor = new Element('a',{'id':this.title+'anchor', 'href':'#' + this.title, 'title': this.title });
@@ -520,7 +520,7 @@ var Area = Class.create({
          return;
       }
     }
-    this.window.open();
+    //this.window.open();
     this.logObj.goOut();
   },
 	/*

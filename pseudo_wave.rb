@@ -187,7 +187,7 @@ class PseudoWaveConnection < Rev::WebSocket
 end
 
 host = '0.0.0.0'
-port = ARGV[0] || 8081
+port = 8081
 $wave = Wave.new
 
 $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
