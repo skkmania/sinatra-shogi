@@ -247,6 +247,10 @@ GameController = Class.create({
 	 */
         // state changeに対するコールバック
         // 機能：state.modeに対応し、各関数にふりわける
+        //   state.modeがとりうる値（文字列）は
+        //    noPlayers, onePlayer,
+        //    preparePlayers, playing
+        //    review
   acceptState: function acceptState() { // GameController
     this.log.getInto('GameController#acceptState');
     if(wave) {
@@ -318,6 +322,10 @@ GameController = Class.create({
         // コンマ区切りで複数個並んでいる
   playing: function playing(state) {  // GameController
     this.log.getInto('GameController#playing');
+
+    // stateから、dataStoreに情報を格納する
+    this.handler.dataStore.readState(state);
+
     this.count = state.get('count') || 0;
     if(!this.player1) this.getPlayersFromState(state);
     this.determineTop();
@@ -610,6 +618,14 @@ GameController = Class.create({
   joinButtonPressed: function joinButtonPressed(name) { // GameController
     this.log.getInto('GameController#joinButtonPressed');
     this.log.debug('arguments : ' + name);
+
+    // nameをwave.viewerにセットする。これはnowaveならではの処理。
+    // waveで使用するときはコメントアウトすること。
+    wave.setViewer(name);
+    this.log.debug('wave.getViewer().getId() : ' + wave.getViewer().getId());
+    this.log.debug('wave.getViewer().getDisplayName() : ' + wave.getViewer().getDisplayName());
+    // ここまで。
+
     if (wave.getState().get('players')) this.players = wave.getState().get('players').split(',');
     if (wave.getState().get('mode')) this.mode = wave.getState().get('mode');
     this.log.debug('this.players : ' + this.players.length + ' : ' + this.players.join(', '));
@@ -624,12 +640,12 @@ GameController = Class.create({
           this.message(t('waiting'));
           deltakey = 'players';
           this.mode = 'onePlayer';
-          delta[deltakey] = name;
+          delta[deltakey] = wave.getViewer().getId();
           delta['mode'] = this.mode;
           break;
         case 'onePlayer':
           this.log.debug('onePlayer: second player added');
-          this.players.push(name);
+          this.players.push(wave.getViewer().getId());
           this.log.debug('players: ' + this.players.join(','));
           delta = this.setPlayersOrder();
           this.log.debug('returned delta : ' + Log.dumpObject(delta));
@@ -639,11 +655,11 @@ GameController = Class.create({
       }
     } else {
         this.log.debug('mode not found: first player added');
-        this.players.push(name);
+        this.players.push(wave.getViewer().getId());
         this.message(t('waiting'));
         deltakey = 'players';
         this.mode = 'onePlayer';
-        delta[deltakey] = name;
+        delta[deltakey] = wave.getViewer().getId();
         delta['mode'] = this.mode;
     }
     //this.controlPanel.update(this.mode);
@@ -662,13 +678,14 @@ GameController = Class.create({
   setPlayersOrder: function setPlayersOrder() { // GameController
     var viewer = wave.getViewer().getId();
     this.log.getInto('GameController#setPlayersOrder');
+    this.log.debug('viewer : ' + viewer);
     
     if(Math.random() < 0.5){ 
-      this.player1 = new Player('player1', this.players[0], this.players[0]==viewer);
-      this.player2 = new Player('player2', this.players[1], this.players[1]==viewer);
+      this.player1 = new Player('player1', this.players[0], this.players[0]==viewer || this.players[0]==wave.getViewer().getDisplayName());
+      this.player2 = new Player('player2', this.players[1], this.players[1]==viewer || this.players[1]==wave.getViewer().getDisplayName());
     } else {
-      this.player1 = new Player('player1', this.players[1], this.players[1]==viewer);
-      this.player2 = new Player('player2', this.players[0], this.players[0]==viewer);
+      this.player1 = new Player('player1', this.players[1], this.players[1]==viewer || this.players[1]==wave.getViewer().getDisplayName());
+      this.player2 = new Player('player2', this.players[0], this.players[0]==viewer || this.players[0]==wave.getViewer().getDisplayName());
     }
     var delta = this.addPlayersToDelta();
     this.log.goOut();
@@ -681,7 +698,6 @@ GameController = Class.create({
         // 返値 : stateに載せる情報としてdeltaを作成し返す
   addPlayersToDelta: function addPlayersToDelta() { // GameController
     var delta = {};
-    var viewer = wave.getViewer().getId();
     this.log.getInto('GameController#addPlayersToDelta');
     
     this.log.debug('player1 : ' + this.player1.toString());
@@ -710,12 +726,13 @@ GameController = Class.create({
   createPlayer: function createPlayer(bs, ws) { // GameController
     var delta = {};
     var viewer = wave.getViewer().getId();
+    var viewerDisplayName = wave.getViewer().getDisplayName();
     var b = bs.split(',')[0];
     var w = ws.split(',')[0];
     this.log.getInto('GameController#createPlayer');
     // Player オブジェクトを生成
-    this.player1 = new Player('player1', b, b==viewer);
-    this.player2 = new Player('player2', w, w==viewer);
+    this.player1 = new Player('player1', b, b==viewer || b==viewerDisplayName);
+    this.player2 = new Player('player2', w, w==viewer || b==viewerDisplayName);
     this.log.debug('player1 : ' + this.player1.toString());
     this.log.debug('player2 : ' + this.player2.toString());
     // blackplayers, whiteplayersの各配列におく

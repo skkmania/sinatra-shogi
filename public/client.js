@@ -42,9 +42,9 @@ var Slice = Class.create(Hash, {
 	 */
   fromState : function fromState(state){ // Slice
     this.logObj.getInto('Slice#fromState');
-    this.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board')));
-    this.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next')));
-    this.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev')));
+    this.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board',window.gameController.game.board.initialString)));
+    this.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next', '')));
+    this.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev', '')));
     this.logObj.goOut();
     return this;
   },

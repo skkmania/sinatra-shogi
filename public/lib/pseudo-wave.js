@@ -68,6 +68,13 @@ Wave.prototype = {
   getViewer: function() {
     return this.viewer;
   },
+  // これはnowaveならではの処理。
+  setViewer: function(name) {
+    wave.log.getInto('wave.setViewer');
+    this.viewer = new wave.Participant(name);
+    wave.log.goOut();
+    return this.viewer;
+  },
   isInWaveContainer: function() {
     return this.isInWaveContainer;
   },
@@ -88,12 +95,12 @@ Wave.prototype = {
 wave = new Wave();
 if(wave.log) wave.log.debug("connecting to "+WS_URL+"...");
 wave.ws.onopen = function() {
-  if(wave.log) wave.log.debug("ws onopen : connected.");
+  wave.log.getInto('wave.ws.onopen');
+  wave.log.debug("ws onopen : connected.");
 
-  //text = "first message from client";
-  //wave.ws.send(text);
-  //wave.log.debug("message sent: "+text);
   wave.ws.send("sync");
+  wave.log.debug("ws onopen : sent sync request.");
+  wave.log.goOut();
 }
 
 wave.ws.onclose = function() {
@@ -107,8 +114,6 @@ wave.ws.onerror = function(msg) {
 wave.ws.onmessage = function(event) {
   wave.log.getInto("wave.ws.onmessage");
   wave.log.debug("message received: "+event.data);
-  wave.log.debug("message.slice(0,4) : "+event.data.slice(0,4));
-  if ($("message")){ $("message").insert("<p>"+event.data+"</p>"); }
   if (wave.stateCallback) {
     switch(event.data.slice(0,4)){
       case "sync" :
@@ -140,12 +145,12 @@ wave.Callback.prototype = {
 
 wave.Mode = {UNKNOWN: 0, VIEW:1, EDIT:2, DIFF_ON_OPEN:3, PLAYBACK:4};
 
-wave.Participant = function() {
-  this.initialize();
+wave.Participant = function(name) {
+  this.initialize(name);
 };
 wave.Participant.prototype = {
-  initialize: function() {
-    this.displayName = 'name' + Math.floor(Math.random() * 100);
+  initialize: function(name) {
+    this.displayName = name || 'name' + Math.floor(Math.random() * 100);
     this.id = this.displayName + '@googlewave.com';
     this.thumbnailUrl = '';
   },
@@ -187,10 +192,13 @@ wave.State.prototype = {
     }
   },
   submitDelta: function(delta) {
+    wave.log.getInto("wave.ws.submitDelta");
     if (wave.stateCallback) {
       this.merge(delta);
+      wave.log.debug('sending : ' + this.toString());
       wave.ws.send(this.toString());
     }
+    wave.log.goOut();
   },
   submitValue: function(key, value) {
     this.state[key] = value;
@@ -236,4 +244,4 @@ wave.util = {};
 wave.util.printJson = function(obj, optPretty, optTabs) {
 };
 
-wave.viewer = new wave.Participant();
+//wave.viewer = new wave.Participant();
