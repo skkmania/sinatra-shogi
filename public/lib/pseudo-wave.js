@@ -187,12 +187,15 @@ wave.State.prototype = {
     this.state = {};
   },
   merge: function(delta) {
+    wave.log.getInto("wave.State.merge");
     for (var key in delta) {
       this.state[key] = delta[key];
     }
+    wave.log.debug("state changed. >> " + this.toDebugString());
+    wave.log.goOut();
   },
   submitDelta: function(delta) {
-    wave.log.getInto("wave.ws.submitDelta");
+    wave.log.getInto("wave.State.submitDelta");
     if (wave.stateCallback) {
       this.merge(delta);
       wave.log.debug('sending : ' + this.toString());
@@ -201,26 +204,50 @@ wave.State.prototype = {
     wave.log.goOut();
   },
   submitValue: function(key, value) {
+    wave.log.getInto("wave.State.submitValue");
     this.state[key] = value;
+    wave.log.debug("state changed. >> " + this.toDebugString());
     if (wave.stateCallback) {
+      wave.log.debug('sending : ' + this.toString());
       wave.ws.send(state);
     }
+    wave.log.goOut();
   },
   toString: function() {
+    wave.log.getInto("wave.State.toString");
     var ret = '';
     for (var key in this.state) {
-      ret += key + '|' + this.state[key] + '!!';
+      if(key && this.state[key])
+        ret += key + '|' + this.state[key] + '!!';
+      else
+        wave.log.debug("undefined value for key: " + key);
     }
     // 最後の!!は余計なので取り除いて返す
     ret = ret.slice(0,-2);
+    wave.log.debug("returning : " + ret);
+    wave.log.goOut();
     return ret;
   },
   fromString: function(str) {
+    wave.log.getInto("wave.State.fromString");
+    wave.log.debug("str : " + str);
     str.split("!!").forEach(function(e){
       var a = e.split("|");
       this.state[a[0]] = a[1];
     }.bind(this));
+    wave.log.debug("state changed. >> " + this.toDebugString());
+    wave.log.goOut();
     return this.state;
+  },
+  toDebugString: function() {
+    wave.log.getInto("wave.State.toDebugString");
+    var ret = "{\n";
+    for (var key in this.state) {
+      if(key) ret += key + ' | ' + this.state[key] + "\n";
+    }
+    ret += '}';
+    wave.log.goOut();
+    return ret;
   },
   sync: function(){
     try{

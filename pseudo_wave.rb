@@ -127,6 +127,7 @@ class Wave::State < Hash
   end
   def put(key, value)
     self[key] = value
+    Log.debug "put : State changed. >> #{self.inspect}"
   end
   def getKeys
     self.keys
@@ -136,10 +137,12 @@ class Wave::State < Hash
   end
   def submitDelta(delta)
     self.merge! delta
+    Log.debug "submitDelta : State changed. >> #{self.inspect}"
     publish
   end
   def submitValue(key, value)
     self[key] = value;
+    Log.debug "submitValue : State changed. >> #{self.inspect}"
     publish
   end
   def toString
@@ -150,6 +153,7 @@ class Wave::State < Hash
       a = e.split("|")
       self[a[0]] = a[1]
     }
+    Log.debug "fromString : State changed. >> #{self.inspect}"
   end
   def publish
   end
