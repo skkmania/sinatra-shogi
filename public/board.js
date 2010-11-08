@@ -199,12 +199,12 @@ Board = Class.create({
 	 * idx2xy(idx)
 	 */
   idx2xy: function idx2xy(idx) { // Board
-    this.game.log.getInto('Board#idx2xy with : ' + idx);
+    this.game.log.getInto('Board#idx2xy with : ' + idx, Log.DEBUG2);
     // stateの文字列のindex(0スタート）を座標の配列[x,y]にして返す
     var h = this.game.height - 1;
     var ret = [Math.floor(idx/h) + 1.0, idx%h + 1.0]
     this.game.log.info('Board#idx2xy returning with : ' + ret.toString());
-    this.game.log.goOut();
+    this.game.log.goOut(Log.DEBUG2);
     return ret;
   },
 	/**

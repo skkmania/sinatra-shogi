@@ -32,7 +32,7 @@
       Event.observe(window, 'load', function() {
         var logObj = makeLogObj('testInitialize',
                       {width:800, height:550, resizable:false});
-        // logObj.setLevel('error');
+        logObj.setLevel('debug');
         $('logger0').insert(new Element('img',
          {id:'handle0', src:"img/lib/window_close.gif"}));
         new Resizable('logger0',{handle:'handle0'});

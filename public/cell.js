@@ -8,7 +8,7 @@ Cell.prototype = {
 	 * initialize(board, x, y, top)
 	 */
   initialize: function initialize(board, x, y, top) {
-    board.game.log.getInto('Cell#initialize');
+    board.game.log.getInto('Cell#initialize', Log.DEBUG2);
     Cell.all.push(this);
     this.board = board;
     this.type = 'cell';
@@ -21,7 +21,7 @@ Cell.prototype = {
     this.marginLeft = 0;
     this.width = 40;
     this.hight = 42;
-    this.log.goOut();
+    this.log.goOut(Log.DEBUG2);
   },
 	/**
 	 * say()
@@ -156,7 +156,7 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
 	 * show()
 	 */
   show: function show() { // Cell
-    this.log.getInto('Cell#show');
+    this.log.getInto('Cell#show',Log.DEBUG2);
     this.log.debug(this.toDebugString());
     if (!this.elm) {
       (this.x === 0 || this.y === 0) ? this.createDummyElm() : this.createElm();
@@ -174,7 +174,7 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
       this.log.debug('in show of Cell, after process -> ' + this.piece.toDebugString());
     }
     this.log.debug('leaving show of Cell: ' + this.toDebugString());
-    this.log.goOut();
+    this.log.goOut(Log.Debug2);
   },
 	/**
 	 * isOpponentArea(playerArg, lineArg)
