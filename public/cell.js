@@ -174,7 +174,7 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
       this.log.debug('in show of Cell, after process -> ' + this.piece.toDebugString());
     }
     this.log.debug('leaving show of Cell: ' + this.toDebugString());
-    this.log.goOut(Log.Debug2);
+    this.log.goOut(Log.DEBUG2);
   },
 	/**
 	 * isOpponentArea(playerArg, lineArg)

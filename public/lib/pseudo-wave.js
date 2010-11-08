@@ -119,6 +119,15 @@ wave.ws.onmessage = function(event) {
       case "sync" :
         wave.log.debug("sync reply arrived : " + event.data);
         wave.getState().fromString(event.data.slice(4));
+        if(wave.getState().get('mode') == 'playing'){
+          // すでにplayerが決まっている'playing'なら、
+          // このクライアントは観戦者なのでIDは自動にふってしまう。
+          wave.setViewer();
+          // そして観戦者ならばjoin Buttonは必要なく
+          $('join-button').hide();
+          // 画面の初期化へ飛んでよい。
+          window.gameController.acceptState();
+        }
         break;
       case "msg:" :
         break;

@@ -176,7 +176,7 @@ Piece = Class.create({
 	 * createElm()
 	 */
   createElm: function createElm() {  // Piece
-this.game.log.getInto('Piece#createElm');
+    this.game.log.getInto('Piece#createElm', Log.DEBUG2);
     this.elm = document.createElement('img');
     this.elm.obj = this;
     this.elm.src = this.imageUrl;
@@ -187,14 +187,14 @@ this.game.log.getInto('Piece#createElm');
     else {
       this.elm.addClassName('top');
     }
-this.game.log.goOut();
+    this.game.log.goOut(Log.DEBUG2);
   },
 	/**
 	 * setClassName(player)
 	 */
   setClassName: function setClassName() { // Piece
-this.game.log.getInto('Piece#setClassName');
-this.game.log.warn('chr : ' + this.chr + ',  atTop : ' + this.atTop() + ',  this.elm.classname: ' + this.elm.className);
+    this.game.log.getInto('Piece#setClassName');
+    this.game.log.warn('chr : ' + this.chr + ',  atTop : ' + this.atTop() + ',  this.elm.classname: ' + this.elm.className);
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
       this.elm.removeClassName('top');
@@ -203,9 +203,11 @@ this.game.log.warn('chr : ' + this.chr + ',  atTop : ' + this.atTop() + ',  this
       this.elm.removeClassName('bottom');
       this.elm.addClassName('top');
     }
-if (window.gameController.game){ window.gameController.game.log.warn('leaving piece setClassName : ' + this.chr + ',  atTop : ' + this.atTop() + ',  this.elm.classname: ' + this.elm.className);
-this.game.log.goOut();
-}
+    this.game.log.warn(
+            'leaving piece setClassName : ' + this.chr +
+            ',  atTop : ' + this.atTop() +
+            ',  this.elm.classname: ' + this.elm.className);
+    this.game.log.goOut();
   },
 	/**
 	 * atTop()
