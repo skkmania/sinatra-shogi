@@ -692,6 +692,9 @@ var Handler = Class.create({
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
     this.logObj.debug('areas are being initialized');
+    // ControlPanel Area
+    this.cpArea = new Area(this, this.logObj,'controlPanel', 'ControlPanel',{position:[10,0], width:120, height:90});
+    this.cpArea.initOnClick();
     // 前の手のエリア
     this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:120, height:300});
     this.prevArea.initOnClick();

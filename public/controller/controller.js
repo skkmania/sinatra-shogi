@@ -69,8 +69,26 @@ ControlPanel = Class.create({
     controller.log.getInto('ControlPanel#initialize');
     this.controller = controller;
     this.controller.log.goOut();
+    this.area = controller.cpArea;
+    this.areaInit();
     this.counterElm = $('counterNum');
   },
+	/**
+	 * areaInit()
+	 */
+  areaInit: function areaInit() { // ControlPanel              
+     this.controller.log.getInto('ControlPanel#areaInit');
+     var contents = '<div id="Title">\
+                        <p id="kid">局面ID: </p>\
+                        <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
+                        <button onclick="javascript:window.gameController.handler.refreshBoard();" id="submitButton">jump</button>\
+                     </div>';
+         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
+         contents += '<div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>';
+         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>';
+    this.area.window_contents.update(contents);
+    this.controller.log.goOut();
+  }, 
 	/**
 	 * reverse()
 	 */

@@ -59,22 +59,14 @@
     <link rel="stylesheet" href="css/shogi_old.css" type="text/css" />
   </head>
   <body>
-   <div id="Title">
-     <p id="kid">局面ID: </p>
-       <input id="inputText" type="text" name="bid" maxlength="7" value="1" />
-       <button onclick="javascript:window.gameController.handler.refreshBoard();" id="submitButton">jump</button>
-   </div>
 
 <div id="container">
-  <div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>
-  <div id="counter"><span class="t">count</span><span id="counterNum"><span></div>
   <div id="shogi"></div>
   <div id="boardArea"></div>
   <div id="promoteOrNot" class="confirmAction" style="display:none">
     <div id="yesElement">yes</div>
     <div id="noElement">no</div>
   </div>
-  <div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>
 </div>
 
 <div id="preMoves"></div>
