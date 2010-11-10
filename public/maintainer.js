@@ -6,6 +6,26 @@
 
 var Maintainer = Class.create({
   initialize : function initialize(controller) {
-    this.
+    LOG.getInto('ControlPanel#initialize');
+    this.controller = controller;
+    this.area = new Area(this, 'maintainer', 'Maintainer',{position:[600,800], width:400, height:150});
+    this.areaInit();
+    this.area.window.open();
+    LOG.goOut();
   },
+	/**
+	 * areaInit()
+	 */
+  areaInit: function areaInit() { // Maintainer              
+     LOG.getInto('Maintainer#areaInit');
+     var contents =
+'<div id="rev-b">\
+  <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>\
+  <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>\
+  <button id="test-button" class="testbutton t" onclick="new Test.Unit.Runner( testcases, \'testlog\' );">run_test</button>\
+  <button id="dumpStore-button" class="dumpStorebutton t" onclick="window.gameController.handler.dataArea.display();">dump_store</button>\
+</div>';
+    this.area.window_contents.update(contents);
+    LOG.goOut();
+  }, 
 });

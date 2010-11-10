@@ -18,11 +18,12 @@
     <script src="area.js"></script>
     <script src="lib/pseudo-wave.js"></script>
     <script src="lib/msgpack.js"></script>
+    <script src="maintainer.js" charset="UTF-8"></script>
     <script src="move.js" charset="UTF-8"></script>
     <script src="store.js"></script>
     <script src="handler.js"></script>
     <script src="book.js"></script>
-    <script src="controller/controller.js" charset="UTF-8"></script>
+    <script src="controller.js" charset="UTF-8"></script>
     <script src="piece.js" charset="UTF-8"></script>
     <script src="cell.js" charset="UTF-8"></script>
     <script src="board.js" charset="UTF-8"></script>
@@ -99,12 +100,6 @@
       <div id="message-body"></div>
     </div>
   </div>
-</div>
-<div id="rev-b">
-  <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>
-  <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>
-  <button id="test-button" class="testbutton t" onclick="new Test.Unit.Runner( testcases, 'testlog' );">run_test</button>
-  <button id="dumpStore-button" class="dumpStorebutton t" onclick="window.gameController.handler.dataArea.display();">dump_store</button>
 </div>
    <div id="BoardPoints">
      <div id="totalBoardPoint">

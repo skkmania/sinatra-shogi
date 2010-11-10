@@ -180,10 +180,8 @@ GameController = Class.create({
     } else {
       LOG.debug('settings : ' + Object.toJSON(this.settings));
     }
+    this.maintainer = new Maintainer(this);
     this.handler = new Handler(this);
-//    this.handler.updateData(1, 1, 'full', false);
-    this.handler.prevArea.window.open();
-    this.handler.nextArea.window.open();
     this.container = $(this.settings['containerId']);
     this.playerSetting = settings['playerSetting'] || 'viewer';
     this.players = $A([]);       // playerのIDの文字列の配列
