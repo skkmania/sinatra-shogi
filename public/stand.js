@@ -6,7 +6,7 @@ Stand = Class.create({
 	 * initialize(id, game)
 	 */
   initialize: function initialize(id, game) {
-    game.log.getInto('Stand#initialize');
+    LOG.getInto('Stand#initialize');
     this.game = game;
     this.top = game.controller.top;
     this.width = 1; 
@@ -16,28 +16,28 @@ Stand = Class.create({
     this.initialString = '';
     this.pieces = $A([]);
     this.createElm();
-    game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * createElm()
 	 */
   createElm: function createElm() {  // Stand
-    this.game.log.getInto('Stand#createElm');
+    LOG.getInto('Stand#createElm');
     this.elm = document.createElement('div');
     this.elm.id = this.id;
     this.elm.obj = this;
     this.elm.style.height = (this.game.height - 1)*30 + 'px';
-    this.game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * removeByObj(piece)
 	 */
   removeByObj: function removeByObj(piece){  // Stand
     // 指定された駒のオブジェクトを駒台から取り除く
-    this.game.log.getInto('Stand#removeByObj');
+    LOG.getInto('Stand#removeByObj');
     this.elm.removeChild(piece.elm);
     this.pieces = this.pieces.reject(function(p){ return p==piece; });
-    this.game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * removeStandsPieceByChr(chr)
@@ -58,25 +58,25 @@ Stand = Class.create({
 	// 入力 : str 文字列 駒のchrを並べたもの
 	// 出力 : なし
   read: function read(strFromState){ // Stand
-    this.game.log.getInto('Stand#read');
-    this.game.log.debug('entered Stand#read with : ' + strFromState );
+    LOG.getInto('Stand#read');
+    LOG.debug('entered Stand#read with : ' + strFromState );
     // 現在のstandの状態との差分を埋める
     var str_now = this.toString();
-    this.game.log.debug('Stand#read str_now : ' + str_now, {'indent':1} );
+    LOG.debug('Stand#read str_now : ' + str_now, {'indent':1} );
     // 現在にあり、strFromStateにないものは現在から消す
     var deleteCandidate = str_now.subtract(strFromState);
-    this.game.log.debug('Stand#read deleteCandidate : ' + deleteCandidate );
+    LOG.debug('Stand#read deleteCandidate : ' + deleteCandidate );
     $A(deleteCandidate).each(function(c){
       this.removeStandsPieceByChr(c);
     }.bind(this));  
     // 現在になく、strにあるものは現在へ足す
     var addCandidate = strFromState.subtract(str_now);
-    this.game.log.debug('Stand#read addCandidate : ' + addCandidate, {'indent':-1} );
+    LOG.debug('Stand#read addCandidate : ' + addCandidate, {'indent':-1} );
     $A(addCandidate).each(function(c){
       this.put_from_read(new Piece(c));
     }.bind(this));
-    this.game.log.debug('leaving  Stand#read' );
-this.game.log.goOut();
+    LOG.debug('leaving  Stand#read' );
+LOG.goOut();
   },
 	/**
 	 * clear()
@@ -91,28 +91,28 @@ this.game.log.goOut();
 	 */
   put: function put(piece){ // Stand
     // 駒台に持ち駒を載せる
-    this.game.log.getInto('Stand#put');
-    this.game.log.debug('this is : ' + this.id + ', piece : ' + piece.toDebugString());
+    LOG.getInto('Stand#put');
+    LOG.debug('this is : ' + this.id + ', piece : ' + piece.toDebugString());
     piece.toggleBW();
     piece.cell = null;
     this.pieces.push(piece);
     this.elm.appendChild(piece.elm);
-    this.game.log.debug('leaving ' + this.id + ', Stand#put : ' + piece.toDebugString());
-    this.game.log.debug(this.id + ' : ' + this.toString());
-    this.game.log.goOut();
+    LOG.debug('leaving ' + this.id + ', Stand#put : ' + piece.toDebugString());
+    LOG.debug(this.id + ' : ' + this.toString());
+    LOG.goOut();
   },
 	/**
 	 * put_from_read(piece)
 	 */
   put_from_read: function put_from_read(piece){ // Stand
     // 駒台に持ち駒を載せるが、readからの場合、chrはそのまま。toggleはしない
-this.game.log.getInto();
-    this.game.log.debug('entered ' + this.id + ' Stand#put_from_read with : ' + piece.toDebugString());
+LOG.getInto();
+    LOG.debug('entered ' + this.id + ' Stand#put_from_read with : ' + piece.toDebugString());
     piece.cell = null;
     this.pieces.push(piece);
     this.elm.appendChild(piece.elm);
-    this.game.log.debug('leaving ' + this.id + ' Stand#put : ' + piece.toDebugString());
-this.game.log.goOut();
+    LOG.debug('leaving ' + this.id + ' Stand#put : ' + piece.toDebugString());
+LOG.goOut();
   },
 	/**
 	 * pull(piece)
@@ -130,14 +130,14 @@ this.game.log.goOut();
 	 * toString()
 	 */
   toString: function toString(){ // Stand
-this.game.log.getInto('Stand#toString');
-    this.game.log.debug('entered Stand#toString : id : ' + this.id + ', size : ' + this.pieces.length);
+LOG.getInto('Stand#toString');
+    LOG.debug('entered Stand#toString : id : ' + this.id + ', size : ' + this.pieces.length);
     // stateに載せる文字列を返す
     var ret = '';
     if(this.pieces.length > 0)
       ret += this.pieces.pluck('chr').join('');
-    this.game.log.debug('leaving Stand#toString with : ' + ret);
-this.game.log.goOut();
+    LOG.debug('leaving Stand#toString with : ' + ret);
+LOG.goOut();
     return ret;
   },
 	/**

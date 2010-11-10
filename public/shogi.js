@@ -11,22 +11,23 @@ window.gameController = gameController;
 window.gameController.game = this;
 
     this.controller = gameController;
-    this.log = gameController.log;
-    this.log.getInto('ShogiGame#initialize');
-    this.log.warn('start ShogiGame log');
+    // LOG = gameController.log;
+    LOG.getInto('ShogiGame#initialize');
+    LOG.warn('start ShogiGame log');
+    this.LOG = LOG;
     this.width = 10;  // 0 is dummy
     this.height = 10;
     this.settings = settings;
     this.container = $(settings.containerId);
     this.container.style.width = this.width * 35 + 'px';
     this.board = new Board(this.controller.handler.boardArea.boardPanel, this);
-    this.log.warn('Board created.');
+    LOG.warn('Board created.');
     this.blackStand = new Stand('black-stand', this);
     this.whiteStand = new Stand('white-stand', this);
-    this.log.warn('Stands created.');
+    LOG.warn('Stands created.');
     this.makeConfirmActionElement();
-    this.log.warn('leaving ShogiGame#initialize',{'indent':-1, 'date':true,3:{'color':'green'}});
-    this.log.goOut();
+    LOG.warn('leaving ShogiGame#initialize',{'indent':-1, 'date':true,3:{'color':'green'}});
+    LOG.goOut();
     // this.debug_dump();
   },
 	/**
@@ -36,8 +37,8 @@ window.gameController.game = this;
 	// 出力 : Moveオブジェクト
         // 機能 : 入力のactionを表すMoveオブジェクトを作成し返す
   makeMove: function makeMove(actionContents) { // ShogiGame
-    this.log.getInto('ShogiGame#makeMove');
-    var ret = new Move(this.log);
+    LOG.getInto('ShogiGame#makeMove');
+    var ret = new Move(LOG);
     ret.bid = this.board.bid;
     ret.piece = actionContents[0].chr;
     ret.from = actionContents[1].type == 'stand' ? 0 :
@@ -47,8 +48,8 @@ window.gameController.game = this;
     if(actionContents[0].type == 'Gold' || 
        actionContents[0].type == 'King')
       ret.promote = false;  
-    this.log.debug('move made as : ' + ret.toDebugString());
-    this.log.goOut();
+    LOG.debug('move made as : ' + ret.toDebugString());
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -60,11 +61,11 @@ window.gameController.game = this;
 	//        無ければundefinedを返す
 	//        あればそのmove objectを返す
   findMove: function findMove(move) { // ShogiGame
-    this.log.getInto('ShogiGame#findMove');
-    this.log.debug('move : ' + Object.toJSON(move));
+    LOG.getInto('ShogiGame#findMove');
+    LOG.debug('move : ' + Object.toJSON(move));
     var ret = this.controller.handler.dataStore.findNextMove(move);
-    this.log.debug('whether move was found or not : ' + Object.toJSON(ret));
-    this.log.goOut();
+    LOG.debug('whether move was found or not : ' + Object.toJSON(ret));
+    LOG.goOut();
     return ret;
 /*
     if(ret){
@@ -79,54 +80,54 @@ window.gameController.game = this;
         // GameControllerからactionの正当性を問われる
         // 
   respondValidity: function respondValidity(actionContents) { // ShogiGame
-    this.log.getInto('ShogiGame#respondValidity');
+    LOG.getInto('ShogiGame#respondValidity');
     var ret = moveValidate(actionContents);
-    this.log.goOut();
+    LOG.goOut();
     return ret;
   },
 	/**
 	 * getPlayer(player)
 	 */ 
   getPlayer: function getPlayer(player) { // ShogiGame
-    this.log.getInto('ShogiGame#getPlayer');
-    this.log.debug('player : ' + player.toDebugString());
+    LOG.getInto('ShogiGame#getPlayer');
+    LOG.debug('player : ' + player.toDebugString());
     this.player = player;
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * setStandPosition()
 	 */ 
   setStandPosition: function setStandPosition() { // ShogiGame
-    this.log.getInto('ShogiGame#setStandPosition');
+    LOG.getInto('ShogiGame#setStandPosition');
     $('container').style.width = 180 + (this.width)*30 + 'px';
     if(this.controller.top !== 1){
       $('bottom-stand').appendChild(this.blackStand.elm);
       $('top-stand').appendChild(this.whiteStand.elm);
-      this.log.debug('blackStand is set to bottom beacuse top is ' + this.controller.top);
+      LOG.debug('blackStand is set to bottom beacuse top is ' + this.controller.top);
     } else {
       $('bottom-stand').appendChild(this.whiteStand.elm);
       $('top-stand').appendChild(this.blackStand.elm);
-      this.log.debug('blackStand is set to top beacuse top is ' + this.controller.top);
+      LOG.debug('blackStand is set to top beacuse top is ' + this.controller.top);
     }
     $('bottom-stand').style.height = (this.height - 1)*30 + 'px';
     $('bottom-stand').style.margin = (this.height - 5)*30 + 'px 0px 0px 0px';
     $('top-stand').style.height = (this.height - 1)*30 + 'px';
     $('shogi').style.height = 30 + (this.height)*30 + 'px';
     $('shogi').style.width = 80 + (this.width)*30 + 'px';
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * show()
 	 */
   show: function show() { // ShogiGame
-    this.log.warn('game.show');
+    LOG.warn('game.show');
     //this.board.show();
   },
 	/**
 	 * reverse()
 	 */
   reverse: function reverse() { // ShogiGame
-    this.controller.log.getInto('ShogiGame#reverse');
+    LOG.getInto('ShogiGame#reverse');
     var tmp = null;
     this.controller.top = (this.controller.top === 0 ? 1 : 0);
     this.controller.top_by_viewer = this.controller.top;
@@ -151,7 +152,7 @@ window.gameController.game = this;
         tmp.invoke('toggleClassName', 'bottom');
       }
     }
-    this.controller.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * toString()
@@ -183,10 +184,10 @@ window.gameController.game = this;
 	 * askPlayersEnough(players)
 	 */
   askPlayersEnough: function askPlayersEnough(players){ // Game
-    this.log.getInto('ShogiGame#askPlayersEnough');
-    this.log.debug('contents of players : ' + players.join(','));
+    LOG.getInto('ShogiGame#askPlayersEnough');
+    LOG.debug('contents of players : ' + players.join(','));
     var ret = (players.length > 1);
-    this.log.goOut();
+    LOG.goOut();
     return ret;
   },
         /**
@@ -200,22 +201,22 @@ window.gameController.game = this;
 	 */
 	// DBから受け取ったボード情報オブジェクトを読み込む
   boardReadFromDB: function boardReadFromDB() { // ShogiGame
-    this.log.getInto('Game#boardReadFromDB: ');
+    LOG.getInto('Game#boardReadFromDB: ');
     var boardObj = this.controller.handler.dataStore.currentSlice().get('board');
     this.board.read(boardObj['board'] || this.board.initialString);
     this.blackStand.read(boardObj['black'] || this.blackStand.initialString);
     this.whiteStand.read(boardObj['white'] || this.whiteStand.initialString);
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * boardReadFromState(state)
 	 */
   boardReadFromState: function boardReadFromState(state) { // ShogiGame
-    this.log.getInto('Game#boardReadFromState: ');
+    LOG.getInto('Game#boardReadFromState: ');
     this.board.read(state.get('board', this.board.initialString));
     this.blackStand.read(state.get('bstand', this.blackStand.initialString));
     this.whiteStand.read(state.get('wstand', this.whiteStand.initialString));
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * initialDraggable(turn)
@@ -226,10 +227,10 @@ window.gameController.game = this;
         // 'white'なら後手のコマにdraggableをつける
   initialDraggable: function initialDraggable(turn){ // ShogiGame
     var viewersPiece;
-    this.log.getInto('ShogiGame#initialDraggable');
+    LOG.getInto('ShogiGame#initialDraggable');
     if(!turn){
-      this.log.debug('return withoud adding draggable');
-      this.log.goOut();
+      LOG.debug('return withoud adding draggable');
+      LOG.goOut();
       return;
     }
     if(turn == 'black'){
@@ -237,74 +238,74 @@ window.gameController.game = this;
     } else {
       viewersPiece = this.allPieces().findAll(function(e){ return e.chr == e.chr.toLowerCase(); });
     }
-    this.log.debug('viewersPiece # : ' + viewersPiece.length);
+    LOG.debug('viewersPiece # : ' + viewersPiece.length);
     viewersPiece.invoke('addDraggable','initially added draggable');
     viewersPiece.each(function(e, index){
-      this.log.debug(index + ' : drag -> ' + e.drag.toString());
+      this.LOG.debug(index + ' : drag -> ' + e.drag.toString());
     }.bind(this));
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * toggleDraggable()
 	 */
   toggleDraggable: function toggleDraggable(){ // ShogiGame
-    this.log.getInto('ShogiGame#toggleDraggable');
-    this.log.debug('Draggables.drags #: ' + Draggables.drags.length);
+    LOG.getInto('ShogiGame#toggleDraggable');
+    LOG.debug('Draggables.drags #: ' + Draggables.drags.length);
        // dragsの中身をログに書き出してみる
     if(Draggables.drags.length > 0){
-      this.log.debug('contents of Draggables.drags :');
+      LOG.debug('contents of Draggables.drags :');
       Draggables.drags.each(function(e){
         var str = e.element && e.element.obj ? e.element.obj.toDebugString() : e.toString();
-        this.log.debug(str);
+        this.LOG.debug(str);
       }.bind(this));
     }
-    this.log.debug(' -- contents of Draggables.drags ends -- ');
+    LOG.debug(' -- contents of Draggables.drags ends -- ');
 
     // 本処理
-    this.log.warn('processing pieces of board.cells');
+    LOG.warn('processing pieces of board.cells');
     this.board.cells.flatten().pluck('piece').compact().invoke('toggleDraggable');
-    this.log.warn('processing blackStand');
+    LOG.warn('processing blackStand');
     this.blackStand.pieces.invoke('toggleDraggable');
-    this.log.warn('processing whiteStand');
+    LOG.warn('processing whiteStand');
     this.whiteStand.pieces.invoke('toggleDraggable');
 
        // 確認のため再度dragsの中身をログに書き出してみる
     if(Draggables.drags.length > 0){
-      this.log.debug('again, contents of Draggables.drags :');
-      this.log.debug('Draggables.drags #: ' + Draggables.drags.length);
+      LOG.debug('again, contents of Draggables.drags :');
+      LOG.debug('Draggables.drags #: ' + Draggables.drags.length);
       Draggables.drags.each(function(e){
         var str = e.element && e.element.obj ? e.element.obj.chr : e.toString();
-        this.log.debug(str);
+        this.LOG.debug(str);
       }.bind(this));
     }
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * proceedAsItis(actionContents)
 	 */
   proceedAsItis: function proceedAsItis(actionContents) { // ShogiGame
-    this.log.getInto('ShogiGame#proceedAsItis');
+    LOG.getInto('ShogiGame#proceedAsItis');
     var ret = actionContents[0].proceed;
-    this.log.goOut();
+    LOG.goOut();
     return ret;
   },
 	/**
 	 * promotePiece(actionContents)
 	 */
   promotePiece: function promotePiece(actionContents) { // ShogiGame
-    var log = window.gameController.log;
-    log.getInto('ShogiGame#promotePiece');
+    //var log = LOG;
+    LOG.getInto('ShogiGame#promotePiece');
     //log.debug('actionContents : ' + Log.dumpObject(actionContents));
-    log.debug('actionContents[0] : ' + actionContents[0].toDebugString());
+    LOG.debug('actionContents[0] : ' + actionContents[0].toDebugString());
     var ret = actionContents[0].promote;
-    log.goOut();
+    LOG.goOut();
     return ret;
   },
 	/**
 	 * makeConfirmActionElement()
 	 */
   makeConfirmActionElement: function makeConfirmActionElement() { // ShogiGame
-    this.log.getInto('ShogiGame#makeConfirmActionElement');
+    LOG.getInto('ShogiGame#makeConfirmActionElement');
     // userがクリックする要素を作成
 /*
     this.confirmActionElement = new Element('div',{id:'promoteOrNot', className:'confirmAction' });
@@ -317,15 +318,16 @@ window.gameController.game = this;
     this.confirmActionElement = $('promoteOrNot');
     this.yesElement = $('yesElement');
     this.noElement = $('noElement');
-    this.log.goOut();
+    LOG.goOut();
   },
+
   	/**
 	 * confirmActionByUser(actionContents)
 	 */
         // action内容をユーザに提示し、ユーザからそれでよいかどうか確認をとる
         // 成り・不成りを確認することを想定
   confirmActionByUser: function confirmActionByUser(actionContents) { // ShogiGame
-    this.log.getInto('ShogiGame#confirmActionByUser');
+    LOG.getInto('ShogiGame#confirmActionByUser');
     // userがクリックする要素を監視開始
     this.confirmActionElement.observe('click',this.controller.getResponseToConfirmActionByUser.bindAsEventListener(actionContents));
     //this.yesElement.observe('click', this.promotePiece(actionContents));
@@ -342,7 +344,7 @@ window.gameController.game = this;
     this.confirmActionElement.style.zIndex=50000;
     this.confirmActionElement.style.width=100;
     this.confirmActionElement.style.hight=100;
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * doAction(actionContents)
@@ -356,10 +358,10 @@ window.gameController.game = this;
     var capturedPieceType = null;
     var movingPieceType = piece.type;
     var moveTo = [toCell.x, toCell.y];
-    this.log.getInto('ShogiGame#doAction');
-    this.log.debug('piece : ' + piece.toDebugString());
-    this.log.debug('fromObj : ' + fromObj.toDebugString());
-    this.log.debug('toCell : ' + toCell.toDebugString());
+    LOG.getInto('ShogiGame#doAction');
+    LOG.debug('piece : ' + piece.toDebugString());
+    LOG.debug('fromObj : ' + fromObj.toDebugString());
+    LOG.debug('toCell : ' + toCell.toDebugString());
 
     // この動きがすでにnextMovesのなかにあるならばその動作をすればよい。
     var m = this.makeMove(actionContents);
@@ -368,13 +370,13 @@ window.gameController.game = this;
     // nextMovesに無ければ、まず新手と新局面を作成して、
 
     if (toCell.piece){
-      this.log.warn('piece moving and capturing. : ');
-      this.log.debug('draggable.obj is : ' + piece.toDebugString());
-      this.log.debug('toCell.piece is : ' + toCell.piece.toDebugString());
+      LOG.warn('piece moving and capturing. : ');
+      LOG.debug('draggable.obj is : ' + piece.toDebugString());
+      LOG.debug('toCell.piece is : ' + toCell.piece.toDebugString());
       capturedPieceType = toCell.piece.type;
       toCell.piece.gotoOpponentsStand();
     } else {
-      this.log.warn('piece moving without capturing.');
+      LOG.warn('piece moving without capturing.');
     }
     if(fromObj.type == 'cell'){
       fromObj.piece.sitOnto(toCell);
@@ -386,14 +388,14 @@ window.gameController.game = this;
     // 新局面なのでturnも反転しておく
     this.board.turn = !this.board.turn;
 
-    this.log.goOut();
+    LOG.goOut();
     // DBサーバに情報を投げ、そのbidとmidを含むsliceを受け取る
     this.controller.handler.dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
-    this.log.debug('doAction: game.new_bid : ' + this.new_bid);
+    LOG.debug('doAction: game.new_bid : ' + this.new_bid);
     //var delta =  window.gameController.handler.makeDeltaFromSlice(game.new_bid, data);
     var delta =  window.gameController.handler.makeReviewDelta(this.new_bid);
-    this.log.debug('delta : ' + Object.toJSON(delta));
+    LOG.debug('delta : ' + Object.toJSON(delta));
     window.gameController.sendDelta(delta);
     //this.controller.sendDelta( this.controller.handler.makeReviewDelta(this.new_bid) );
 
@@ -410,18 +412,18 @@ window.gameController.game = this;
     var capturedPieceType = null;
     var movingPieceType = piece.type;
     var moveTo = [toCell.x, toCell.y];
-    this.log.getInto('ShogiGame#doActionWithPromote');
-    this.log.debug('piece : ' + piece.toDebugString());
-    this.log.debug('fromObj : ' + fromObj.toDebugString());
-    this.log.debug('toCell : ' + toCell.toDebugString());
+    LOG.getInto('ShogiGame#doActionWithPromote');
+    LOG.debug('piece : ' + piece.toDebugString());
+    LOG.debug('fromObj : ' + fromObj.toDebugString());
+    LOG.debug('toCell : ' + toCell.toDebugString());
     if (toCell.piece){
-      this.log.warn('piece moving and capturing. : ');
-      this.log.debug('draggable.obj is : ' + piece.toDebugString());
-      this.log.debug('toCell.piece is : ' + toCell.piece.toDebugString());
+      LOG.warn('piece moving and capturing. : ');
+      LOG.debug('draggable.obj is : ' + piece.toDebugString());
+      LOG.debug('toCell.piece is : ' + toCell.piece.toDebugString());
       capturedPieceType = toCell.piece.type;
       toCell.piece.gotoOpponentsStand();
     } else {
-      this.log.warn('piece moving without capturing.');
+      LOG.warn('piece moving without capturing.');
     }
     if(fromObj.type == 'cell'){
       fromObj.piece.sitOnto(toCell);
@@ -433,7 +435,7 @@ window.gameController.game = this;
 
     this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
     
-    this.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * mateCheck(moveTo)
@@ -443,8 +445,8 @@ window.gameController.game = this;
         // 入力値：ライオンの位置
         // 返り値：詰んでいればtrue, いなければfalse
   mateCheck: function mateCheck(moveTo){ // ShogiGame
-    this.log.getInto('ShogiGame#mateCheck');
-    this.log.debug('lion at ' + moveTo.inspect() + ' is mated?');
+    LOG.getInto('ShogiGame#mateCheck');
+    LOG.debug('lion at ' + moveTo.inspect() + ' is mated?');
     var ret = false;
     // 対象のライオンの位置
     var x = parseInt(moveTo[0]);
@@ -459,10 +461,10 @@ window.gameController.game = this;
         if(cell){
           piece = this.board.getCell(x+i,y+j).piece;
           if(piece){
-            this.log.debug('i,j,piece : ' + i + ', ' + j + ', ' + piece.toDebugString());
+            LOG.debug('i,j,piece : ' + i + ', ' + j + ', ' + piece.toDebugString());
             if((!piece.isTurn()) && (ret = piece.canMoveTo(x,y))){
-              this.log.debug('this piece can move to : ' + x + ', ' + y );
-              this.log.debug('so, the lion is mated');
+              LOG.debug('this piece can move to : ' + x + ', ' + y );
+              LOG.debug('so, the lion is mated');
               break;
             }
           }
@@ -470,8 +472,8 @@ window.gameController.game = this;
       }
       if(ret) break;
     }
-    this.log.debug('leaving with : ' + ret);
-    this.log.goOut();
+    LOG.debug('leaving with : ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -481,9 +483,9 @@ window.gameController.game = this;
         // 返り値：どちらかが勝ちだったら勝ったplayerのオブジェクトを返す 
         //         勝負がついていなければnullを返す
   checkFinish: function checkFinish(player, movingPieceType, moveTo, capturedPieceType){ // ShogiGame
-    this.log.getInto('ShogiGame#checkFinish');
+    LOG.getInto('ShogiGame#checkFinish');
     var opponent_player = (player.name == this.controller.player1.name) ? this.controller.player2 : this.controller.player1;
-    this.log.debug('opponent_player : ' + opponent_player.toDebugString());
+    LOG.debug('opponent_player : ' + opponent_player.toDebugString());
     var ret = null;
     // ライオンが詰んでいるかどうか
     // var mated = (movingPieceType == 'lion') ? this.mateCheck(moveTo) : false;
@@ -505,25 +507,25 @@ window.gameController.game = this;
         } 
       }
     }
-    this.log.warn('checkFinish leaving with : ' + ret);
-    this.log.goOut();
+    LOG.warn('checkFinish leaving with : ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
 	 * debug_dump()
 	 */
   debug_dump: function debug_dump(){ //ShogiGame
-    this.log.getInto('ShogiGame#debug_dump', { "background":"#ff88aa","font-size":"12px" });
-    this.log.setLevel(Log.ERROR);
+    LOG.getInto('ShogiGame#debug_dump', { "background":"#ff88aa","font-size":"12px" });
+    LOG.setLevel(Log.ERROR);
     try{
       var state = wave.getState();
     } catch(e){
-      this.log.error('cannot get state : ' + e);
+      LOG.error('cannot get state : ' + e);
     }
     if(state)
-      this.log.warn(state.toString());
+      LOG.warn(state.toString());
     else
-      this.log.error('state is null');
+      LOG.error('state is null');
     var obj = {};
     obj['all pieces']    = this.allPieces().length;
     obj['player1']	 = (this.player1 ? this.player1.toDebugString():null);
@@ -540,11 +542,11 @@ window.gameController.game = this;
     //obj['Droppables']	= Droppables.toDebugString();
     //obj['Draggables']	= Draggables.toDebugString();
     for(var p in obj){
-      this.log.error(p + ' : ' + obj[p]);
+      LOG.error(p + ' : ' + obj[p]);
     }
-    this.log.setLevel(Log.DEBUG);
-    this.log.debug('leaving debug_dump');
-    this.log.goOut();
+    LOG.setLevel(Log.DEBUG);
+    LOG.debug('leaving debug_dump');
+    LOG.goOut();
   }
 });
 
@@ -561,35 +563,35 @@ window.gameController.game = this;
         // 返り値 :'badAction' ルールにそわない手だという意味 
         // 返り値 :'normal' ルールにそい、そのまま進めてよい手だという意味 
 function moveValidate(actionContents){
-  window.gameController.log.getInto('ShogiGame#moveValidate');
+  LOG.getInto('ShogiGame#moveValidate');
   var piece = actionContents[0];
   var fromCell = actionContents[1];
   var toCell = actionContents[2];
   var ret = 'normal';
-  window.gameController.log.debug('piece : ' + piece.toDebugString());
-  window.gameController.log.debug('fromCell : ' + fromCell.toDebugString());
-  window.gameController.log.debug('toCell : ' + toCell.toDebugString());
+  LOG.debug('piece : ' + piece.toDebugString());
+  LOG.debug('fromCell : ' + fromCell.toDebugString());
+  LOG.debug('toCell : ' + toCell.toDebugString());
 
   for(;;){
 
     // 自分の手番の駒の上に進もうとしていないかCheck
     if (toCell.piece) {
       if (piece.isBlack() == toCell.piece.isBlack()){
-        window.gameController.log.debug('piece.isBlack() : ' + piece.isBlack());
-        window.gameController.log.debug('toCell.piece : ' + toCell.piece.toDebugString());
-        window.gameController.log.debug('toCell.piece.isBlack() : ' + toCell.piece.isBlack());
+        LOG.debug('piece.isBlack() : ' + piece.isBlack());
+        LOG.debug('toCell.piece : ' + toCell.piece.toDebugString());
+        LOG.debug('toCell.piece.isBlack() : ' + toCell.piece.isBlack());
         window.gameController.message(t('cannot_capture_yourown_piece')); ret = 'badAction';
         break;
       }
     }
-    window.gameController.game.log.debug('own capturing check passed.');
+    LOG.debug('own capturing check passed.');
 
     // 持ち駒を駒の上に打とうとしていないかCheck
     if((fromCell.type == 'stand') && toCell.piece) {
       window.gameController.message(t('already_occupied')); ret = 'badAction';
       break;
     }
-    window.gameController.game.log.debug('put piece on filled cell check passed.');
+    LOG.debug('put piece on filled cell check passed.');
 
     // Piece#canMoveのなかで処理しているのは、
       // 二歩を打とうとしていないか
@@ -599,7 +601,7 @@ function moveValidate(actionContents){
       window.gameController.message(t('not_allowed')); ret = 'badAction';
       break;
     }
-    window.gameController.log.debug('illegal move check passed.');
+    LOG.debug('illegal move check passed.');
 
     // 成ろうとしているかCheck
     if (fromCell.type == 'cell'){
@@ -607,11 +609,11 @@ function moveValidate(actionContents){
       if (ret) break;
       else ret = 'normal';
     }
-    window.gameController.log.debug('this move does not require promotion.');
+    LOG.debug('this move does not require promotion.');
     break;
   }
-  window.gameController.log.debug('returning with : ' + ret);
-  window.gameController.log.goOut();
+  LOG.debug('returning with : ' + ret);
+  LOG.goOut();
   return ret;
 }
 
@@ -623,67 +625,67 @@ function moveValidate(actionContents){
         // 返り値 :'mustPromote' ルール上、成らなければいけない手だという意味 
         // そうでないならfalseを返す
 function promoteCheck(actionContents){
-  window.gameController.log.getInto('promoteCheck');
+  LOG.getInto('promoteCheck');
   var ret = false;
   var piece = actionContents[0];
   var player = piece.isBlack() ? window.gameController.player1 : window.gameController.player2;
   var fromCell = actionContents[1];
   var toCell = actionContents[2];
-  window.gameController.log.debug('piece type : ' + piece.type);
-  window.gameController.log.debug('fromCell : ' + fromCell.toDebugString());
-  window.gameController.log.debug('toCell : ' + toCell.toDebugString());
+  LOG.debug('piece type : ' + piece.type);
+  LOG.debug('fromCell : ' + fromCell.toDebugString());
+  LOG.debug('toCell : ' + toCell.toDebugString());
   for(var i=0;i<1;i++){
     // 王様or金ならpromoteできないのでfalse
     if (piece.type == 'King' || piece.type == 'Gold'){
-      window.gameController.log.debug('ret is set to false because piece type is ' + piece.type);
+      LOG.debug('ret is set to false because piece type is ' + piece.type);
       ret = false;
       break;
     }
     // すでにpromoteしている駒ならpromoteできないのでfalse
-    window.gameController.log.debug('すでにpromoteしている駒ならpromoteできないのでfalseをcheck : ' + piece.unpromote_type);
+    LOG.debug('すでにpromoteしている駒ならpromoteできないのでfalseをcheck : ' + piece.unpromote_type);
     if (piece.unpromote_type){
-      window.gameController.log.debug('ret is set to false because piece has unpromote_type : ' + piece.unpromote_type);
+      LOG.debug('ret is set to false because piece has unpromote_type : ' + piece.unpromote_type);
       ret = false;
       break;
     }
     // 歩ならば１段目へ進むときは必ず成る
-    window.gameController.log.debug('歩ならば１段目へ進むときは必ず成るかcheck');
+    LOG.debug('歩ならば１段目へ進むときは必ず成るかcheck');
     if (piece.type == 'Pawn' && toCell.isOpponentArea(player, 1)){
-      window.gameController.log.debug('ret is set to mustPromote because Pawn is going to first line');
+      LOG.debug('ret is set to mustPromote because Pawn is going to first line');
       ret = 'mustPromote';
       break;
     }
     // 香ならば１段目へ進むときは必ず成る
-    window.gameController.log.debug('香ならば１段目へ進むときは必ず成るかcheck');
+    LOG.debug('香ならば１段目へ進むときは必ず成るかcheck');
     if (piece.type == 'Lance' && toCell.isOpponentArea(player, 1)){
-      window.gameController.log.debug('ret is set to mustPromote because Lance is going to first line');
+      LOG.debug('ret is set to mustPromote because Lance is going to first line');
       ret = 'mustPromote';
       break;
     }
     // 桂ならば2 or 1段目へ進むときは必ず成る
-    window.gameController.log.debug('桂ならば１,２段目へ進むときは必ず成るかcheck');
+    LOG.debug('桂ならば１,２段目へ進むときは必ず成るかcheck');
     if (piece.type == 'kNight' && toCell.isOpponentArea(player, 2)){
-      window.gameController.log.debug('ret is set to mustPromote because kNight is going to first or second line');
+      LOG.debug('ret is set to mustPromote because kNight is going to first or second line');
       ret = 'mustPromote';
       break;
     }
     // 敵陣へ動く場合は成ることができる
-    window.gameController.log.debug('敵陣へ動く場合は成ることができるかCheck');
+    LOG.debug('敵陣へ動く場合は成ることができるかCheck');
     if (toCell.isOpponentArea(player)){
-      window.gameController.log.debug('ret is set to needConfirm because piece is going to OpponentArea');
+      LOG.debug('ret is set to needConfirm because piece is going to OpponentArea');
       ret = 'needConfirm';
       break;
     }
     // 敵陣から動く場合は成ることができる
-    window.gameController.log.debug('敵陣から動く場合は成ることができるかCheck');
+    LOG.debug('敵陣から動く場合は成ることができるかCheck');
     if (fromCell.isOpponentArea(player)){
-      window.gameController.log.debug('ret is set to needConfirm because piece is going from OpponentArea');
+      LOG.debug('ret is set to needConfirm because piece is going from OpponentArea');
       ret = 'needConfirm';
       break;
     }
     break;
   } 
-  window.gameController.log.debug('returning with : ' + ret);
-  window.gameController.log.goOut();
+  LOG.debug('returning with : ' + ret);
+  LOG.goOut();
   return ret;
 }

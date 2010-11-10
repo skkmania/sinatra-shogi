@@ -8,12 +8,12 @@ Cell.prototype = {
 	 * initialize(board, x, y, top)
 	 */
   initialize: function initialize(board, x, y, top) {
-    board.game.log.getInto('Cell#initialize', Log.DEBUG2);
+    LOG.getInto('Cell#initialize', Log.DEBUG2);
+    this.LOG = LOG;
     Cell.all.push(this);
     this.board = board;
     this.type = 'cell';
     this.game = this.board.game;
-    this.log = this.game.log;
     this.x = x;
     this.y = y;
     //this.top = top;
@@ -21,25 +21,25 @@ Cell.prototype = {
     this.marginLeft = 0;
     this.width = 40;
     this.hight = 42;
-    this.log.goOut(Log.DEBUG2);
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * say()
 	 */
   say: function say(){ // Cell
-    //this.log.getInto('Cell#say');
+    //LOG.getInto('Cell#say');
     // このセルにいるpieceの状態を文字にして返す
     if (!this.piece){
-      //this.log.goOut();
+      //LOG.goOut();
       return 'x';
     }
     var retChar = Type2chr[this.piece.type];
-    //this.log.debug('retChar : ' + retChar);
+    //LOG.debug('retChar : ' + retChar);
     if(this.piece.isBlack()){
-      //this.log.goOut();
+      //LOG.goOut();
       return retChar.toUpperCase();
     } else {
-      //this.log.goOut();
+      //LOG.goOut();
       return retChar; 
     }
   },
@@ -47,12 +47,12 @@ Cell.prototype = {
 	 * put(piece)
 	 */
   put: function put(piece) { // Cell
-    this.log.getInto('Cell#put');
+    LOG.getInto('Cell#put');
     this.piece = piece;
     this.piece.cell = this;
     if(this.elm) this.elm.appendChild(piece.elm);
-    this.log.debug('leaving with piece : ' + this.piece.toDebugString());
-    this.log.goOut();
+    LOG.debug('leaving with piece : ' + this.piece.toDebugString());
+    LOG.goOut();
   },
 	/**
 	 * move(toY, toX)
@@ -66,7 +66,7 @@ Cell.prototype = {
 	 */
   getPosition: function getPosition(){ // Cell
     // top値により、各セルの画面上の座標が決まる
-if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cell#getPosition -----------');
+    if(this.x === 1 && this.y === 1) LOG.warn('-------Cell#getPosition -----------');
     if (this.game.controller.top == 1){
       var bh = this.game.height;
       this.elm.style.left = (this.marginLeft + this.width * this.x) + 'px';
@@ -113,7 +113,7 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
     this.elm.addClassName('cell');
     this.getPosition();
     this.board.elm.appendChild(this.elm);
-    this.log.warn('Droppables to add ' + this.elm.id);
+    LOG.warn('Droppables to add ' + this.elm.id);
     Droppables.add(this.elm, {
       toDebugString: function toDebugString(){
         return 'Droppable : ' + this.toDebugString();
@@ -123,19 +123,19 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
 	 * onDrop(draggable)
 	 */
       onDrop: function onDrop(draggable) {
-        this.log.getInto('Droppable#onDrop',{ "background":"#aaccff" });
+        this.LOG.getInto('Droppable#onDrop',{ "background":"#aaccff" });
 
         // make action contents
         var fromObj = draggable.parentNode.obj;
         var toCell = this;
         var piece = draggable.obj;
         var actionContents = [piece, fromObj, toCell];
-        this.log.debug('actionContents:');
-        this.log.debug('piece :' + piece.toDebugString());
-        this.log.debug('fromObj :' + fromObj.toDebugString());
-        this.log.debug('toCell :' + toCell.toDebugString());
+        this.LOG.debug('actionContents:');
+        this.LOG.debug('piece :' + piece.toDebugString());
+        this.LOG.debug('fromObj :' + fromObj.toDebugString());
+        this.LOG.debug('toCell :' + toCell.toDebugString());
 
-        this.log.goOut();
+        this.LOG.goOut();
 
         var m = this.game.makeMove(actionContents);
         var foundMove = this.game.findMove(m);
@@ -156,13 +156,13 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
 	 * show()
 	 */
   show: function show() { // Cell
-    this.log.getInto('Cell#show',Log.DEBUG2);
-    this.log.debug(this.toDebugString());
+    LOG.getInto('Cell#show',Log.DEBUG2);
+    LOG.debug(this.toDebugString());
     if (!this.elm) {
       (this.x === 0 || this.y === 0) ? this.createDummyElm() : this.createElm();
     }
     if (this.piece) {
-      this.log.debug('in show of Cell, processing -> ' + this.piece.toDebugString());
+      LOG.debug('in show of Cell, processing -> ' + this.piece.toDebugString());
       this.elm.appendChild(this.piece.elm);
       if(this.piece.isBlack() == (this.game.controller.top === 0)){
         this.piece.elm.addClassName('bottom');
@@ -171,10 +171,10 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
         this.piece.elm.addClassName('top');
         this.piece.elm.removeClassName('bottom');
       }
-      this.log.debug('in show of Cell, after process -> ' + this.piece.toDebugString());
+      LOG.debug('in show of Cell, after process -> ' + this.piece.toDebugString());
     }
-    this.log.debug('leaving show of Cell: ' + this.toDebugString());
-    this.log.goOut(Log.DEBUG2);
+    LOG.debug('leaving show of Cell: ' + this.toDebugString());
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * isOpponentArea(playerArg, lineArg)
@@ -185,12 +185,12 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
         //    default は3
   isOpponentArea: function isOpponentArea(playerArg, lineArg) { // Cell
     var ret;
-    this.log.getInto('Cell#isOpponentArea');
+    LOG.getInto('Cell#isOpponentArea');
     var player = playerArg || window.gameController.playerInTurn();
     var line = lineArg || 3;
-    this.log.debug('this cell : ' + this.toDebugString());
-    this.log.debug('player : ' + player.id);
-    this.log.debug('line : ' + line);
+    LOG.debug('this cell : ' + this.toDebugString());
+    LOG.debug('player : ' + player.id);
+    LOG.debug('line : ' + line);
     if (player.id == 'player1') {
       ret = (this.y > 0) && (this.y < line+1);
     }
@@ -198,10 +198,10 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
       ret = (this.y > (9-line)) && (this.y < 10);
     }
     else {
-      this.log.fatal('no player?: ' + player.id);
+      LOG.fatal('no player?: ' + player.id);
     }
-    this.log.debug('leaving with : ' + ret);
-    this.log.goOut();
+    LOG.debug('leaving with : ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -223,9 +223,9 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
 	 * deleteOwnPiece()
 	 */
   deleteOwnPiece: function deleteOwnPiece(){  // Cell
-    this.log.getInto('Cell#deleteOwnPiece');
+    LOG.getInto('Cell#deleteOwnPiece');
     if(this.piece){
-      this.log.warn('this cell.piece to be deleted: ' + this.piece.toDebugString());
+      LOG.warn('this cell.piece to be deleted: ' + this.piece.toDebugString());
     }
     if(this.piece){
       this.piece.cell = null;
@@ -235,21 +235,21 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
       if(this.piece.drag){
         this.piece.drag.destroy();
         this.piece.drag = null;
-        this.log.debug('piece.drag was destroid  : ' + this.piece.drag);
+        LOG.debug('piece.drag was destroid  : ' + this.piece.drag);
       }
       delete this.piece;
       this.piece = null;
     }
-    this.log.goOut();
+    LOG.goOut();
     return;
   }, 
 	/**
 	 * removeOwnPiece()
 	 */
   removeOwnPiece: function removeOwnPiece(){  // Cell
-    this.log.getInto('Cell#removeOwnPiece');
+    LOG.getInto('Cell#removeOwnPiece');
     if(this.piece) {
-      this.log.debug('this cell.piece to be removed: ' + this.piece.toDebugString());
+      LOG.debug('this cell.piece to be removed: ' + this.piece.toDebugString());
     }
     var ret = null;
     if(this.piece){
@@ -258,8 +258,8 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
       this.elm.removeChild(this.piece.elm);
       this.piece = null;
     }
-    this.log.debug('leaving as :' + this.toDebugString());
-    this.log.goOut();
+    LOG.debug('leaving as :' + this.toDebugString());
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -269,8 +269,8 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
     // 敵駒のあるセルに自駒を動かすとき、敵駒の敵stand(つまり自分のスタンド）
     // に駒を動かしてから自駒をこのセルに置く
     // この処理は駒を動かすとき、つまりmoveから呼ばれなければならない
-    this.log.getInto('Cell#replaceOwnPieceWith');
-    this.log.debug('newPiece : ' + newPiece.toDebugString());
+    LOG.getInto('Cell#replaceOwnPieceWith');
+    LOG.debug('newPiece : ' + newPiece.toDebugString());
     var tmp = null;
     if(this.piece){
       tmp = this.piece;
@@ -280,12 +280,12 @@ if(this.x === 1 && this.y === 1) window.gameController.game.log.warn('-------Cel
     this.piece = newPiece;
     this.put(newPiece);
     if (tmp){
-      this.log.debug('leaving Cell#replaceOwnPieceWith with : ' + tmp.toDebugString());
-      this.log.goOut();
+      LOG.debug('leaving Cell#replaceOwnPieceWith with : ' + tmp.toDebugString());
+      LOG.goOut();
         return tmp;
     } else {
-      this.log.debug('leaving Cell#replaceOwnPieceWith nothing');
-      this.log.goOut();
+      LOG.debug('leaving Cell#replaceOwnPieceWith nothing');
+      LOG.goOut();
         return;
     }
   },

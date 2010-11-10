@@ -15,11 +15,11 @@ var Chr2Kanji= { 'p': '歩', 'l': '香', 'n': '桂', 's': '銀',
                  'h': '馬','d': '龍'}; 
 
 function create_piece(chr){
-window.gameController.game.log.getInto();
-  window.gameController.game.log.debug('entered create_piece: ' );
+  LOG.getInto();
+  LOG.debug('entered create_piece: ' );
   var p = new Piece(chr);
-  window.gameController.game.log.debug('leaving create_piece with :' + p.toDebugString() );
-window.gameController.game.log.goOut();
+  LOG.debug('leaving create_piece with :' + p.toDebugString() );
+  LOG.goOut();
   return p;
 }
 /**
@@ -31,33 +31,33 @@ Piece = Class.create({
 	 */
   initialize: function initialize(chr, game) { // Piece
     this.game = game || window.gameController.game;
-    this.game.log.getInto('Piece#initialize');
-    this.game.log.warn('Piece#initialize entered with : ' + chr, {'indent':1});
+    LOG.getInto('Piece#initialize');
+    LOG.warn('Piece#initialize entered with : ' + chr, {'indent':1});
     this.type = Chr2Type[chr.toLowerCase()];
-    this.game.log.warn('Piece#initialize type is : ' + this.type);
+    LOG.warn('Piece#initialize type is : ' + this.type);
     Object.extend(this, PieceTypeObjects[this.type]);
-    this.game.log.warn('Piece#initialize imageUrl is : ' + this.imageUrl);
+    LOG.warn('Piece#initialize imageUrl is : ' + this.imageUrl);
     this.cell = null;
     this.drag = null;
     this.chr = chr;
     this.createElm();
-    this.game.log.debug(this.toDebugString()); 
-    this.game.log.goOut();
+    LOG.debug(this.toDebugString()); 
+    LOG.goOut();
   },
 	/**
 	 * isBlack()
 	 */
   isBlack: function isBlack() {  // Piece
-//this.game.log.debug('Piece#isBlack entered : ');
+//LOG.debug('Piece#isBlack entered : ');
     var ret = (this.chr.toUpperCase() == this.chr);
-//this.game.log.debug('leaving Piece#isBlack with : ' + ret);
+//LOG.debug('leaving Piece#isBlack with : ' + ret);
     return ret;
   },
 	/**
 	 * toggleBW()
 	 */
   toggleBW: function toggleBW() {  // Piece
-    this.game.log.getInto('Piece#toggleBW');
+    LOG.getInto('Piece#toggleBW');
     if (this.chr == this.chr.toUpperCase())
       this.chr = this.chr.toLowerCase(); 
     else
@@ -66,50 +66,50 @@ Piece = Class.create({
     this.elm.toggleClassName('top');
     this.elm.toggleClassName('bottom');
 
-    this.game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * addDraggable(startMessage)
 	 */
   addDraggable: function addDraggable(startMessage){ // Piece
-    this.game.log.getInto('Piece#addDraggable');
-    this.game.log.debug('piece:' + this.toDebugString());
-    this.game.log.debug('msg:' + startMessage);
+    LOG.getInto('Piece#addDraggable');
+    LOG.debug('piece:' + this.toDebugString());
+    LOG.debug('msg:' + startMessage);
   
     this.drag = new Draggable(this.elm, {
           onStart: function onStart() {
-            this.game.log.getInto('Draggable#onStart');
-            this.game.log.debug(this.toDebugString());
-            this.game.log.debug('Drag started. : ' + startMessage);
-            this.game.log.goOut();
+            LOG.getInto('Draggable#onStart');
+            LOG.debug(this.toDebugString());
+            LOG.debug('Drag started. : ' + startMessage);
+            LOG.goOut();
           }.bind(this),
           onEnd: function onEnd() {
-            this.game.log.getInto('Draggable#onEnd');
-            this.game.log.debug(this.toDebugString());
+            LOG.getInto('Draggable#onEnd');
+            LOG.debug(this.toDebugString());
             this.elm.style.top = 0;
             this.elm.style.left = 0;
-            this.game.log.goOut();
+            LOG.goOut();
           }.bind(this)
         });
   
-    this.game.log.debug('drags #: ' + Draggables.drags.length);
-    this.game.log.debug('added obj is : ' + this.drag.toString());
-    this.game.log.goOut();
+    LOG.debug('drags #: ' + Draggables.drags.length);
+    LOG.debug('added obj is : ' + this.drag.toString());
+    LOG.goOut();
   },
 	/**
 	 * toggleDraggable()
 	 */
   toggleDraggable: function toggleDraggable(){ // Piece
-    this.game.log.getInto('Piece#toggleDraggable');
+    LOG.getInto('Piece#toggleDraggable');
 
     // for log
-    this.game.log.debug('piece : '+this.toDebugString());
+    LOG.debug('piece : '+this.toDebugString());
     if(this.drag){
-      this.game.log.debug('this.drag : '+ this.drag.toString());
+      LOG.debug('this.drag : '+ this.drag.toString());
     } else {
-      this.game.log.debug('this piece has no drag');
+      LOG.debug('this piece has no drag');
     }
-    this.game.log.debug('count : '+this.game.controller.count);
+    LOG.debug('count : '+this.game.controller.count);
 
     // main
     if ( (this.game.controller.playerSetting == 'public')
@@ -117,15 +117,15 @@ Piece = Class.create({
       this.simpleToggleDraggable();
     else
       this.viewerRelatedToggleDraggable();
-    this.game.log.goOut();
+    LOG.goOut();
   },
 
 	/**
 	 * simpleToggleDraggable()
 	 */
   simpleToggleDraggable: function simpleToggleDraggable(){ // Piece
-    this.game.log.getInto('Piece#simpleToggleDraggable');
-    this.game.log.debug('turn : '+this.game.board.turn);
+    LOG.getInto('Piece#simpleToggleDraggable');
+    LOG.debug('turn : '+this.game.board.turn);
     if (!this.drag){
       if (this.game.board.turn) {
         if (this.isBlack())
@@ -137,19 +137,19 @@ Piece = Class.create({
     } else {
         this.drag.destroy();
         this.drag = null;
-        this.game.log.debug('drag destroyed because this has one : '+ Draggables.drags.length);
+        LOG.debug('drag destroyed because this has one : '+ Draggables.drags.length);
     }
-    this.game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * viewerRelatedToggleDraggable()
 	 */
   viewerRelatedToggleDraggable: function viewerRelatedToggleDraggable(){ // Piece
-    this.game.log.getInto('Piece#viewerRelatedToggleDraggable');
+    LOG.getInto('Piece#viewerRelatedToggleDraggable');
     var thisPieceIsViewers = this.isViewersP();
-    this.game.log.debug('isViewersP : '+ thisPieceIsViewers);
+    LOG.debug('isViewersP : '+ thisPieceIsViewers);
     var thisTurnIsViewers = this.game.controller.isViewersTurn();
-    this.game.log.debug('isViewersTurn : '+thisTurnIsViewers);
+    LOG.debug('isViewersTurn : '+thisTurnIsViewers);
     if (!this.drag){
         if(thisPieceIsViewers && thisTurnIsViewers){
           this.addDraggable('toggled');
@@ -157,26 +157,26 @@ Piece = Class.create({
     } else {
         if(thisPieceIsViewers){
           if(!thisTurnIsViewers){
-            this.game.log.debug('to destroy drag because this is not Vieweres turn. : '+ Draggables.drags.length);
+            LOG.debug('to destroy drag because this is not Vieweres turn. : '+ Draggables.drags.length);
             this.drag.destroy();
-            this.game.log.debug('length of drags became : '+ Draggables.drags.length);
+            LOG.debug('length of drags became : '+ Draggables.drags.length);
             this.drag = null;
           }
         } else {
-          this.game.log.debug('to destroy drag because this is not Vieweres piece. : '+ Draggables.drags.length);
+          LOG.debug('to destroy drag because this is not Vieweres piece. : '+ Draggables.drags.length);
           this.drag.destroy();
-          this.game.log.debug('length of drags became : '+ Draggables.drags.length);
+          LOG.debug('length of drags became : '+ Draggables.drags.length);
           this.drag = null;
         }
     }
-    this.game.log.debug(this.drag ? 'drag remains':'no drag');
-    this.game.log.goOut();
+    LOG.debug(this.drag ? 'drag remains':'no drag');
+    LOG.goOut();
   },
 	/**
 	 * createElm()
 	 */
   createElm: function createElm() {  // Piece
-    this.game.log.getInto('Piece#createElm', Log.DEBUG2);
+    LOG.getInto('Piece#createElm', Log.DEBUG2);
     this.elm = document.createElement('img');
     this.elm.obj = this;
     this.elm.src = this.imageUrl;
@@ -187,14 +187,14 @@ Piece = Class.create({
     else {
       this.elm.addClassName('top');
     }
-    this.game.log.goOut(Log.DEBUG2);
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * setClassName(player)
 	 */
   setClassName: function setClassName() { // Piece
-    this.game.log.getInto('Piece#setClassName');
-    this.game.log.warn('chr : ' + this.chr + ',  atTop : ' + this.atTop() + ',  this.elm.classname: ' + this.elm.className);
+    LOG.getInto('Piece#setClassName');
+    LOG.warn('chr : ' + this.chr + ',  atTop : ' + this.atTop() + ',  this.elm.classname: ' + this.elm.className);
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
       this.elm.removeClassName('top');
@@ -203,11 +203,11 @@ Piece = Class.create({
       this.elm.removeClassName('bottom');
       this.elm.addClassName('top');
     }
-    this.game.log.warn(
+    LOG.warn(
             'leaving piece setClassName : ' + this.chr +
             ',  atTop : ' + this.atTop() +
             ',  this.elm.classname: ' + this.elm.className);
-    this.game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * atTop()
@@ -230,14 +230,14 @@ Piece = Class.create({
         // このコマがセル上にいるとき限定の関数
   canMoveTo: function canMoveTo(x, y) { // Piece
     var ret;
-    this.game.log.getInto('Piece#canMoveTo');
+    LOG.getInto('Piece#canMoveTo');
     var dx = x - this.cell.x;
     var dy = y - this.cell.y;
     this.isBlack() ? dx *= -1 : dy *= -1;
-    this.game.log.debug('dx, dy : ' + dx + ', ' + dy);
+    LOG.debug('dx, dy : ' + dx + ', ' + dy);
     ret = this.movableCheck(dx, dy);
-    this.game.log.debug('leaving with: ' + ret);
-    this.game.log.goOut();
+    LOG.debug('leaving with: ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -245,7 +245,7 @@ Piece = Class.create({
 	 */
   canMoveFromStand: function canMoveFromStand(toCell) { // Piece
     var ret = true;
-    this.game.log.getInto('Piece#canMoveFromStand');
+    LOG.getInto('Piece#canMoveFromStand');
     // 二歩のチェック
     switch (this.type){
       case 'Pawn':
@@ -262,8 +262,8 @@ Piece = Class.create({
         ret = !toCell.isOpponentArea(null, 2);
         break;
     }
-    this.game.log.debug('leaving with: ' + ret);
-    this.game.log.goOut();
+    LOG.debug('leaving with: ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -271,8 +271,8 @@ Piece = Class.create({
 	 */
   canMove: function canMove(fromObj, toCell) { // Piece
     var ret;
-    this.game.log.getInto('Piece#canMove');
-    this.game.log.debug('from: ' + fromObj.toDebugString() + ', to: ' + toCell.toDebugString());
+    LOG.getInto('Piece#canMove');
+    LOG.debug('from: ' + fromObj.toDebugString() + ', to: ' + toCell.toDebugString());
     if (fromObj.type == 'stand'){
       ret = this.canMoveFromStand(toCell);
     } else {
@@ -284,72 +284,72 @@ Piece = Class.create({
         ret = this.canMoveTo(toCell.x, toCell.y);
       }
     }
-    this.game.log.debug('leaving with: ' + ret);
-    this.game.log.goOut();
+    LOG.debug('leaving with: ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
 	 * move(fromCell, toCell, notCapture, dropOrState)
 	 */
   move: function move(fromCell, toCell, notCapture, dropOrState) {  // Piece
-this.game.log.getInto();
-window.gameController.game.log.warn('Piece#move 1 : ');
+LOG.getInto();
+LOG.warn('Piece#move 1 : ');
     var capturedPiece = null;
     var movingPiece = null;
     if(fromCell) movingPiece = fromCell.removeOwnPiece();
-window.gameController.game.log.warn('Piece#move 2 : ');
+LOG.warn('Piece#move 2 : ');
     capturedPiece = toCell.replaceOwnPieceWith(movingPiece);
-window.gameController.game.log.warn('Piece#move 3 : ');
-this.game.log.goOut();
+LOG.warn('Piece#move 3 : ');
+LOG.goOut();
     return capturedPiece;
   },
 	/**
 	 * sitOnto(cell)
 	 */
   sitOnto: function sitOnto(distination_cell) { // Piece
-    this.game.log.getInto('Piece#sitOnto');
-    this.game.log.debug('entered : ' + distination_cell.toDebugString(), {'indent':1});
+    LOG.getInto('Piece#sitOnto');
+    LOG.debug('entered : ' + distination_cell.toDebugString(), {'indent':1});
     if(this.cell) this.cell.elm.removeChild(this.elm);
     distination_cell.piece = this;
     distination_cell.elm.appendChild(this.elm);
     this.cell = distination_cell;
-    this.game.log.debug('leaving Piece#sitOnto as ' + this.toDebugString(), {'indent':-1});
-    this.game.log.goOut();
+    LOG.debug('leaving Piece#sitOnto as ' + this.toDebugString(), {'indent':-1});
+    LOG.goOut();
   },
 	/**
 	 * gotoOpponentsStand()
 	 */
   gotoOpponentsStand: function gotoOpponentsStand() { // Piece
-    this.game.log.getInto('Piece#gotoOpponentsStand');
-    this.game.log.debug('piece: ' + this.toDebugString());
+    LOG.getInto('Piece#gotoOpponentsStand');
+    LOG.debug('piece: ' + this.toDebugString());
     if(this.unpromote_type){
       this.unpromote();
-      this.game.log.debug('unpromoted : ' + this.toDebugString());
+      LOG.debug('unpromoted : ' + this.toDebugString());
     }
     if(this.isBlack()){
       this.game.whiteStand.put(this);
     } else {
       this.game.blackStand.put(this);
     }
-      this.game.log.debug('leaving Piece#gotoOpponentsStand : ');
-      this.game.log.debug('piece: ' + this.toDebugString());
-      this.game.log.goOut();
+      LOG.debug('leaving Piece#gotoOpponentsStand : ');
+      LOG.debug('piece: ' + this.toDebugString());
+      LOG.goOut();
   },
 	/**
 	 * isViewersP()
 	 */
   isViewersP: function isViewersP(game) { // Piece
-    this.game.log.getInto('Piece#isViewersP');
+    LOG.getInto('Piece#isViewersP');
     var ret;
     if (this.isBlack()){
-      this.game.log.debug('owner name : ' + this.game.controller.player1.name);
+      LOG.debug('owner name : ' + this.game.controller.player1.name);
       ret = this.game.controller.player1.isViewer;
     } else {
-      this.game.log.debug('owner name : ' + this.game.controller.player2.name);
+      LOG.debug('owner name : ' + this.game.controller.player2.name);
       ret = this.game.controller.player2.isViewer;
     }
-    this.game.log.debug('returning with : ' + ret);
-    this.game.log.goOut();
+    LOG.debug('returning with : ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -362,8 +362,8 @@ this.game.log.goOut();
 	 * promote()
 	 */
   promote: function promote() {  // Piece
-    this.game.log.getInto('Piece#promote');
-    this.game.log.debug(this.toDebugString());
+    LOG.getInto('Piece#promote');
+    LOG.debug(this.toDebugString());
     if(this.promote_type){
       this.imageUrl = PieceTypeObjects[this.promote_type].imageUrl;
       this.elm.src = this.imageUrl;
@@ -375,18 +375,18 @@ this.game.log.goOut();
         this.chr = Type2chr[this.type];
       this.movableCheck = PieceTypeObjects[this.promote_type].movableCheck;
       this.promote_type = undefined;
-      this.game.log.debug('promoted : ' + this.toDebugString());
+      LOG.debug('promoted : ' + this.toDebugString());
     } else {
-      this.game.log.fatal('this piece cannot promote.');
+      LOG.fatal('this piece cannot promote.');
     }
-    this.game.log.goOut();
+    LOG.goOut();
   },
   	/**
 	 * unpromote()
 	 */
   unpromote: function unpromote() {  // Piece
-    this.game.log.getInto('Piece#unpromote');
-    this.game.log.debug(this.toDebugString());
+    LOG.getInto('Piece#unpromote');
+    LOG.debug(this.toDebugString());
     if(this.unpromote_type){
       this.imageUrl = PieceTypeObjects[this.unpromote_type].imageUrl;
       this.elm.src = this.imageUrl;
@@ -398,11 +398,11 @@ this.game.log.goOut();
       else
         this.chr = Type2chr[this.type];
       this.unpromote_type = undefined;
-      this.game.log.debug('unpromoted : ' + this.toDebugString());
+      LOG.debug('unpromoted : ' + this.toDebugString());
     } else {
-      this.game.log.fatal('this piece cannot unpromote.');
+      LOG.fatal('this piece cannot unpromote.');
     }
-    this.game.log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * toDebugString()

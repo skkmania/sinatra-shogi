@@ -70,9 +70,9 @@ Wave.prototype = {
   },
   // これはnowaveならではの処理。
   setViewer: function(name) {
-    wave.log.getInto('wave.setViewer');
+    LOG.getInto('wave.setViewer');
     this.viewer = new wave.Participant(name);
-    wave.log.goOut();
+    LOG.goOut();
     return this.viewer;
   },
   isInWaveContainer: function() {
@@ -93,31 +93,31 @@ Wave.prototype = {
   }
 };
 wave = new Wave();
-if(wave.log) wave.log.debug("connecting to "+WS_URL+"...");
+if(LOG) LOG.debug("connecting to "+WS_URL+"...");
 wave.ws.onopen = function() {
-  wave.log.getInto('wave.ws.onopen');
-  wave.log.debug("ws onopen : connected.");
+  LOG.getInto('wave.ws.onopen');
+  LOG.debug("ws onopen : connected.");
 
   wave.ws.send("sync");
-  wave.log.debug("ws onopen : sent sync request.");
-  wave.log.goOut();
+  LOG.debug("ws onopen : sent sync request.");
+  LOG.goOut();
 }
 
 wave.ws.onclose = function() {
-  wave.log.debug("disconnected...");
+  LOG.debug("disconnected...");
 }
 
 wave.ws.onerror = function(msg) {
-  wave.log.debug("failed to connect"+msg);
+  LOG.debug("failed to connect"+msg);
 }
 
 wave.ws.onmessage = function(event) {
-  wave.log.getInto("wave.ws.onmessage");
-  wave.log.debug("message received: "+event.data);
+  LOG.getInto("wave.ws.onmessage");
+  LOG.debug("message received: "+event.data);
   if (wave.stateCallback) {
     switch(event.data.slice(0,4)){
       case "sync" :
-        wave.log.debug("sync reply arrived : " + event.data);
+        LOG.debug("sync reply arrived : " + event.data);
         wave.getState().fromString(event.data.slice(4));
         if(wave.getState().get('mode') == 'playing'){
           // すでにplayerが決まっている'playing'なら、
@@ -137,7 +137,7 @@ wave.ws.onmessage = function(event) {
         break;
     }
   }
-  wave.log.goOut();
+  LOG.goOut();
 }
 
 wave.Callback = function(callback, optContext) {
@@ -196,66 +196,66 @@ wave.State.prototype = {
     this.state = {};
   },
   merge: function(delta) {
-    wave.log.getInto("wave.State.merge");
+    LOG.getInto("wave.State.merge");
     for (var key in delta) {
       this.state[key] = delta[key];
     }
-    wave.log.debug("state changed. >> " + this.toDebugString());
-    wave.log.goOut();
+    LOG.debug("state changed. >> " + this.toDebugString());
+    LOG.goOut();
   },
   submitDelta: function(delta) {
-    wave.log.getInto("wave.State.submitDelta");
+    LOG.getInto("wave.State.submitDelta");
     if (wave.stateCallback) {
       this.merge(delta);
-      wave.log.debug('sending : ' + this.toString());
+      LOG.debug('sending : ' + this.toString());
       wave.ws.send(this.toString());
     }
-    wave.log.goOut();
+    LOG.goOut();
   },
   submitValue: function(key, value) {
-    wave.log.getInto("wave.State.submitValue");
+    LOG.getInto("wave.State.submitValue");
     this.state[key] = value;
-    wave.log.debug("state changed. >> " + this.toDebugString());
+    LOG.debug("state changed. >> " + this.toDebugString());
     if (wave.stateCallback) {
-      wave.log.debug('sending : ' + this.toString());
+      LOG.debug('sending : ' + this.toString());
       wave.ws.send(state);
     }
-    wave.log.goOut();
+    LOG.goOut();
   },
   toString: function() {
-    wave.log.getInto("wave.State.toString");
+    LOG.getInto("wave.State.toString");
     var ret = '';
     for (var key in this.state) {
       if(key && this.state[key])
         ret += key + '|' + this.state[key] + '!!';
       else
-        wave.log.debug("undefined value for key: " + key);
+        LOG.debug("undefined value for key: " + key);
     }
     // 最後の!!は余計なので取り除いて返す
     ret = ret.slice(0,-2);
-    wave.log.debug("returning : " + ret);
-    wave.log.goOut();
+    LOG.debug("returning : " + ret);
+    LOG.goOut();
     return ret;
   },
   fromString: function(str) {
-    wave.log.getInto("wave.State.fromString");
-    wave.log.debug("str : " + str);
+    LOG.getInto("wave.State.fromString");
+    LOG.debug("str : " + str);
     str.split("!!").forEach(function(e){
       var a = e.split("|");
       this.state[a[0]] = a[1];
     }.bind(this));
-    wave.log.debug("state changed. >> " + this.toDebugString());
-    wave.log.goOut();
+    LOG.debug("state changed. >> " + this.toDebugString());
+    LOG.goOut();
     return this.state;
   },
   toDebugString: function() {
-    wave.log.getInto("wave.State.toDebugString");
+    LOG.getInto("wave.State.toDebugString");
     var ret = "{\n";
     for (var key in this.state) {
       if(key) ret += key + ' | ' + this.state[key] + "\n";
     }
     ret += '}';
-    wave.log.goOut();
+    LOG.goOut();
     return ret;
   },
   sync: function(){
@@ -271,7 +271,7 @@ wave.State.prototype = {
       }
     }
     catch(e){
-      if(wave.log) wave.log.debug("sync fail : " + e);
+      if(LOG) LOG.debug("sync fail : " + e);
     }
   }
 };

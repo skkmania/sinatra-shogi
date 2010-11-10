@@ -7,6 +7,7 @@
 さもなくば、ひとつのwindowに重ねて書き込まれてしまう。
 生成されるpopup windowの見た目や大きさはcssにより指定すること。
 */
+LOG = null;
 
 var window_factory = function(container,title,options){
    var window_header = new Element('div',{

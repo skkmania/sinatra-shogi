@@ -30,18 +30,18 @@
 
     <script>
       Event.observe(window, 'load', function() {
-        var logObj = makeLogObj('testInitialize',
+        LOG = makeLogObj('testInitialize',
                       {width:800, height:550, resizable:false});
-        logObj.setLevel('debug');
+        LOG.setLevel('debug');
         $('logger0').insert(new Element('img',
          {id:'handle0', src:"img/lib/window_close.gif"}));
         new Resizable('logger0',{handle:'handle0'});
-        //logObj.setLevel(Log.ERROR);
+        //LOG.setLevel(Log.ERROR);
         if(wave){
-          wave.log = logObj;
+          wave.log = LOG;
           window.gameController = new GameController({containerId:'shogi',
-               'playerSetting':'playGame', 'gameConstructor':'shogi'}, logObj);
-               //'playerSetting':'review', 'gameConstructor':'shogi'}, logObj);
+               'playerSetting':'playGame', 'gameConstructor':'shogi'}, LOG);
+               //'playerSetting':'review', 'gameConstructor':'shogi'}, LOG);
         }
         // if (wave && wave.isInWaveContainer())
         if(wave) 
