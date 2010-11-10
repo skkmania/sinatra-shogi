@@ -10,26 +10,26 @@ var Book = Class.create({
 	 */
   initialize: function initialize(handler, id){
     this.handler = handler;
-    this.log     = handler.logObj;
+    this.LOG     = LOG;
     this.area    = handler.readBookArea;
     this.textAreaId  = id;
-    this.log.getInto('Book#initialize');
+    LOG.getInto('Book#initialize');
     this.book = [];
     this.kid = null;
        // Moveオブジェクトの配列
 
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * showInputBox()
 	 */
   showInputBox: function showInputBox(){
-    this.log.getInto('Book#showInputBox');
+    LOG.getInto('Book#showInputBox');
     var textarea = new Element('textarea',{ id:this.textAreaId, cols:20, rows:20,className:'book' });
     var button = new Element('input',{ id:'bookBack', type:'button', value:'post',className:'book' });
     button.observe('click', function(){
       this.writtenContent = textarea.value;
-      this.log.debug('content: ' + this.writtenContent);
+      this.LOG.debug('content: ' + this.writtenContent);
       if(this.legalCheck()){
         this.postBook();
       } else {
@@ -39,7 +39,7 @@ var Book = Class.create({
     }.bind(this));
     this.area.window_contents.appendChild(button);
     this.area.window_contents.appendChild(textarea);
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * legalCheck()
@@ -50,12 +50,12 @@ var Book = Class.create({
 	// 出力 : 文字列 pure moveを並べた文字列。長さは6 * 手数となる
 	// 出力例 : 7776Pf3334pf2726Pf8384pf8822Bt
   legalCheck: function legalCheck(){ // Book
-    this.log.getInto('Book#legalCheck');
+    LOG.getInto('Book#legalCheck');
     //var bookText = $(this.textAreaId).value;
-    //this.log.debug('written content: ' + bookText);
+    //LOG.debug('written content: ' + bookText);
     var ret = true;
-    this.log.debug('returning : ' + ret);
-    this.log.goOut();
+    LOG.debug('returning : ' + ret);
+    LOG.goOut();
     return ret;
   },
 	/*
@@ -65,9 +65,9 @@ var Book = Class.create({
 	// 入力 : なし
 	// 出力 : なし
   showError: function showError(){ // Book
-    this.log.getInto('Book#showError');
+    LOG.getInto('Book#showError');
     $(this.textAreaId).value = 'Error!';
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * readDB
@@ -87,13 +87,13 @@ var Book = Class.create({
 	//     例 : "1,0,77,76,P,f,2:2,0,33,34,p,f,3:3,0,27,26,P,f,4:4,0,41,32,g,f,5:5,0,69,78,G,f,6"
 	// 出力 配列 moveオブジェクトの配列
   readDB : function readDB(ary){ // Book
-    this.log.getInto('Book#readDB'); 
+    LOG.getInto('Book#readDB'); 
     Object.extend(this, ary[0]);
     this.moves = this.kif.split(':').map(function(e){
-      return new Move(this.log).fromRecord(e.split(','));
+      return new Move().fromRecord(e.split(','));
     }.bind(this));
-    this.log.debug('returning : ' + this.moves.invoke('toDelta').join(':'));
-    this.log.goOut();
+    LOG.debug('returning : ' + this.moves.invoke('toDelta').join(':'));
+    LOG.goOut();
     return this.moves;
   },
 	/*
@@ -113,13 +113,13 @@ var Book = Class.create({
 	//    "m_from":27, "mid":0, "cnt":3, "nxt_bid":4}]
 	// 出力 配列 moveオブジェクトの配列
   readDB_old : function readDB_old(ary){ // Book
-    this.log.getInto('Book#readDB'); 
+    LOG.getInto('Book#readDB'); 
     var ret = ary.map(function(e){
-      return new Move(this.log).fromObj(e);
+      return new Move().fromObj(e);
     }.bind(this));
     this.book = ret;
-    this.log.debug('returning : ' + ret.invoke('toDelta').join(':'));
-    this.log.goOut();
+    LOG.debug('returning : ' + ret.invoke('toDelta').join(':'));
+    LOG.goOut();
     return ret;
   },
 	/*
@@ -129,7 +129,7 @@ var Book = Class.create({
 	// 入力 なし
 	// 出力 なし
   showBookForm : function showBookForm(){ // Book
-    this.log.getInto(); 
+    LOG.getInto(); 
     //var form = new Element('form',{ id:'getBookForm' });
     var label  = Builder.node('label',{ htmlFor:'kidInput', className:'book' }, 'kid');
     var input   = new Element('input',{ id:'kidInput', type:'text', size: 8, className:'book' });
@@ -142,7 +142,7 @@ var Book = Class.create({
       this.showBackButton();
       return false;
     }.bind(this));
-    //this.log.debug('input created : ' + form.className);
+    //LOG.debug('input created : ' + form.className);
     this.area.window_contents.appendChild(label);
 /*
     form.appendChild(label);
@@ -152,7 +152,7 @@ var Book = Class.create({
     //this.area.window_contents.appendChild(form);
     this.area.window_contents.appendChild(input);
     this.area.window_contents.appendChild(button);
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * showBackButton
@@ -161,7 +161,7 @@ var Book = Class.create({
 	// 入力 なし
 	// 出力 なし
   showBackButton : function showBackButton(){ // Book
-    this.log.getInto(); 
+    LOG.getInto(); 
     var button = new Element('input',{ id:'bookBack', type:'button', value:'back',className:'book' });
     button.observe('click', function(){
       this.showBookForm();
@@ -169,7 +169,7 @@ var Book = Class.create({
       return false;
     }.bind(this));
     this.area.window_contents.appendChild(button);
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * showBook
@@ -179,9 +179,9 @@ var Book = Class.create({
 	// 入力 数値 foundCnt 既存の手の手数
 	// 出力 なし
   showBook : function showBook(foundCnt){ // Book
-    this.log.getInto("Book#showBook"); 
+    LOG.getInto("Book#showBook"); 
     var ul = new Element('ul',{ className:'book',listStyleType:'decimal' });
-    this.log.debug('ul created : ' + ul.className);
+    LOG.debug('ul created : ' + ul.className);
     // add metadata
     $w('kid gdate black white tesu result').each(function(e){
       var elm = new Element('li', { className: "metabookdata" }); 
@@ -189,9 +189,9 @@ var Book = Class.create({
       ul.appendChild(elm);
     }.bind(this));
     // add moves 
-    this.log.debug('moves size : ' + this.moves.size());
+    LOG.debug('moves size : ' + this.moves.size());
     this.moves.each(function(m, idx){
-      this.log.debug('idx : ' + idx + ', m : ' + m.toDelta());
+      this.LOG.debug('idx : ' + idx + ', m : ' + m.toDelta());
       var cn = 'book';
       if(foundCnt && idx <= foundCnt) cn += ' found';
       var elm = new Element('li',{ id: 'km_'+m.nxt_bid, className: cn });
@@ -200,7 +200,7 @@ var Book = Class.create({
     }.bind(this));
     $(this.area.window_contents).update(ul);
     this.area.window_contents.appendChild(this.backButton);
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * getBook
@@ -210,8 +210,8 @@ var Book = Class.create({
 	// 出力 なし
 	//   だが、ajaxのresponsが帰ってきたらthis.bookに値を格納する
   getBook : function getBook(arg_kid){ // Book
-    this.log.getInto('Book#getBook'); 
-    this.log.debug('kid : ' + arg_kid);
+    LOG.getInto('Book#getBook'); 
+    LOG.debug('kid : ' + arg_kid);
     this.kid = arg_kid;
     var request = new Ajax.Request('/book', {
          method: 'get',
@@ -223,29 +223,29 @@ var Book = Class.create({
       parameters : { kid : arg_kid },
       asynchronous : false,
       onSuccess : function onSuccess_getBook(response){
-        this.log.getInto('Book#onSuccess_getBook');
+        this.LOG.getInto('Book#onSuccess_getBook');
         var data= msgpack.unpack(response.responseText);
-        this.log.debug('result of getBook :<br> unpacked responseText : ' + JSON.stringify(data));
+        this.LOG.debug('result of getBook :<br> unpacked responseText : ' + JSON.stringify(data));
         this.readDB(data);
-        this.log.debug('response read done : ');
-        this.log.goOut();
+        this.LOG.debug('response read done : ');
+        this.LOG.goOut();
       }.bind(this),
       onFailure : function onFailure_getBook(response){
-        this.log.getInto();
-        this.log.debug('onFailure : ' + response.status + response.statusText);
-        this.log.goOut();
+        this.LOG.getInto();
+        this.LOG.debug('onFailure : ' + response.status + response.statusText);
+        this.LOG.goOut();
         return false;
       }.bind(this)
     });
     var response = new Ajax.Response(request);
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * postBook
 	 */
 	// getBookとの違い : 何手目までが既存手であったかをserverから教えてもらっている
   postBook : function postBook(){ // Book
-    this.log.getInto('Book#postBook'); 
+    LOG.getInto('Book#postBook'); 
     //var bookText = $(this.textAreaId).value;
     var request = new Ajax.Request('/book', {
          method: 'post',
@@ -258,26 +258,26 @@ var Book = Class.create({
       //parameters : { text: bookText },
       asynchronous : true,
       onSuccess : function onSuccess_postBook(response){
-        this.log.getInto('Book#onSuccess_postBook');
-        this.log.debug('responseText : ' + Object.toJSON(response.responseText));
+        this.LOG.getInto('Book#onSuccess_postBook');
+        this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
-        this.log.debug('result of postBook :<br> unpacked responseText : ' + Object.toJSON(data));
+        this.LOG.debug('result of postBook :<br> unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data);
         this.showBook(data.foundCnt);
         this.showBackButton();
-        this.log.debug('slice read done : ');
-        this.log.goOut();
+        this.LOG.debug('slice read done : ');
+        this.LOG.goOut();
         return data;
       }.bind(this),
       onFailure : function onFailure_postBook(response){
-        this.log.getInto();
-        this.log.debug('onFailure : ' + response.status + response.statusText);
-        this.log.goOut();
+        this.LOG.getInto();
+        this.LOG.debug('onFailure : ' + response.status + response.statusText);
+        this.LOG.goOut();
         return false;
       }.bind(this)
     });
     var response = new Ajax.Response(request);
-    this.log.goOut();
+    LOG.goOut();
   },
 
   toDebugString: function toDebugString(){

@@ -66,18 +66,18 @@ ControlPanel = Class.create({
 	 * initialize(game)
 	 */
   initialize: function initialize(controller) { // ControlPanel
-    controller.log.getInto('ControlPanel#initialize');
+    LOG.getInto('ControlPanel#initialize');
     this.controller = controller;
-    this.controller.log.goOut();
-    this.area = controller.cpArea;
+    this.area = controller.handler.cpArea;
     this.areaInit();
     this.counterElm = $('counterNum');
+    LOG.goOut();
   },
 	/**
 	 * areaInit()
 	 */
   areaInit: function areaInit() { // ControlPanel              
-     this.controller.log.getInto('ControlPanel#areaInit');
+     LOG.getInto('ControlPanel#areaInit');
      var contents = '<div id="Title">\
                         <p id="kid">局面ID: </p>\
                         <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
@@ -86,14 +86,14 @@ ControlPanel = Class.create({
          contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
          contents += '<div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>';
          contents += '<div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>';
-    //this.area.window_contents.update(contents);
-    this.controller.log.goOut();
+    this.area.window_contents.update(contents);
+    LOG.goOut();
   }, 
 	/**
 	 * reverse()
 	 */
   reverse: function reverse() { // ControlPanel              
-     this.controller.log.getInto('ControlPanel#reverse');
+     LOG.getInto('ControlPanel#reverse');
       if (this.controller.top == 1){                                                
         this.player1Elm = $('top-panel');
         this.player2Elm = $('bottom-panel');
@@ -103,21 +103,21 @@ ControlPanel = Class.create({
       }                    
     this.player1Elm.update(t('sente') + (this.controller.player1 ? this.controller.player1.statusHtml() : t('waiting')));
     this.player2Elm.update(t('gote') +  (this.controller.player2 ? this.controller.player2.statusHtml() : t('waiting')));
-    this.controller.log.goOut();
+    LOG.goOut();
   }, 
 	/**
 	 * waitPlayer()
 	 */
   waitPlayer: function waitPlayer() { // ControlPanel             
-    this.controller.log.getInto();
-    this.controller.log.goOut();
+    LOG.getInto();
+    LOG.goOut();
   }, 
 	/**
 	 * update()
 	 */
   update: function update(mode) { // ControlPanel             
-    this.controller.log.getInto('ControlPanel#update');
-    this.controller.log.debug('mode : ' + mode);
+    LOG.getInto('ControlPanel#update');
+    LOG.debug('mode : ' + mode);
     this.counterElm.update(this.controller.count);
     if (!this.elm) this.elm = $('control-panel');                         
     if (this.controller.top == 1){                                                
@@ -138,12 +138,12 @@ ControlPanel = Class.create({
           this.player1Elm.innerHTML = t('sente') + this.controller.player1.statusHtml();
         else
           this.player1Elm.innerHTML = t('sente');
-        this.controller.log.debug('player1 is written on panel');
+        LOG.debug('player1 is written on panel');
         if(this.controller.player2)
           this.player2Elm.innerHTML = t('gote') + this.controller.player2.statusHtml();
         else
           this.player2Elm.innerHTML = t('gote');
-        this.controller.log.debug('player2 is written on panel');
+        LOG.debug('player2 is written on panel');
         break;
       case 'over':
         this.controller.message(t('already_over') + '<br>' + wave.getState().get('winner') + t('win'));
@@ -159,8 +159,8 @@ ControlPanel = Class.create({
         this.player1Elm.innerHTML = t('sente');
         this.player2Elm.innerHTML = t('gote');
     }
-    this.controller.log.warn('cp update leaving'); 
-    this.controller.log.goOut();
+    LOG.warn('cp update leaving'); 
+    LOG.goOut();
   } 
 });
 
