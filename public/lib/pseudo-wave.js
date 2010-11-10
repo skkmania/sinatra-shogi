@@ -95,12 +95,12 @@ Wave.prototype = {
 wave = new Wave();
 if(LOG) LOG.debug("connecting to "+WS_URL+"...");
 wave.ws.onopen = function() {
-  LOG.getInto('wave.ws.onopen');
-  LOG.debug("ws onopen : connected.");
+  if(LOG) LOG.getInto('wave.ws.onopen');
+  if(LOG) LOG.debug("ws onopen : connected.");
 
   wave.ws.send("sync");
-  LOG.debug("ws onopen : sent sync request.");
-  LOG.goOut();
+  if(LOG) LOG.debug("ws onopen : sent sync request.");
+  if(LOG) LOG.goOut();
 }
 
 wave.ws.onclose = function() {

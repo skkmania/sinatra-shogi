@@ -18,9 +18,9 @@ var Move = Class.create({
   nxt_bid: null,
   toStr: null,
 
-  initialize : function initialize(log, str){ // Move
-    this.log = log;
-    this.log.getInto('Move#initialize');
+  initialize : function initialize(str){ // Move
+    this.LOG = LOG;
+    LOG.getInto('Move#initialize');
     if (str && str.length == 6){
       this.from    = parseInt(str.slice(0,2));
       this.to      = parseInt(str.slice(2,4));
@@ -28,7 +28,7 @@ var Move = Class.create({
       this.promote = str.slice(-1) == 't' ? true : false;
       this.toStr   = str;
     }
-    this.log.goOut();
+    LOG.goOut();
     return this;
   },
 
@@ -171,7 +171,7 @@ var Move = Class.create({
 	 * legalCheck()
 	 */
   legalCheck : function legalCheck(){ // Move
-    this.log.getInto();
+    LOG.getInto();
     if (typeof this.to == "String"){
       var to_x = this.to[0]-0;
       var to_y = this.to[1]-0;
@@ -183,8 +183,8 @@ var Move = Class.create({
       var from_x = Math.floor(this.from / 10);
       var from_y = this.from - 10*from_x;
     }
-    this.log.debug('legalcheck@Move');
-    this.log.debug('legal check this move : ' + Object.toJSON(this));
+    LOG.debug('legalcheck@Move');
+    LOG.debug('legal check this move : ' + Object.toJSON(this));
     switch(this.piece){
       case 'p':
         return (from_x == to_x) && (to_y - from_y == 1);
@@ -243,7 +243,7 @@ var Move = Class.create({
       default:
         break;
     } // switch
-    this.log.goOut();
+    LOG.goOut();
   } // function legalCheck
 });
 
@@ -254,10 +254,10 @@ var Move = Class.create({
 var Moves = Class.create(Hash, {
 
   initialize : function($super, log){ // Moves
-    this.log = log;
-    this.log.getInto('Moves#initialize');
+    LOG = log;
+    LOG.getInto('Moves#initialize');
     $super();
-    this.log.goOut();
+    LOG.goOut();
   },
 	/*
 	 * search(m)
@@ -269,14 +269,14 @@ var Moves = Class.create(Hash, {
 	//        みつかったときはそのmove
 	//        みつからないときはfalse
   search : function(m){ // Moves
-    this.log.getInto('Moves#search');
+    LOG.getInto('Moves#search');
     var res = this.find(function(pair){
-      // this.log.debug('key : ' + pair.key);
-      // this.log.debug('value : ' + Object.toJSON(pair.value));
+      this.LOG.debug2('key : ' + pair.key);
+      this.LOG.debug2('value : ' + Object.toJSON(pair.value));
       return pair.value.minimalEqual(m);
     }.bind(this));
-    // this.log.debug('returning : ' + res.value.toDelta());
-    this.log.goOut();
+    LOG.debug2('returning : ' + res.value.toDelta());
+    LOG.goOut();
     if (res)
       return res.value;
     else
@@ -286,20 +286,20 @@ var Moves = Class.create(Hash, {
 	 * toDebugString()
 	 */
   toDebugString : function toDebugString(){ // Moves
-    this.log.getInto('Moves#toDebugString');
+    LOG.getInto('Moves#toDebugString');
     var res = this.values().invoke('toDebugString').join(':');
-    this.log.debug('returning : ' + res);
-    this.log.goOut();
+    LOG.debug('returning : ' + res);
+    LOG.goOut();
     return res;
   },
 	/*
 	 * toDelta()
 	 */
   toDelta : function toDelta(){ // Moves
-    this.log.getInto('Moves#toDelta');
+    LOG.getInto('Moves#toDelta');
     var res = this.values().invoke('toDelta').join(':');
-    this.log.debug('returning : ' + res);
-    this.log.goOut();
+    LOG.debug('returning : ' + res);
+    LOG.goOut();
     return res;
   },
 	/*
@@ -309,23 +309,23 @@ var Moves = Class.create(Hash, {
 	// ただし、midがないmoveは読み込まない
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
   fromDelta : function fromDelta(str){ // Moves
-    this.log.getInto('Moves#fromDelta');
+    LOG.getInto('Moves#fromDelta');
     if(!str || str.length == 0){
-      this.log.debug('nothing to do because argument str is invalid');
-      this.log.goOut();
+      LOG.debug('nothing to do because argument str is invalid');
+      LOG.goOut();
       return this;
     }
     var ary = str.split(':');
     ary.each(function(e){
-      var m = new Move(this.log);
+      var m = new Move();
       m.fromDelta(e);
-      this.log.debug('m : ' + m.toDelta());
+      this.LOG.debug('m : ' + m.toDelta());
       if (Object.isNumber(m.mid)){
         this.set(m.mid, m);
-        this.log.debug('m was set to Moves : ' + m.toDelta());
+        this.LOG.debug('m was set to Moves : ' + m.toDelta());
       }
     }.bind(this));
-    this.log.goOut();
+    LOG.goOut();
     return this;
   },
 
@@ -339,13 +339,13 @@ var Moves = Class.create(Hash, {
 	// 入力 : 配列 要素はjsのオブジェクト
 	// 出力 : 自身
   fromDB : function fromDB(ary){ // Moves
-    this.log.getInto('Moves#fromDB');
+    LOG.getInto('Moves#fromDB');
     ary.each(function(e){
-      var m = (new Move(this.log)).fromObj(e);
+      var m = (new Move()).fromObj(e);
       if (Object.isNumber(m.mid)) this.set(m.mid, m);
     }.bind(this));
-    this.log.debug('Moves became : ' + this.toDelta());
-    this.log.goOut();
+    LOG.debug('Moves became : ' + this.toDelta());
+    LOG.goOut();
     return this;
   },
 

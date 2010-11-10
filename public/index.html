@@ -38,10 +38,9 @@
         new Resizable('logger0',{handle:'handle0'});
         //LOG.setLevel(Log.ERROR);
         if(wave){
-          wave.log = LOG;
           window.gameController = new GameController({containerId:'shogi',
-               'playerSetting':'playGame', 'gameConstructor':'shogi'}, LOG);
-               //'playerSetting':'review', 'gameConstructor':'shogi'}, LOG);
+               'playerSetting':'playGame', 'gameConstructor':'shogi'});
+               //'playerSetting':'review', 'gameConstructor':'shogi'});
         }
         // if (wave && wave.isInWaveContainer())
         if(wave) 

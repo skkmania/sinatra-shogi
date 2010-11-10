@@ -11,13 +11,13 @@
 //-----------------------------------------------------------------
 
 function initOnClick_Title(){
-    logObj.getInto();
+    LOG.getInto();
     $('hTitle').observe('click',
       function(evt){ 
         hand.areaClicked('next', '1');
       }
     );
-    logObj.goOut();
+    LOG.goOut();
 }
 /**
  * Slice Class
@@ -29,36 +29,36 @@ var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super, logObj){
-    logObj.getInto('Slice#initialize');
+  initialize : function initialize($super, LOG){
+    LOG.getInto('Slice#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    this.logObj = logObj;
-    logObj.goOut();
+    this.LOG = LOG;
+    LOG.goOut();
     return this;
   },
 	/**
 	 * fromState()
 	 */
   fromState : function fromState(state){ // Slice
-    this.logObj.getInto('Slice#fromState');
-    this.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board',window.gameController.game.board.initialString)));
-    this.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next', '')));
-    this.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev', '')));
-    this.logObj.goOut();
+    LOG.getInto('Slice#fromState');
+    this.set('board',     (new BoardData(LOG)).fromDelta(state.get('board',window.gameController.game.board.initialString)));
+    this.set('nextMoves', (new Moves(LOG)).fromDelta(state.get('next', '')));
+    this.set('prevMoves', (new Moves(LOG)).fromDelta(state.get('prev', '')));
+    LOG.goOut();
     return this;
   },
 	/**
 	 * toDebugHtml()
 	 */
   toDebugHtml : function toDebugHtml(){ // Slice
-    this.logObj.getInto('Slice#toDebugHtml');
+    LOG.getInto('Slice#toDebugHtml');
     var ret = '<table class="slice">';
-    this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
-    this.logObj.debug('values : ' + this.values().invoke('toDebugString').join('::'));
+    LOG.debug('keys : ' + Object.toJSON(this.keys()));
+    LOG.debug('values : ' + this.values().invoke('toDebugString').join('::'));
     this.keys().each(function(key){
-      this.logObj.debug('pair.key: ' + Object.toJSON(key));
-      this.logObj.debug('pair.value: ' + this.get(key).toDebugString());
+      this.LOG.debug('pair.key: ' + Object.toJSON(key));
+      this.LOG.debug('pair.value: ' + this.get(key).toDebugString());
       ret += '<tr>';
       ret += '<td>' + key + '</td>';
       if (!this.get(key)){
@@ -68,31 +68,31 @@ var Slice = Class.create(Hash, {
       }
       ret += '</tr>';
     }.bind(this));
-    this.logObj.goOut();
+    LOG.goOut();
     return ret + '</table>';
   },
 	/**
 	 * toDebugString()
 	 */
   toDebugString : function toDebugString(){ // Slice
-    this.logObj.getInto('Slice#toDebugString');
+    LOG.getInto('Slice#toDebugString');
     var ret = '';
-    this.logObj.debug('keys : ' + JSON.stringify(this.keys()));
-    //this.logObj.debug('keys : ' + Object.toJSON(this.keys()));
-    // this.logObj.debug('values : ' + Object.toJSON(this.values()));
+    LOG.debug('keys : ' + JSON.stringify(this.keys()));
+    //LOG.debug('keys : ' + Object.toJSON(this.keys()));
+    // LOG.debug('values : ' + Object.toJSON(this.values()));
     this.keys().each(function(key){
       var obj = this.get(key);
-      this.logObj.getInto('key : ' + key);
+      this.LOG.getInto('key : ' + key);
       ret += key + '::';
       if (!obj){
          ret += '[]';
       } else {
          ret += obj.toDelta();
       }
-      this.logObj.debug('value: ' + ret);
-      this.logObj.goOut();
+      this.LOG.debug('value: ' + ret);
+      this.LOG.goOut();
     }.bind(this));
-    this.logObj.goOut();
+    LOG.goOut();
     return ret;
   }
 });
@@ -107,12 +107,12 @@ var Slices = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super, logObj){
-    logObj.getInto('Slices#initialize');
+  initialize : function initialize($super, LOG){
+    LOG.getInto('Slices#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    this.logObj = logObj;
-    logObj.goOut();
+    LOG = LOG;
+    LOG.goOut();
   },
 	/**
 	 * read(bid,sliceData)
@@ -123,11 +123,11 @@ var Slices = Class.create(Hash, {
 	//      : sliceData  javascriptのオブジェクト 新しいボードの１画面ぶんのデータ
 	// 出力 : なし
   read : function read(bid, sliceData) { // Slices
-    this.logObj.getInto('Slices#read');
-    this.logObj.debug('typeof bid : ' + typeof bid);
+    LOG.getInto('Slices#read');
+    LOG.debug('typeof bid : ' + typeof bid);
     this.set(bid, sliceData);
-    this.logObj.debug('this['+bid+'] became ' + Object.toJSON(this.get(bid)));
-    this.logObj.goOut();
+    LOG.debug('this['+bid+'] became ' + Object.toJSON(this.get(bid)));
+    LOG.goOut();
   }
 });
 
@@ -142,19 +142,19 @@ var Store = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super, logObj){
-    this.logObj = logObj;
-    this.logObj.getInto('Store#initialize');
+  initialize : function initialize($super, LOG){
+    this.LOG = LOG;
+    LOG.getInto('Store#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    this.slices = new Slices(this.logObj);
+    this.slices = new Slices(LOG);
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
        // stateを読むごとに更新される
     this.nextBid = null; // 次に表示する画面のbidの値を格納する。
        // 初期値はわからないのでnullとする。
        // ユーザアクションを受けてはじめて決まり、
        // 次の画面情報を作成するときに使われる
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/**
 	 * currentSlice()
@@ -186,20 +186,20 @@ var Store = Class.create(Hash, {
 	//        mask  dataNameの使用範囲を指定する数字, 省略時は511
 	// 出力 : なし
   readDB : function readDB(data, mask) { // Store
-    this.logObj.getInto('Store#readDB');
+    LOG.getInto('Store#readDB');
     // dataに含まれるbidを取り出して配列として保持
     var bids = data['board'].pluck('bid');
     // data[board]は、dataが保持しているjsオブジェクトの配列
-    this.logObj.debug('data[board] : ' + Object.toJSON(data['board']));
+    LOG.debug('data[board] : ' + Object.toJSON(data['board']));
     // bidsは、数値の配列
-    this.logObj.debug('bids : ' + Object.toJSON(bids));
+    LOG.debug('bids : ' + Object.toJSON(bids));
     var m = mask || 511;
     bids.each(function(bid){
-      this.logObj.debug('bid : ' + Object.toJSON(bid));
+      this.LOG.debug('bid : ' + Object.toJSON(bid));
       this.slices.set(bid, this.makeSlice(bid, data, m));
     }.bind(this));
-    //this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
-    this.logObj.goOut();
+    //LOG.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.goOut();
   },
 	/**
 	 * readState(data)
@@ -208,20 +208,20 @@ var Store = Class.create(Hash, {
 	// 入力 : state  google wave のgadgetの仕様にしたがう
 	// 出力 : なし
   readState : function readState(state) { // Store
-    this.logObj.getInto('Store#readState');
+    LOG.getInto('Store#readState');
     this.currentBid = parseInt(state.get('bid'));
       // stateから読んだbidは、これから表示しようとする画面のbid
       // なので、currentBidという名をつけてアクセスを容易にする
       // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
-    var slice = (new Slice(this.logObj)).fromState(state);
+    var slice = (new Slice(LOG)).fromState(state);
 /*
-    slice.set('board',     (new BoardData(this.logObj)).fromDelta(state.get('board')));
-    slice.set('nextMoves', (new Moves(this.logObj)).fromDelta(state.get('next')));
-    slice.set('prevMoves', (new Moves(this.logObj)).fromDelta(state.get('prev')));
+    slice.set('board',     (new BoardData(LOG)).fromDelta(state.get('board')));
+    slice.set('nextMoves', (new Moves(LOG)).fromDelta(state.get('next')));
+    slice.set('prevMoves', (new Moves(LOG)).fromDelta(state.get('prev')));
 */
     this.slices.set(this.currentBid, slice);
-    this.logObj.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
-    this.logObj.goOut();
+    LOG.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.goOut();
   },
 	/**
 	 * makeSlice(bid, data, mask)
@@ -233,53 +233,53 @@ var Store = Class.create(Hash, {
 	//           指定方法：this.nameの添字をbitに見立てた二進から10進変換
 	// 出力 : Sliceオブジェクト(Hash)
   makeSlice : function makeSlice(bid, data, mask) { // Store
-    this.logObj.getInto('Store#makeSlice');
+    LOG.getInto('Store#makeSlice');
     var m = mask || 511;
-    this.logObj.debug('m : ' + Object.toJSON(m));
+    LOG.debug('m : ' + Object.toJSON(m));
     var target;
-    var ret = new Slice(this.logObj);
+    var ret = new Slice(LOG);
     var dataNames = this.getMaskedDataName(m);
-    this.logObj.debug('masked data name : ' + Object.toJSON(dataNames));
+    LOG.debug('masked data name : ' + Object.toJSON(dataNames));
     // ほとんどの場合、あるbidの画面にはそのbidを自身のbidとして持つオブジェクトを集める
     dataNames.each(function(name){
-      this.logObj.debug('name : ' + Object.toJSON(name));
+      this.LOG.debug('name : ' + Object.toJSON(name));
       switch(name){
         case 'board':
           target = data['board'].find(function(e){
              return e.bid == bid;
           });
-          this.logObj.debug('target : ' + Object.toJSON(target));
-          this.logObj.debug('target.bid : ' + Object.toJSON(target.bid));
-          this.logObj.debug('target.board : ' + Object.toJSON(target.board));
-          var obj = new BoardData(this.logObj);
-          this.logObj.debug('obj after initialize : ' + obj.toDelta());
+          this.LOG.debug('target : ' + Object.toJSON(target));
+          this.LOG.debug('target.bid : ' + Object.toJSON(target.bid));
+          this.LOG.debug('target.board : ' + Object.toJSON(target.board));
+          var obj = new BoardData(this.LOG);
+          this.LOG.debug('obj after initialize : ' + obj.toDelta());
           ret.set('board',    obj.fromDB(target));
-          this.logObj.debug('obj after fromDB : ' + obj.toDelta());
-          this.logObj.debug('ret : ' + Object.toJSON(ret));
+          this.LOG.debug('obj after fromDB : ' + obj.toDelta());
+          this.LOG.debug('ret : ' + Object.toJSON(ret));
           break;
         case 'nextMoves':
           target = $A(data['nextMoves']).findAll(function(obj){
       	         return obj.bid == bid;
       	       }.bind(this));
-          this.logObj.debug('target : ' + Object.toJSON(target));
-          var obj = new Moves(this.logObj);
+          this.LOG.debug('target : ' + Object.toJSON(target));
+          var obj = new Moves(this.LOG);
           ret.set('nextMoves', obj.fromDB(target));
           break;
         case 'prevMoves':
           target = $A(data['prevMoves']).findAll(function(obj){
     	       return obj.nxt_bid == bid;
     	     }.bind(this));
-          ret.set('prevMoves', (new Moves(this.logObj)).fromDB(target));
+          ret.set('prevMoves', (new Moves()).fromDB(target));
           break;
         default:
-          this.logObj.fatal('Store#makeSlice : wrong data name arrived!');
+          this.LOG.fatal('Store#makeSlice : wrong data name arrived!');
           break;
       }
       return ret;
     }.bind(this));
     // prevMovesだけは、あるbidの画面にはnxt_bidがbidのオブジェクトを集める
-    this.logObj.debug('ret : ' + ret.toDebugString());
-    this.logObj.goOut();
+    LOG.debug('ret : ' + ret.toDebugString());
+    LOG.goOut();
     return ret; 
   },
 	/**
@@ -290,11 +290,11 @@ var Store = Class.create(Hash, {
 	//        bid   取得したいデータのbid
 	// 出力 : Storeが保持しているデータオブジェクト
   ask : function ask(name, bid){ // Store
-    this.logObj.getInto('Store#ask');
+    LOG.getInto('Store#ask');
     var ret = this.slices.get(bid).get(name);
-    this.logObj.debug('asked bid : ' + bid + ',  name : ' + name);
-    this.logObj.debug('returning : ' + ret.toDelta());
-    this.logObj.goOut();
+    LOG.debug('asked bid : ' + bid + ',  name : ' + name);
+    LOG.debug('returning : ' + ret.toDelta());
+    LOG.goOut();
     return ret;
   },
 	/**
@@ -305,17 +305,17 @@ var Store = Class.create(Hash, {
         // 入力 : Moveオブジェクト
 	// 出力 : Moveオブジェクト または false
   findNextMove : function findNextMove(move){ // Store
-    this.logObj.getInto('Store#findNextMove'); 
+    LOG.getInto('Store#findNextMove'); 
     var ret = this.currentSlice().get('nextMoves').search(move);
-    this.logObj.debug('returning : ' + Object.toJSON(ret));
-    this.logObj.goOut();
+    LOG.debug('returning : ' + Object.toJSON(ret));
+    LOG.goOut();
     return ret;
   },
 	/**
 	 * getMsg(bid, uid, level, mask, range, async)
 	 */
   getMsg : function getMsg(bid, uid, level, mask, range, async){ // Store
-    this.logObj.getInto('Store#getMsg'); 
+    LOG.getInto('Store#getMsg'); 
     var request = new Ajax.Request('/getMsg', {
          method: 'get',
          onCreate: function(request, response){
@@ -326,28 +326,28 @@ var Store = Class.create(Hash, {
       parameters : { 'bid' : bid , 'uid' :uid, 'level' : level, 'mask' : mask, 'range' : range },
       asynchronous : async,
       onSuccess : function onSuccess_getMsg(response){
-        this.logObj.getInto('onSuccess_getMsg');
-        this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
+        this.LOG.getInto('onSuccess_getMsg');
+        this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
-        this.logObj.debug('unpacked responseText : ' + Object.toJSON(data));
+        this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data, 7);
-        this.logObj.goOut();
+        this.LOG.goOut();
         return data;
       }.bind(this),
       onFailure : function onFailure_getMsg(response){
-        this.logObj.getInto();
-        this.logObj.debug('onFailure : ' + response.status + response.statusText);
-        this.logObj.goOut();
+        this.LOG.getInto();
+        this.LOG.debug('onFailure : ' + response.status + response.statusText);
+        this.LOG.goOut();
         return false;
 
       }.bind(this)
     });
-    this.logObj.goOut();
+    LOG.goOut();
     var response = new Ajax.Response(request);
   },
 
   getQueryStr : function getQueryStr(move){ // Store
-    this.logObj.getInto(); 
+    LOG.getInto(); 
     var game = window.gameController.game;
     var res = {
       'turn'    : game.board.turn ? 't' : 'f',
@@ -361,13 +361,13 @@ var Store = Class.create(Hash, {
       'oldbid'  : move.bid
     };
     res = $H(res).toQueryString();
-    this.logObj.debug('res : ' + res);
-    this.logObj.goOut();
+    LOG.debug('res : ' + res);
+    LOG.goOut();
     return res;
   },
 
   registBoard : function registBoard(move){ // Store
-    this.logObj.getInto(); 
+    LOG.getInto(); 
     var game = window.gameController.game;
     var request = new Ajax.Request('/bid', {
          method: 'post',
@@ -380,10 +380,10 @@ var Store = Class.create(Hash, {
       //asynchronous : true,
       asynchronous : false,
       onSuccess : function onSuccess_registBoard(response){
-        this.logObj.getInto('Store#onSuccess_registBoard');
-        this.logObj.debug('responseText : ' + Object.toJSON(response.responseText));
+        this.LOG.getInto('Store#onSuccess_registBoard');
+        this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
-        this.logObj.debug('result of registBoard :<br> unpacked responseText : ' + Object.toJSON(data));
+        this.LOG.debug('result of registBoard :<br> unpacked responseText : ' + Object.toJSON(data));
           // この出力例：
           //  {"prevMoves": [{"promote": "f", "m_to": "96", "piece": "P", "bid": "1", "mid": 5, "m_from": "97", "nxt_bid": 73630}],
 // "nextMoves": [],
@@ -395,21 +395,21 @@ var Store = Class.create(Hash, {
         // registBoardの場合、それだけでは追加が足りない。新局面に至った新手の情報がまだ追加されていないから、それを追加する。
         // 新手の情報とは、この新局面にとってのprevMoves[0]にほかならない。
         this.addMovesAsNextMoves(data['prevMoves'])
-        this.logObj.debug('slice read done : ');
-//        this.logObj.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
+        this.LOG.debug('slice read done : ');
+//        this.LOG.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
         //var delta =  window.gameController.handler.makeReviewDelta(game.new_bid);
-        this.logObj.goOut();
+        this.LOG.goOut();
         return data;
       }.bind(this),
       onFailure : function onFailure_registBoard(response){
-        this.logObj.getInto();
-        this.logObj.debug('onFailure : ' + response.status + response.statusText);
-        this.logObj.goOut();
+        this.LOG.getInto();
+        this.LOG.debug('onFailure : ' + response.status + response.statusText);
+        this.LOG.goOut();
         return false;
       }.bind(this)
     });
     var response = new Ajax.Response(request);
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/**
 	 * addMovesAsNextMoves(ary)
@@ -418,31 +418,31 @@ var Store = Class.create(Hash, {
         // 出力 : なし
         // 機能 : 受け取った配列の各要素を、そのMoveのbidのNextMovesに追加する。
   addMovesAsNextMoves: function addMovesAsNextMoves(ary) { // Store
-    this.logObj.getInto('Store#addMovesAsNextMoves'); 
-    this.logObj.debug('ary : ' + Object.toJSON(ary));
+    LOG.getInto('Store#addMovesAsNextMoves'); 
+    LOG.debug('ary : ' + Object.toJSON(ary));
     $A(ary).each(function(m){
-      this.logObj.debug('m : ' + Object.toJSON(m));
+      this.LOG.debug('m : ' + Object.toJSON(m));
       // var obj = evalJSON(m);
       var bid = parseInt(m['bid']);
-      this.logObj.debug('bid : ' + Object.toJSON(bid));
+      this.LOG.debug('bid : ' + Object.toJSON(bid));
       var slice = this.slices.get(bid);
-      this.logObj.debug('slice : ' + slice.toDebugString());
+      this.LOG.debug('slice : ' + slice.toDebugString());
       var nm = slice.get('nextMoves');
       if (!nm) {
-        nm =  new Moves(this.logObj);
+        nm =  new Moves(this.LOG);
         slice.set('nextMoves',nm);
       }
-      this.logObj.debug('nextMoves before : ' + nm.toDebugString());
+      this.LOG.debug('nextMoves before : ' + nm.toDebugString());
       nm.fromDB([m]); // mをMoveオブジェクトにしてからNextMovesに追加してくれる
-      this.logObj.debug('nextMoves after : ' + nm.toDebugString());
+      this.LOG.debug('nextMoves after : ' + nm.toDebugString());
     }.bind(this));
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/**
 	 * toDebugHtml()
 	 */
   toDebugHtml: function toDebugHtml() { // Store
-    this.logObj.getInto('Store#toDebugHtml'); 
+    LOG.getInto('Store#toDebugHtml'); 
     // 自身を表示
     var ret = '<table class="storeTable">';
     this.each(function(pair){
@@ -455,15 +455,15 @@ var Store = Class.create(Hash, {
     // slicesを表示
     var ret_slice = '<table class="storeTable">';
     this.slices.each(function(pair){
-      this.logObj.debug('pair.key : ' + Object.toJSON(pair.key));
-      this.logObj.debug('pair.value : ' + pair.value.toDebugString());
+      this.LOG.debug('pair.key : ' + Object.toJSON(pair.key));
+      this.LOG.debug('pair.value : ' + pair.value.toDebugString());
       ret_slice += '<tr>'
       ret_slice += '<td>' + pair.key + '</td>';
       ret_slice += '<td>' + pair.value.toDebugHtml() + '</td>';
       ret_slice += '</tr>';
     }.bind(this));
     ret_slice += '</table>';
-    this.logObj.goOut();
+    LOG.goOut();
     return ret + ret_slice;
   }
 });
@@ -475,10 +475,10 @@ var Store = Class.create(Hash, {
 // livepipeのwindowを使う
 var Area = Class.create({
 
-  initialize : function initialize(hand, logObj, container, title, options){
-    logObj.getInto('Area#initialize');
+  initialize : function initialize(hand, container, title, options){
+    LOG.getInto('Area#initialize');
     this.handler = hand;
-    this.logObj = logObj;
+    this.LOG = LOG;
     this.container = container;
     this.title = title;
     this.window_header = new Element('div',{ className: 'window_header' });  
@@ -496,13 +496,13 @@ var Area = Class.create({
               height:500 };
     // window_headerにwindow_titleとwindow_closeを挿入してから
     this.options = Object.extend(this.default_options, options || {});
-    this.logObj.debug(container + ' window is opening');
+    LOG.debug(container + ' window is opening');
     this.openWindow();
-    this.logObj.goOut();
+    LOG.goOut();
   },
 
   openWindow: function openWindow(){ // Area
-    this.logObj.getInto('Area#openWindow');
+    LOG.getInto('Area#openWindow');
     if (!this.window || !this.window.document) {
       this.anchor = new Element('a',{'id':this.title+'anchor', 'href':'#' + this.title, 'title': this.title });
       $('links_pool').appendChild(this.anchor);
@@ -521,7 +521,7 @@ var Area = Class.create({
       }
     }
     //this.window.open();
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/*
 	 * show()
@@ -529,22 +529,22 @@ var Area = Class.create({
 	// dataStoreのデータをもとに、自身のwindowに内容を表示する
 	// 現状では、(2010.6.24) nextMovesとprevMovesのAreaにのみ対応する
   show : function show(){ // Area
-    this.logObj.getInto('Area#show');
-    this.logObj.debug(this.container + ' area is to be displayed.');
+    LOG.getInto('Area#show');
+    LOG.debug(this.container + ' area is to be displayed.');
     var ret = '';
     var str = '<ul>';
     var movesObj = this.handler.dataStore.currentSlice().get(this.title);
-    this.logObj.debug('title : ' + Object.toJSON(this.title));
+    LOG.debug('title : ' + Object.toJSON(this.title));
     str += movesObj.inject(ret, function(acc, pair){
       var kanji = pair.value.toKanji();
       ret = acc + '<li id="' + this.container + pair.value.mid + '">' + kanji + '</li>';
       return ret;
     }.bind(this));
     str += '</ul>';
-    this.logObj.debug('str : ' + str);
-    this.logObj.debug('container : ' + this.window.container.id);
+    LOG.debug('str : ' + str);
+    LOG.debug('container : ' + this.window.container.id);
     this.window_contents.update(str);
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/*
 	 * layoutContents()
@@ -552,7 +552,7 @@ var Area = Class.create({
 	// boardArea のためのメソッド
 	// boardAreaに、駒台と盤のための要素を追加する
   layoutContents : function layoutContents(){ // Area
-    this.logObj.getInto('Area#layoutContents');
+    LOG.getInto('Area#layoutContents');
    // this.whiteStand = new Element('div',{ id: 'white-stand' });
     this.topStand = new Element('div',{ id: 'top-stand' });
    // this.topStand.appendChild(this.whiteStand);
@@ -564,7 +564,7 @@ var Area = Class.create({
     this.bottomStand.setStyle({ margin:'150px 0px 0px 400px' });
    // this.bottomStand.appendChild(this.blackStand);
     this.window_contents.appendChild(this.bottomStand);
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/*
 	 * display(target)
@@ -573,10 +573,10 @@ var Area = Class.create({
 	// 入力 : 数値 target 表示したい画面のbid
 	// 出力 : なし
   display : function display_Area(target){ // Area
-    this.logObj.getInto();
-    this.logObj.debug(this.container + ' stand is to be displayed.');
-    this.logObj.debug('target is ' + target);
-    this.logObj.debug('target_store is ' + this.handler.target_store);
+    LOG.getInto();
+    LOG.debug(this.container + ' stand is to be displayed.');
+    LOG.debug('target is ' + target);
+    LOG.debug('target_store is ' + this.handler.target_store);
     var str = '';
     switch (this.container){
       case 'pres':
@@ -614,20 +614,20 @@ var Area = Class.create({
            str = this.handler.dataStore.toDebugHtml();
            break;
       case 'nxts':
-        this.logObj.debug('nxts : str -> ' + str);
-        this.logObj.debug('nxts : target -> ' + target);
-       	this.logObj.debug('dataStore -> ' + Object.toJSON(this.handler.dataStore));
-       	this.logObj.debug('slice -> ' + Object.toJSON(this.handler.dataStore.slices));
+        LOG.debug('nxts : str -> ' + str);
+        LOG.debug('nxts : target -> ' + target);
+       	LOG.debug('dataStore -> ' + Object.toJSON(this.handler.dataStore));
+       	LOG.debug('slice -> ' + Object.toJSON(this.handler.dataStore.slices));
 
        	if(this.handler.dataStore.slices.get(target)){
-       	  this.logObj.debug('slices.get('+target+') -> ' + Object.toJSON(this.handler.dataStore.slices.get(target)));
+       	  LOG.debug('slices.get('+target+') -> ' + Object.toJSON(this.handler.dataStore.slices.get(target)));
           str = '<ul>';
-	  this.logObj.debug(Object.toJSON(this.handler.dataStore.slices.get(target).get('bids')[0]['nxts']));
+	  LOG.debug(Object.toJSON(this.handler.dataStore.slices.get(target).get('bids')[0]['nxts']));
 	   $A(this.handler.dataStore.slices.get(target).get('bids')[0]['nxts']).each(function(e){
 	     str += '<li>' + e + '</li>';
 	   });
 	  str += '</ul>';
-          this.logObj.debug('str -> ' + str);
+          LOG.debug('str -> ' + str);
         } else {
 	  if(!this.handler.dataStore.slices.get(target)){
 	    str = '<ul><li>now loading</li></ul>';
@@ -644,24 +644,24 @@ var Area = Class.create({
 	default:
 		break;
     }
-    this.logObj.debug('container : ' + this.window.container.id);
+    LOG.debug('container : ' + this.window.container.id);
     this.window_contents.update(str);
     this.window.open();
-    this.logObj.goOut();
+    LOG.goOut();
   },
 
   initOnClick : function initOnClick_Area(){ // Area
-    this.logObj.getInto('Area#initOnClick');
-    this.logObj.goOut();
+    LOG.getInto('Area#initOnClick');
+    LOG.goOut();
     this.window_contents.observe('click',
       function(evt){ 
-        this.logObj.getInto('Area#initOnClick#observe');
-        this.logObj.debug('id of clicked element : ' + evt.findElement('li').id);
+        this.LOG.getInto('Area#initOnClick#observe');
+        this.LOG.debug('id of clicked element : ' + evt.findElement('li').id);
         var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
-        this.logObj.debug('mid of clicked element : ' + mid);
+        this.LOG.debug('mid of clicked element : ' + mid);
         var inner = evt.findElement('li').innerHTML;
         this.handler.areaClicked(this.container, mid, inner);
-        this.logObj.goOut();
+        this.LOG.goOut();
       }.bind(this)
     );
   },
@@ -675,10 +675,10 @@ var Handler = Class.create({
 
   initialize : function initialize(controller) {
     this.controller = controller;
-    this.logObj = this.controller.log;
-    this.logObj.getInto('Handler#initialize');
-    this.dataStore = new Store(this.logObj); // データをbidごとに再構成したデータの貯蔵庫
-    this.logObj.debug('dataStore was created.');
+    this.LOG = LOG;
+    LOG.getInto('Handler#initialize');
+    this.dataStore = new Store(LOG); // データをbidごとに再構成したデータの貯蔵庫
+    LOG.debug('dataStore was created.');
     // 以下の３つのプロパティは、保持するキャッシュの肥大化を防ぐ目的で導入
     // 例えば１局の将棋の指し手を次々に読み込んでいけば、そのたびにキャッシュにデータが増える。
     // なので、中盤になったら序盤のデータは捨ててもいいだろう、と判断する
@@ -691,40 +691,40 @@ var Handler = Class.create({
     this.data_name = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
-    this.logObj.debug('areas are being initialized');
+    LOG.debug('areas are being initialized');
     // ControlPanel Area
-    this.cpArea = new Area(this, this.logObj,'controlPanel', 'ControlPanel',{position:[10,0], width:120, height:90});
+    this.cpArea = new Area(this, 'controlPanel', 'ControlPanel',{position:[10,0], width:500, height:90});
     this.cpArea.initOnClick();
     // 前の手のエリア
-    this.prevArea = new Area(this, this.logObj,'pres', 'prevMoves',{position:[10,100], width:120, height:300});
+    this.prevArea = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
     this.prevArea.initOnClick();
     // 盤面のエリア
-    this.boardArea = new Area(this, this.logObj,'boardArea', 'Board',{position:[160,100], width:520, height:440});
+    this.boardArea = new Area(this, 'boardArea', 'Board',{position:[160,100], width:520, height:440});
     this.boardArea.layoutContents();
     // 次の手のエリア
-    this.nextArea = new Area(this, this.logObj,'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
+    this.nextArea = new Area(this, 'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
     this.nextArea.initOnClick();
     // nextMovePoint用のエリア
-    this.nextMovePointArea = new Area(this, this.logObj,'nextMovePoint', 'NextMovePoint',{position:[850,100], width:130, height:400});
+    this.nextMovePointArea = new Area(this, 'nextMovePoint', 'NextMovePoint',{position:[850,100], width:130, height:400});
     this.nextMovePointArea.initOnClick();
     // nextMoveComment用のエリア
-    this.nextMoveCommentArea = new Area(this, this.logObj,'nextMoveComment', 'NextMoveComment',{position:[1010,100], width:180, height:400});
+    this.nextMoveCommentArea = new Area(this, 'nextMoveComment', 'NextMoveComment',{position:[1010,100], width:180, height:400});
     this.nextMoveCommentArea.initOnClick();
     // boardPoint用のエリア
-    this.boardPointArea = new Area(this, this.logObj,'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
+    this.boardPointArea = new Area(this, 'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
     this.boardPointArea.initOnClick();
     // boardComment用のエリア
-    this.boardCommentArea = new Area(this, this.logObj,'boardComment', 'BoardComment',{position:[10,580], width:700, height:100});
+    this.boardCommentArea = new Area(this, 'boardComment', 'BoardComment',{position:[10,580], width:700, height:100});
     this.boardCommentArea.initOnClick();
     // 棋譜読み込み用のエリア
-    this.readBookArea = new Area(this, this.logObj,'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
+    this.readBookArea = new Area(this, 'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
     this.readBookArea.initOnClick();
     this.book = new Book(this);
     this.book.showBookForm();
     this.book.showInputBox();
     // dataStoreのdebug dump用のエリア
-    this.dataArea = new Area(this, this.logObj,'data', 'dataStore',{position:[10,680], width:830, height:270});
-    this.logObj.debug('areas were initialized');
+    this.dataArea = new Area(this, 'data', 'dataStore',{position:[10,680], width:830, height:270});
+    LOG.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';
   // range は 'only' か 'full'の２値をとる。
@@ -752,7 +752,7 @@ var Handler = Class.create({
    //    ただし、bids, boardは必須。つまりmaskは最低3になる。
     this.masked_data_name = $A();
 
-    this.logObj.goOut();
+    LOG.goOut();
   },
 
 
@@ -773,7 +773,7 @@ var Handler = Class.create({
         // 出力 : 作成されたdelta オブジェクト
   makeDeltaFromSlice: function makeDeltaFromSlice(bid, slice){ // Handler
     var delta = {};
-    this.logObj.getInto();
+    LOG.getInto();
       delta['mode']  = 'review';
       delta['bid']   = Object.toJSON(bid);
       delta['turn']  = (bid % 2 == 0) ? 'f':'t';
@@ -786,8 +786,8 @@ var Handler = Class.create({
       delta['next']  = slice.nextMoves;
       delta['prev']  = slice.prevMoves;
 */
-      this.logObj.debug('delta : ' + Object.toJSON(delta));
-    this.logObj.goOut();
+      LOG.debug('delta : ' + Object.toJSON(delta));
+    LOG.goOut();
     return delta;
   },
 	/**
@@ -799,32 +799,32 @@ var Handler = Class.create({
         // 出力 : 作成されたdelta オブジェクト
   makeReviewDelta: function makeReviewDelta(bid){ // Handler
     var delta = {};
-    this.logObj.getInto('Handler#makeReviewDelta');
-    this.logObj.debug('bid : ' + bid);
-    this.logObj.debug('typeof bid : ' + typeof bid);
+    LOG.getInto('Handler#makeReviewDelta');
+    LOG.debug('bid : ' + bid);
+    LOG.debug('typeof bid : ' + typeof bid);
     var value = bid || $('inputText').value;
     //var value = bid.toString() || $('inputText').value;
-    this.logObj.debug('value : ' + value);
+    LOG.debug('value : ' + value);
     var slice = this.dataStore.slices.get(value);
     if(!slice){
-      this.logObj.debug('was not found in slices key, so try getMsg.');
-      this.logObj.debug('slices key is : ' + this.dataStore.slices.keys().join(','));
+      LOG.debug('was not found in slices key, so try getMsg.');
+      LOG.debug('slices key is : ' + this.dataStore.slices.keys().join(','));
       this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
       //this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
     }
-    this.logObj.debug('slice : ' + slice.toDebugString());
-    this.logObj.debug('slice constructor : ' + Object.toJSON(slice.constructor));
-    this.logObj.debug('slice.keys : ' + (slice.keys().join(',')));
+    LOG.debug('slice : ' + slice.toDebugString());
+    LOG.debug('slice constructor : ' + Object.toJSON(slice.constructor));
+    LOG.debug('slice.keys : ' + (slice.keys().join(',')));
     //slice = $H(slice);
     //if(slice && !slice.constructor) slice = $H(slice);
-    //this.logObj.debug('slice constructor 2 : ' + Object.toJSON(slice.constructor));
+    //LOG.debug('slice constructor 2 : ' + Object.toJSON(slice.constructor));
     if(slice){
-      this.logObj.debug('slices[' + value + '] : ' + slice.toDebugString());
-      this.logObj.debug('slice.keys : ' + (slice.keys().join(',')));
+      LOG.debug('slices[' + value + '] : ' + slice.toDebugString());
+      LOG.debug('slice.keys : ' + (slice.keys().join(',')));
       slice.each(function(pair){
-        this.logObj.debug('key : ' + Object.toJSON(pair.key));
-        this.logObj.debug('value : ' + pair.value.toDebugString());
+        this.LOG.debug('key : ' + Object.toJSON(pair.key));
+        this.LOG.debug('value : ' + pair.value.toDebugString());
       }.bind(this));
       delta['mode']  = 'review';
       delta['bid']   = value.toString();
@@ -832,11 +832,11 @@ var Handler = Class.create({
       delta['board'] = slice.get('board').toDelta();
       delta['next']  = slice.get('nextMoves').toDelta();
       delta['prev']  = slice.get('prevMoves').toDelta();
-      this.logObj.debug('delta : ' + Object.toJSON(delta));
+      LOG.debug('delta : ' + Object.toJSON(delta));
     } else {
-      this.logObj.fatal('cannot get slice');
+      LOG.fatal('cannot get slice');
     }
-    this.logObj.goOut();
+    LOG.goOut();
     return delta;
   },
 
@@ -848,16 +848,16 @@ var Handler = Class.create({
 	// 入力 : bid 数値 表示したい局面のbid
 	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
   refreshBoard: function refreshBoard(bid){ // Handler
-    this.logObj.getInto('Handler#refreshBoard');
-    this.logObj.debug('bid : ' + bid);
+    LOG.getInto('Handler#refreshBoard');
+    LOG.debug('bid : ' + bid);
     var boardObj, nextMoves, prevMoves;
 
     if(bid) $('inputText').value = bid;
     var value = $('inputText').value;
-    this.logObj.debug('value : ' + value);
-    this.logObj.debug('typeof value : ' + typeof value);
+    LOG.debug('value : ' + value);
+    LOG.debug('typeof value : ' + typeof value);
     var slice = this.dataStore.slices.get(value);
-    this.logObj.debug('slice['+value+'] : ' + Object.toJSON(slice));
+    LOG.debug('slice['+value+'] : ' + Object.toJSON(slice));
     if(!slice){
       this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
       //this.dataStore.arrangeByBid(7);
@@ -869,9 +869,9 @@ var Handler = Class.create({
       this.prevArea.show();
       this.nextArea.show();
     } else {
-      this.logObj.fatal('cannot get slice');
+      LOG.fatal('cannot get slice');
     }
-    this.logObj.goOut();
+    LOG.goOut();
   },
 	/*
 	 * areaClicked(place, target, inner)
@@ -881,110 +881,110 @@ var Handler = Class.create({
 	//        target 数値 li要素のプロパティからとった数字
 	//        inner  クリックされた要素のinnnerHTML
   areaClicked : function areaClicked(place, target, inner){ // Handler
-    this.logObj.getInto('Handler#areaClicked');
-    this.logObj.debug('place -> ' + Object.toJSON(place) + ',  target -> ' + Object.toJSON(target));
+    LOG.getInto('Handler#areaClicked');
+    LOG.debug('place -> ' + Object.toJSON(place) + ',  target -> ' + Object.toJSON(target));
     switch(place) {
       case 'nxts' :
 	// この場合、targetによりクリックされた要素のmidが渡されてくる
         var bid = this.dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
-        this.logObj.debug('bid found : ' + bid);
+        LOG.debug('bid found : ' + bid);
         window.gameController.sendDelta( this.makeReviewDelta(bid) );
         break;
       case 'pres' :
         // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
-        this.logObj.getInto('clicked innerHTML is : ' + inner);
+        LOG.getInto('clicked innerHTML is : ' + inner);
         var bid = this.dataStore.currentSlice().get('prevMoves').find(
           function(pair){
-             this.logObj.debug('value.toKanji : ' + pair.value.toKanji());
+             this.LOG.debug('value.toKanji : ' + pair.value.toKanji());
              return pair.value.toKanji() == inner;
            }.bind(this)).value.bid;
         if(bid) {
-          this.logObj.debug('bid found : ' + bid);
+          LOG.debug('bid found : ' + bid);
           window.gameController.sendDelta( this.makeReviewDelta(bid) );
         } else {
-          this.logObj.fatal('clicked move was not found');
+          LOG.fatal('clicked move was not found');
         }
         break;
       case 'readBook' :
-        this.logObj.getInto('clicked innerHTML is : ' + inner);
+        LOG.getInto('clicked innerHTML is : ' + inner);
         window.gameController.sendDelta( this.makeReviewDelta(target) );
         break;
       default :
         break;
     }
-    this.logObj.goOut();
+    LOG.goOut();
   },
 
   updateData : function updateData(target, uid, range, async){ // Handler
-      this.logObj.getInto(); 
-      this.logObj.debug('target: ' + arguments[0]);
-      this.logObj.debug('uid: ' + arguments[1]);
-      this.logObj.debug('range: ' + arguments[2]);
-      this.logObj.debug('async: ' + arguments[3]);
-      this.logObj.goOut();
+      LOG.getInto(); 
+      LOG.debug('target: ' + arguments[0]);
+      LOG.debug('uid: ' + arguments[1]);
+      LOG.debug('range: ' + arguments[2]);
+      LOG.debug('async: ' + arguments[3]);
+      LOG.goOut();
       this.dataStore.getMsg(target, uid, this.gLevel, this.mask, range, async);
   },
 
   set_data_by_bid : function set_data_by_bid(target, responseJSON){
       var bids_ary;
-      this.logObj.getInto();
-      this.logObj.debug('contents of responseJSON follows:');
+      LOG.getInto();
+      LOG.debug('contents of responseJSON follows:');
 /*
       masked_data_name.each(function(e){
-        this.logObj.debug('name : ' + e);
-        if(responseJSON[e]) this.logObj.debug('responseJSON['+e+'] : ' + responseJSON[e]);
-        else this.logObj.debug('responseJSON['+e+'] not exist');
+        LOG.debug('name : ' + e);
+        if(responseJSON[e]) LOG.debug('responseJSON['+e+'] : ' + responseJSON[e]);
+        else LOG.debug('responseJSON['+e+'] not exist');
       });
 */
       var data_hash = responseJSON;
       //var data_hash = $H();
       this.age += 1;
-      this.logObj.debug('responseJSONをハッシュdata_hashに格納する');
+      LOG.debug('responseJSONをハッシュdata_hashに格納する');
       // DBから文字列としてうけたものを、JSONオブジェクトとして評価する
 /*
       masked_data_name.each(function(e){
 	data_hash.set(e, responseJSON[e]);
       });
 */
-      this.logObj.debug('data_hash をJSONオブジェクトとして表示してみる');
-      this.logObj.debug(Object.toJSON(data_hash), 3);
-      this.logObj.debug('データをbidごとに再構成する');
-      this.logObj.debug('まずdata_hash[bids]からbidを抽出する');
-//      this.logObj.debug('data_hash[bids]は文字列で、カンマ区切りのオブジェクトの配列という形。');
-//      this.logObj.debug('したがって、まずsplitし、個々の要素をevalすればobjectの配列となる。');
+      LOG.debug('data_hash をJSONオブジェクトとして表示してみる');
+      LOG.debug(Object.toJSON(data_hash), 3);
+      LOG.debug('データをbidごとに再構成する');
+      LOG.debug('まずdata_hash[bids]からbidを抽出する');
+//      LOG.debug('data_hash[bids]は文字列で、カンマ区切りのオブジェクトの配列という形。');
+//      LOG.debug('したがって、まずsplitし、個々の要素をevalすればobjectの配列となる。');
 /*
       try {
         bids_ary = eval(data_hash.get('bids'));
-        this.logObj.debug('data_hash[bids] size : ' + bids_ary.size());
+        LOG.debug('data_hash[bids] size : ' + bids_ary.size());
       }
       catch (exception){
         alert(exception);
       }
       bids_ary.each(function(e){
-        this.logObj.debug(e);
+        LOG.debug(e);
       });
-      this.logObj.debug('eval bids_ary[0] : ' + Object.toJSON(eval(bids_ary[0])));
-      this.logObj.debug('bids_ary -> ' + Object.toJSON(bids_ary));
+      LOG.debug('eval bids_ary[0] : ' + Object.toJSON(eval(bids_ary[0])));
+      LOG.debug('bids_ary -> ' + Object.toJSON(bids_ary));
 */
       //bids_ary = bids_ary.map(function(e){ return eval(e); }).pluck('bid');
       bids_ary = data_hash['bids'].pluck('bid');
-      this.logObj.debug('bids_ary -> ' + Object.toJSON(bids_ary));
+      LOG.debug('bids_ary -> ' + Object.toJSON(bids_ary));
         // そのbidごとに、data_hashから抽出したハッシュを登録する
       bids_ary.each(function(bid){
-        this.logObj.debug('bid : ' + bid);
+        LOG.debug('bid : ' + bid);
         data_by_bid.set(bid, extract_from_data_hash_by_bid(bid, data_hash));
-        this.logObj.debug('data_by_bid -> ' + Object.toJSON(data_by_bid));
+        LOG.debug('data_by_bid -> ' + Object.toJSON(data_by_bid));
         // ageも追加
         age_hash.set(bid, this.age);
       });
       // 再構成したデータのtargetぶんを表示してみる。
-      this.logObj.debug('updateData : target -> ' + Object.toJSON(target), 3);
-      this.logObj.debug('updateData : data_by_bid.get[target] -> ' + Object.toJSON(data_by_bid.get(target)), 3);
+      LOG.debug('updateData : target -> ' + Object.toJSON(target), 3);
+      LOG.debug('updateData : data_by_bid.get[target] -> ' + Object.toJSON(data_by_bid.get(target)), 3);
       // age_hash を表示
-      this.logObj.debug('updateData : age_hash -> ' + Object.toJSON(age_hash), 3);
+      LOG.debug('updateData : age_hash -> ' + Object.toJSON(age_hash), 3);
       // garbage collect
       var ages = age_hash.values().sortBy(function(e){ return parseInt(e); }).uniq();
-      this.logObj.debug('updateData : ages -> ' + Object.toJSON(ages), 3);
+      LOG.debug('updateData : ages -> ' + Object.toJSON(ages), 3);
       while(ages.size() > gLevel*2 ){
         age_hash.findAll(function(e){ return e[1] == ages[0]; }).each(function(b){
           data_by_bid.unset(b.key);
@@ -992,21 +992,21 @@ var Handler = Class.create({
         });
         ages.shift();
       } 
-      this.logObj.debug('updateData : ages after gc -> ' + Object.toJSON(ages), 3);
-      this.logObj.debug('updateData : age_hash after gc -> ' + Object.toJSON(age_hash), 3);
-      this.logObj.goOut();
+      LOG.debug('updateData : ages after gc -> ' + Object.toJSON(ages), 3);
+      LOG.debug('updateData : age_hash after gc -> ' + Object.toJSON(age_hash), 3);
+      LOG.goOut();
   },
   
   updateDisplay : function updateDisplay(target){ // Handler
-    this.logObj.getInto();
+    LOG.getInto();
     this.prevArea.display(target);
     this.selfArea.display(target);
     this.dataArea.display(target);
     this.nextArea.display(target);
     $('size').update(this.dataStore.slices.size());
-    this.logObj.debug('size was updated.');
+    LOG.debug('size was updated.');
     var ages = this.age_hash.values().sort().uniq();
-    this.logObj.debug('ages : ' + Object.toJSON(ages));
+    LOG.debug('ages : ' + Object.toJSON(ages));
     var bids_per_age = $H();
     ages.each(function(age){
       bids_per_age.set(age, age_hash.findAll(function(e){ return e[1] == age; }));
@@ -1016,19 +1016,19 @@ var Handler = Class.create({
        return str;
     });
     $('age').update(agestr);
-    this.logObj.goOut();
+    LOG.goOut();
   },
 
   cs_gc : function cs_garbageCollect(){
-    this.logObj.getInto();
-    this.logObj.debug('values : ' + Object.toJSON(cs.values()),3); 
+    LOG.getInto();
+    LOG.debug('values : ' + Object.toJSON(cs.values()),3); 
     var minCycle = cs.values().map(function(e){ return e[2]; }).min();
-    this.logObj.debug('minCycle : ' + minCycle);
+    LOG.debug('minCycle : ' + minCycle);
     cs.each(function(pair){
-      //this.logObj.debug('pair : ' + Object.toJSON(pair),3);
+      //LOG.debug('pair : ' + Object.toJSON(pair),3);
       if ( pair.value[2] <= minCycle + 2 ) cs.unset(pair.key);
     });
-    this.logObj.goOut();
+    LOG.goOut();
   }
 });
 //-----------------------------------------------------------------
@@ -1057,34 +1057,34 @@ function data_by_bid_to_table(target){
 }
 
 function extract_from_data_hash_by_bid(target,data_hash){
-  logObj.getInto();
+  LOG.getInto();
   var ret_hash = $H();
   $H(data_hash).each(function(pair){
-    logObj.debug('key : ' + Object.toJSON(pair.key));
-    logObj.debug('value : ' + Object.toJSON(pair.value));
+    LOG.debug('key : ' + Object.toJSON(pair.key));
+    LOG.debug('value : ' + Object.toJSON(pair.value));
     var v =  pair.value.findAll(function(obj){
 	       return obj.bid == target;
 	     });
-    logObj.debug('v : ' + Object.toJSON(v));
+    LOG.debug('v : ' + Object.toJSON(v));
     ret_hash.set(pair.key,v);
   });
-  logObj.debug('ret_hash : ' + Object.toJSON(ret_hash));
-  logObj.goOut();
+  LOG.debug('ret_hash : ' + Object.toJSON(ret_hash));
+  LOG.goOut();
   return ret_hash;
 }
 
 /*
 function init(){
-  logObj = makeLogObj('Log', {width:800, height:550, resizable:false});
+  LOG = makeLogObj('Log', {width:800, height:550, resizable:false});
   $('logger0').insert(new Element('img', {id:'handle0', src:"img/lib/window_close.gif"}));
   new Resizable('logger0',{handle:'handle0'});
 
-  logObj.debug('creating masked_data_name.');
+  LOG.debug('creating masked_data_name.');
   for(var index=0; index < 10; index++){
     if ((mask & (1 << index)) > 0) masked_data_name.push(data_name[index]);
   }
-  logObj.debug('masked_data_name -> ' + Object.toJSON(masked_data_name));
-  hand = new Handler(logObj);
+  LOG.debug('masked_data_name -> ' + Object.toJSON(masked_data_name));
+  hand = new Handler(LOG);
   hand.updateData(1, 1, 'full', false);
   var flag = false;
   prevArea.initOnClick();
@@ -1095,12 +1095,12 @@ function init(){
           else flag = false;
   }
   prevArea.display('1');
-  logObj.debug('prevArea was displayed');
+  LOG.debug('prevArea was displayed');
   nextArea.display('1');
-  logObj.debug('nextArea was displayed');
+  LOG.debug('nextArea was displayed');
   selfArea.display('1');
-  logObj.debug('selfArea was displayed');
+  LOG.debug('selfArea was displayed');
   dataArea.display('1');
-  logObj.debug('dataArea was displayed');
+  LOG.debug('dataArea was displayed');
 }
 */
