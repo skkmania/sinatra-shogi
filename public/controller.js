@@ -78,14 +78,22 @@ ControlPanel = Class.create({
 	 */
   areaInit: function areaInit() { // ControlPanel              
      LOG.getInto('ControlPanel#areaInit');
-     var contents = '<div id="Title">\
+     var contents =   '<div id="sidebar">\
+                        <div id="control-panel">\
+                          <div id="message">\
+                            <div class="t">message</div>\
+                            <div id="message-body"></div>\
+                          </div>\
+                        </div>\
+                      </div>';
+         contents +=  '<div id="Title">\
                         <p id="kid">局面ID: </p>\
                         <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
                         <button onclick="javascript:window.gameController.handler.refreshBoard();" id="submitButton">jump</button>\
                      </div>';
          contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
-         contents += '<div id="top-panel" class="player"><span class="t">gote</span><span class="t">waiting</span></div>';
-         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span><span class="t">waiting</span></div>';
+         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span> : <span class="t">waiting</span></div>';
+         contents += '<div id="top-panel" class="player"><span class="t">gote</span> : <span class="t">waiting</span></div>';
     this.area.window_contents.update(contents);
     LOG.goOut();
   }, 
@@ -189,7 +197,6 @@ GameController = Class.create({
     this.blackplayers = $A([]);  // 先手playerのPlayerオブジェクトの配列
     this.whiteplayers = $A([]);  // 後手playerのPlayerオブジェクトの配列
     this.controlPanel = new ControlPanel(this);
-    LOG.warn('CP created.');
     this.count = 0;
        // 手数。このgameではcount手目を指した局面がthis.gameの
        // board, blackStand, whiteStandに反映されているものとする.
@@ -205,6 +212,9 @@ GameController = Class.create({
       //  Boardのinitializeにおいては
       //  top=0を前提にstyle.top, style.leftを決めている
       //  ので、topが決まったこの時点で必要なら修正しておく必要がある
+    LOG.debug('GameController initializer coming to end.');
+    LOG.debug('now, going to each process named by playerSetting : ' + this.playerSetting);
+    LOG.goOut();
     switch(this.playerSetting){
       case 'review':  // 検討モード
         this.mode = 'noPlayers';
@@ -222,7 +232,6 @@ GameController = Class.create({
       default:
         break;
     }
-    LOG.goOut();
   },
 
   lookForParticipants : function lookForParticipants(){
@@ -826,20 +835,20 @@ GameController = Class.create({
 	 */
   getTurn: function getTurn() { // GameController
     // turnは論理値。countが偶数ならtrueで先手番、奇数ならfalseで後手番。
-    LOG.getInto('GameController#getTurn');
+    LOG.getInto('GameController#getTurn',Log.DEBUG2);
     var ret = (this.count % 2 == 0);
     LOG.debug('count is ' + this.count + ', so returning with : ' + ret);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   },
 	/**
 	 * thisTurnPlayer()
 	 */
   thisTurnPlayer: function thisTurnPlayer() { // GameController
-    LOG.getInto('GameController#thisTurnPlayer');
+    LOG.getInto('GameController#thisTurnPlayer',Log.DEBUG2);
     var ret = this.getTurn() ? this.player1 : this.player2;
     LOG.debug('returning with : ' + ret);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   },
 	/**
@@ -847,10 +856,10 @@ GameController = Class.create({
 	 */
         // 現在、viewerのturnならtrueを返す
   isViewersTurn: function isViewersTurn() { // GameController
-    LOG.getInto('GameController#isViewersTurn');
+    LOG.getInto('GameController#isViewersTurn',Log.DEBUG2);
     var ret = this.thisTurnPlayer().isViewer;
     LOG.debug('returning with : ' + ret);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   },
 	/**

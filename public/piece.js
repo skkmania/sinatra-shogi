@@ -339,7 +339,7 @@ LOG.goOut();
 	 * isViewersP()
 	 */
   isViewersP: function isViewersP(game) { // Piece
-    LOG.getInto('Piece#isViewersP');
+    LOG.getInto('Piece#isViewersP',Log.DEBUG2);
     var ret;
     if (this.isBlack()){
       LOG.debug('owner name : ' + this.game.controller.player1.name);
@@ -349,7 +349,7 @@ LOG.goOut();
       ret = this.game.controller.player2.isViewer;
     }
     LOG.debug('returning with : ' + ret);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   },
 	/**

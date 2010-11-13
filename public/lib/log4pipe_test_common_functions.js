@@ -4,7 +4,8 @@
 //  log4pipeを使うテストhtmlにて共通に呼び出す
 //
   var elem = null;
-  var HOST = 'http://skkmania.sakura.ne.jp/animal-shogi/';
+  //var HOST = 'http://skkmania.sakura.ne.jp/animal-shogi/';
+  var HOST = '';
   var TestCounter = 0;
 
   function getContainerId(){
@@ -27,7 +28,8 @@
     // log window を表示するためのリンクアンカーをページに追加
     var href = '#logger' + TestCounter;
     elem = new Element('a',{'id':getContainerId(), 'href':href, 'title':'log'});
-    elem.insert(testname + ' ' + TestCounter);
+    elem.insert(testname);
+    //elem.insert(testname + TestCounter);
     $('links_pool').appendChild(elem);
 
     // Logオブジェクトを生成

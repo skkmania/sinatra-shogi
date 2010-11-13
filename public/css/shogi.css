@@ -1,4 +1,4 @@
-@charset "UTF-8";
+@charset "UTF-9";
 /*
 @import "dw.css";
 #test {
@@ -132,8 +132,9 @@ img.bottom {
 }
 #top-panel {
   float: left;
-  text-align: left;
+  text-align: right;
   margin-top: 2px;
+
 }
 #counter {
   margin-top: 2px;
@@ -141,12 +142,12 @@ img.bottom {
   text-align: right;
 }
 #bottom-panel {
-  clear:both;
-  text-align: right;
-  margin-top: 5px;
+  float: left;
+  text-align: left;
+  margin-top: 2px;
 }
 #message {
-  height: 100px;
+/*  height: 100px; */
   font-size: small;
 }
 #message-body {
@@ -208,4 +209,12 @@ pre#json {
 }
 table.storeTable tr td{
   border: 1px solid yellow;
+}
+
+p#links_pool {
+  width: 300px;
+}
+
+p#links_pool a,#window_pool a {
+  margin: 3px;
 }

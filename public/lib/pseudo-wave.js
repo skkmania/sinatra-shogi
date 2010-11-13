@@ -129,6 +129,10 @@ wave.ws.onmessage = function(event) {
           window.gameController.acceptState();
         }
         break;
+      case "rese" :
+        LOG.debug("reset state message : " + event.data);
+        wave.getState().clear();
+        break;
       case "msg:" :
         break;
       default :
@@ -193,6 +197,10 @@ wave.State.prototype = {
     return keys;
   },
   reset: function() {
+    this.state = {};
+    wave.ws.send('reset');
+  },
+  clear: function() {
     this.state = {};
   },
   merge: function(delta) {

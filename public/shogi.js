@@ -62,7 +62,7 @@ window.gameController.game = this;
 	//        あればそのmove objectを返す
   findMove: function findMove(move) { // ShogiGame
     LOG.getInto('ShogiGame#findMove');
-    LOG.debug('move : ' + Object.toJSON(move));
+    LOG.debug('move : ' + move.toDebugString());
     var ret = this.controller.handler.dataStore.findNextMove(move);
     LOG.debug('whether move was found or not : ' + Object.toJSON(ret));
     LOG.goOut();

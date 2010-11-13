@@ -58,12 +58,14 @@
  #sTable { width: 500px; height: 20px; }
 
  #Title {
+/*
    margin-left: 120px;
    margin-top: 15px;
    margin-bottom: 15px;
    height: 20px;
    width:  280px;
    vertical-align: middle;
+*/
  }
 
  #Title #kid {

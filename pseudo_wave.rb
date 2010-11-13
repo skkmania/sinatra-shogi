@@ -181,6 +181,10 @@ class PseudoWaveConnection < Rev::WebSocket
         Log.debug "sync request arrived : #{data}"
         send_message 'sync' + $wave.state.toString
         Log.debug "sent sync reply : #{'sync' + $wave.state.toString}"
+      when /^reset/
+        Log.debug "reset request arrived : #{data}"
+        $wave.state.clear
+        $pubsub.publish('reset state')
       else
         $wave.state.fromString(data)
         Log.debug "read state done : #{$wave.state.inspect}"

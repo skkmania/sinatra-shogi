@@ -6,7 +6,7 @@
 
 var Maintainer = Class.create({
   initialize : function initialize(controller) {
-    LOG.getInto('ControlPanel#initialize');
+    LOG.getInto('Maintainer#initialize');
     this.controller = controller;
     this.area = new Area(this, 'maintainer', 'Maintainer',{position:[600,800], width:400, height:150});
     this.areaInit();
@@ -24,8 +24,17 @@ var Maintainer = Class.create({
   <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>\
   <button id="test-button" class="testbutton t" onclick="new Test.Unit.Runner( testcases, \'testlog\' );">run_test</button>\
   <button id="dumpStore-button" class="dumpStorebutton t" onclick="window.gameController.handler.dataArea.display();">dump_store</button>\
+  <button id="clearState-button" class="maintainer t" onclick="window.gameController.maintainer.clearState();">clear_state</button>\
 </div>';
     this.area.window_contents.update(contents);
+    LOG.goOut();
+  }, 
+	/**
+	 * clearState()
+	 */
+  clearState: function clearState() { // Maintainer              
+    LOG.getInto('Maintainer#clearState');
+    wave.getState().reset();
     LOG.goOut();
   }, 
 });
