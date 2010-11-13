@@ -325,7 +325,7 @@ var Store = Class.create(Hash, {
 
       }.bind(this)
     });
-    LOG.goOut();
+    this.LOG.goOut();
     var response = new Ajax.Response(request);
   },
 

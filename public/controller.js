@@ -671,6 +671,9 @@ GameController = Class.create({
           LOG.debug('onePlayer: second player added');
           this.players.push(wave.getViewer().getId());
           LOG.debug('players: ' + this.players.join(','));
+          // 2人そろったので、DBから初期盤面データを取得しStoreを構成しておく
+          // もっと早く読んでおいてもよいのかな
+          this.handler.dataStore.getMsg(1, 1, 3, 7, 'full', false);
           delta = this.setPlayersOrder();
           LOG.debug('returned delta : ' + Log.dumpObject(delta));
           $('join-button').hide();
@@ -699,6 +702,7 @@ GameController = Class.create({
         // 機能： 2つのPlayerオブジェクトを生成し、ランダムに2人のプレイヤーに割り当てる
         //        this.blackplayers, this.whiteplayersをセットする
         // 返値 : stateに載せる情報としてdeltaを作成し返す
+        //        deltaに載せる項目は、playerとturn
   setPlayersOrder: function setPlayersOrder() { // GameController
     var viewer = wave.getViewer().getId();
     LOG.getInto('GameController#setPlayersOrder');
@@ -712,6 +716,12 @@ GameController = Class.create({
       this.player2 = new Player('player2', this.players[0], this.players[0]==viewer || this.players[0]==wave.getViewer().getDisplayName());
     }
     var delta = this.addPlayersToDelta();
+    delta['mode']  = 'playing';
+    delta['bid']   = value.toString();
+    delta['turn'] = 't';
+    delta['board'] = this.game.board.initialString;
+    delta['next']  = this.handler.dataStore.slice.get('nextMoves').toDelta();
+    delta['prev']  = this.handler.dataStore.slice.get('prevMoves').toDelta();
     LOG.goOut();
     return delta;
   },
