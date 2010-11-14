@@ -144,7 +144,6 @@ var Handler = Class.create({
       slice = this.dataStore.slices.get(value);
     }
     LOG.debug('slice : ' + slice.toDebugString());
-    LOG.debug('slice constructor : ' + Object.toJSON(slice.constructor));
     LOG.debug('slice.keys : ' + (slice.keys().join(',')));
     //slice = $H(slice);
     //if(slice && !slice.constructor) slice = $H(slice);

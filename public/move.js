@@ -250,11 +250,12 @@ var Move = Class.create({
 
 // 指し手の集合 
 // Hashの子クラス
-// 指し手のmidをkeyとする。このmidはNumberでなければならない。
+//   key   : 指し手のmid。このmidはNumberでなければならない。
+//   value : Move オブジェクト
 var Moves = Class.create(Hash, {
 
-  initialize : function($super, log){ // Moves
-    this.LOG = log;
+  initialize : function($super){ // Moves
+    this.LOG = LOG;
     LOG.getInto('Moves#initialize');
     $super();
     LOG.goOut();
@@ -272,7 +273,7 @@ var Moves = Class.create(Hash, {
     LOG.getInto('Moves#search');
     var res = this.find(function(pair){
       this.LOG.debug2('key : ' + pair.key);
-      this.LOG.debug2('value : ' + Object.toJSON(pair.value));
+      this.LOG.debug2('value : ' + pair.value.toDebugString());
       return pair.value.minimalEqual(m);
     }.bind(this));
     LOG.debug2('returning : ' + res.value.toDelta());
@@ -285,6 +286,9 @@ var Moves = Class.create(Hash, {
 	/*
 	 * toDebugString()
 	 */
+        // 自身のもつ全てのMoveオブジェクトのtoDebugStringを
+        // : でつなげた文字列をかえす
+        // 自身が空の場合、空文字列をかえす
   toDebugString : function toDebugString(){ // Moves
     LOG.getInto('Moves#toDebugString');
     var res = this.values().invoke('toDebugString').join(':');
@@ -295,6 +299,9 @@ var Moves = Class.create(Hash, {
 	/*
 	 * toDelta()
 	 */
+        // 自身のもつ全てのMoveオブジェクトのtoDeltaを
+        // : でつなげた文字列をかえす
+        // 自身が空の場合、空文字列をかえす
   toDelta : function toDelta(){ // Moves
     LOG.getInto('Moves#toDelta');
     var res = this.values().invoke('toDelta').join(':');
@@ -310,8 +317,13 @@ var Moves = Class.create(Hash, {
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
   fromDelta : function fromDelta(str){ // Moves
     LOG.getInto('Moves#fromDelta');
-    if(!str || str.length == 0){
-      LOG.debug('nothing to do because argument str is invalid');
+    if(!str){
+      LOG.fatal('Fatal ERROR! argument str is invalid');
+      LOG.goOut();
+      return this;
+    }
+    if(str.length == 0){
+      LOG.debug('nothing to do because argument str size is 0');
       LOG.goOut();
       return this;
     }

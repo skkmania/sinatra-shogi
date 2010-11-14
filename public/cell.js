@@ -123,7 +123,7 @@ Cell.prototype = {
 	 * onDrop(draggable)
 	 */
       onDrop: function onDrop(draggable) {
-        this.LOG.getInto('Droppable#onDrop',{ "background":"#aaccff" });
+        this.LOG.getInto('Cell#Droppable#onDrop',{ "background":"#aaccff" });
 
         // make action contents
         var fromObj = draggable.parentNode.obj;
@@ -146,6 +146,7 @@ Cell.prototype = {
           return null;
         } else {
           // nextMovesのなかにあったらそれを実行
+          // ここでmakeReviewDeltaを呼ぶのはreviewのみがDASだった時代の旧弊
           var delta = window.gameController.handler.makeReviewDelta(foundMove['nxt_bid']);
           window.gameController.sendDelta(delta);
         }

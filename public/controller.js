@@ -724,8 +724,8 @@ GameController = Class.create({
     delta['board'] = this.game.board.initialString;
     LOG.debug('slices: ');
     LOG.debug(JSON.stringify(this.handler.dataStore.slices));
-    //delta['next']  = this.handler.dataStore.slices.get(1).get('nextMoves').toDelta();
-    //delta['prev']  = this.handler.dataStore.slices.get(1).get('prevMoves').toDelta();
+    delta['next']  = this.handler.dataStore.slices.get(1).get('nextMoves').toDelta();
+    delta['prev']  = this.handler.dataStore.slices.get(1).get('prevMoves').toDelta();
     LOG.debug('leaving with delta : ' + Log.dumpObject(delta));
     LOG.goOut();
     return delta;

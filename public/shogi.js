@@ -64,7 +64,7 @@ window.gameController.game = this;
     LOG.getInto('ShogiGame#findMove');
     LOG.debug('move : ' + move.toDebugString());
     var ret = this.controller.handler.dataStore.findNextMove(move);
-    LOG.debug('whether move was found or not : ' + Object.toJSON(ret));
+    LOG.debug('whether move was found or not : ' + ret.toDebugString());
     LOG.goOut();
     return ret;
 /*

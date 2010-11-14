@@ -183,11 +183,11 @@ var Store = Class.create(Hash, {
     bids.each(function(bid){
       this.LOG.debug('bid : ' + JSON.stringify(bid));
       this.slices.set(bid, this.makeSlice(bid, data, m));
-      this.LOG.debug('slice made : ' + JSON.stringify(this.slices.get(bid)));
+      this.LOG.debug('slice made : ' + JSON.stringify(this.slices.get(bid).toDebugString()));
     }.bind(this));
-    LOG.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
     LOG.debug('slices: ');
-    LOG.debug(JSON.stringify(this.handler.dataStore.slices));
+    LOG.debug(JSON.stringify(this.slices));
     LOG.goOut();
   },
 	/**
@@ -272,7 +272,7 @@ var Store = Class.create(Hash, {
             this.LOG.debug('obj after fromDB : ' + obj.toDelta());
             this.LOG.debug('ret : ' + JSON.stringify(ret));
           } else {
-            ret.set('prevMoves', null);
+            ret.set('prevMoves', (new Moves()));
             this.LOG.debug('ret : ' + JSON.stringify(ret));
           }
           this.LOG.goOut();
@@ -313,7 +313,7 @@ var Store = Class.create(Hash, {
   findNextMove : function findNextMove(move){ // Store
     LOG.getInto('Store#findNextMove'); 
     var ret = this.currentSlice().get('nextMoves').search(move);
-    LOG.debug('returning : ' + Object.toJSON(ret));
+    LOG.debug('returning : ' + ret.toDebugString());
     LOG.goOut();
     return ret;
   },
