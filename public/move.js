@@ -276,12 +276,14 @@ var Moves = Class.create(Hash, {
       this.LOG.debug2('value : ' + pair.value.toDebugString());
       return pair.value.minimalEqual(m);
     }.bind(this));
-    LOG.debug2('returning : ' + res.value.toDelta());
-    LOG.goOut();
-    if (res)
+    if (res) {
+      LOG.debug2('returning : ' + res.value.toDelta());
+      LOG.goOut();
       return res.value;
-    else
+    } else {
+      LOG.goOut();
       return false;
+    }
   },
 	/*
 	 * toDebugString()

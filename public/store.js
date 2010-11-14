@@ -313,9 +313,15 @@ var Store = Class.create(Hash, {
   findNextMove : function findNextMove(move){ // Store
     LOG.getInto('Store#findNextMove'); 
     var ret = this.currentSlice().get('nextMoves').search(move);
-    LOG.debug('returning : ' + ret.toDebugString());
-    LOG.goOut();
-    return ret;
+    if (ret) {
+      LOG.debug('Move found. returning : ' + ret.toDebugString());
+      LOG.goOut();
+      return ret;
+    } else {
+      LOG.debug('Move not found. returning : false');
+      LOG.goOut();
+      return false;
+    }
   },
 	/**
 	 * getMsg(bid, uid, level, mask, range, async)
