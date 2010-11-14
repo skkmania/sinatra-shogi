@@ -56,17 +56,23 @@ window.gameController.game = this;
 	 * findMove(move)
 	 */ 
         // 入力 : Moveオブジェクト 駒の動きをあらわしている
-	// 出力 : Moveオブジェクトまたはundefined 
+	// 出力 : Moveオブジェクトまたはfalse 
         // 機能 : 入力の動きがnextMovesの中にあるか探し
-	//        無ければundefinedを返す
+	//        無ければfalseを返す
 	//        あればそのmove objectを返す
   findMove: function findMove(move) { // ShogiGame
     LOG.getInto('ShogiGame#findMove');
     LOG.debug('move : ' + move.toDebugString());
     var ret = this.controller.handler.dataStore.findNextMove(move);
-    LOG.debug('whether move was found or not : ' + ret.toDebugString());
-    LOG.goOut();
-    return ret;
+    if (ret) {
+      LOG.debug('move was found : ' + ret.toDebugString());
+      LOG.goOut();
+      return ret;
+    } else {
+      LOG.debug('move was not found : ');
+      LOG.goOut();
+      return false;
+    }
 /*
     if(ret){
       this.controller.sendDelta( this.controller.handler.makeReviewDelta(ret.nxt_bid) );
