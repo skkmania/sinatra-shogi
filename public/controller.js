@@ -673,7 +673,9 @@ GameController = Class.create({
           LOG.debug('players: ' + this.players.join(','));
           // 2人そろったので、DBから初期盤面データを取得しStoreを構成しておく
           // もっと早く読んでおいてもよいのかな
-          this.handler.dataStore.getMsg(1, 1, 3, 7, 'full', false);
+          //this.handler.dataStore.getMsg(1, 1, 3, 7, 'full', false);
+          //LOG.debug('dataStore after getMsg :');
+          //LOG.debug(this.handler.dataStore.toDebugHtml());
           delta = this.setPlayersOrder();
           LOG.debug('returned delta : ' + Log.dumpObject(delta));
           $('join-button').hide();
@@ -717,11 +719,14 @@ GameController = Class.create({
     }
     var delta = this.addPlayersToDelta();
     delta['mode']  = 'playing';
-    delta['bid']   = value.toString();
+    delta['bid']   = 1;
     delta['turn'] = 't';
     delta['board'] = this.game.board.initialString;
-    delta['next']  = this.handler.dataStore.slice.get('nextMoves').toDelta();
-    delta['prev']  = this.handler.dataStore.slice.get('prevMoves').toDelta();
+    LOG.debug('slices: ');
+    LOG.debug(JSON.stringify(this.handler.dataStore.slices));
+    //delta['next']  = this.handler.dataStore.slices.get(1).get('nextMoves').toDelta();
+    //delta['prev']  = this.handler.dataStore.slices.get(1).get('prevMoves').toDelta();
+    LOG.debug('leaving with delta : ' + Log.dumpObject(delta));
     LOG.goOut();
     return delta;
   },

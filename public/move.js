@@ -254,7 +254,7 @@ var Move = Class.create({
 var Moves = Class.create(Hash, {
 
   initialize : function($super, log){ // Moves
-    LOG = log;
+    this.LOG = log;
     LOG.getInto('Moves#initialize');
     $super();
     LOG.goOut();

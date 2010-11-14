@@ -12,7 +12,7 @@ var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super, LOG){
+  initialize : function initialize($super){
     LOG.getInto('Slice#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
@@ -90,11 +90,11 @@ var Slices = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super, LOG){
+  initialize : function initialize($super){
     LOG.getInto('Slices#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    LOG = LOG;
+    this.LOG = LOG;
     LOG.goOut();
   },
 	/**
@@ -130,13 +130,15 @@ var Store = Class.create(Hash, {
     LOG.getInto('Store#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    this.slices = new Slices(LOG);
+    this.slices = new Slices();
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
        // stateを読むごとに更新される
     this.nextBid = null; // 次に表示する画面のbidの値を格納する。
        // 初期値はわからないのでnullとする。
        // ユーザアクションを受けてはじめて決まり、
        // 次の画面情報を作成するときに使われる
+    // まず初期盤面のデータを取得しておく
+    this.getMsg(1, 1, 3, 7, 'full', true);
     LOG.goOut();
   },
 	/**
@@ -173,15 +175,19 @@ var Store = Class.create(Hash, {
     // dataに含まれるbidを取り出して配列として保持
     var bids = data['board'].pluck('bid');
     // data[board]は、dataが保持しているjsオブジェクトの配列
-    LOG.debug('data[board] : ' + Object.toJSON(data['board']));
+    LOG.debug('data[board] : ' + JSON.stringify(data['board']));
     // bidsは、数値の配列
-    LOG.debug('bids : ' + Object.toJSON(bids));
+    LOG.debug('bids : ' + JSON.stringify(bids));
+    LOG.debug('bids size : ' + JSON.stringify(bids.length));
     var m = mask || 511;
     bids.each(function(bid){
-      this.LOG.debug('bid : ' + Object.toJSON(bid));
+      this.LOG.debug('bid : ' + JSON.stringify(bid));
       this.slices.set(bid, this.makeSlice(bid, data, m));
+      this.LOG.debug('slice made : ' + JSON.stringify(this.slices.get(bid)));
     }.bind(this));
-    //LOG.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.debug('slices: ');
+    LOG.debug(JSON.stringify(this.handler.dataStore.slices));
     LOG.goOut();
   },
 	/**
@@ -218,41 +224,58 @@ var Store = Class.create(Hash, {
   makeSlice : function makeSlice(bid, data, mask) { // Store
     LOG.getInto('Store#makeSlice');
     var m = mask || 511;
-    LOG.debug('m : ' + Object.toJSON(m));
+    LOG.debug('m : ' + JSON.stringify(m));
     var target;
-    var ret = new Slice(LOG);
+    var ret = new Slice();
     var dataNames = this.getMaskedDataName(m);
-    LOG.debug('masked data name : ' + Object.toJSON(dataNames));
+    LOG.debug('masked data name : ' + JSON.stringify(dataNames));
     // ほとんどの場合、あるbidの画面にはそのbidを自身のbidとして持つオブジェクトを集める
     dataNames.each(function(name){
-      this.LOG.debug('name : ' + Object.toJSON(name));
+      this.LOG.debug('name : ' + JSON.stringify(name));
       switch(name){
         case 'board':
+          this.LOG.getInto('processing board');
           target = data['board'].find(function(e){
              return e.bid == bid;
           });
-          this.LOG.debug('target : ' + Object.toJSON(target));
-          this.LOG.debug('target.bid : ' + Object.toJSON(target.bid));
-          this.LOG.debug('target.board : ' + Object.toJSON(target.board));
+          this.LOG.debug('target : ' + JSON.stringify(target));
+          this.LOG.debug('target.bid : ' + JSON.stringify(target.bid));
+          this.LOG.debug('target.board : ' + JSON.stringify(target.board));
           var obj = new BoardData(this.LOG);
           this.LOG.debug('obj after initialize : ' + obj.toDelta());
-          ret.set('board',    obj.fromDB(target));
+          obj.fromDB(target);
           this.LOG.debug('obj after fromDB : ' + obj.toDelta());
-          this.LOG.debug('ret : ' + Object.toJSON(ret));
+          ret.set('board', obj);
+          this.LOG.debug('ret[board] became : ' + JSON.stringify(ret.get('board')));
+          this.LOG.goOut();
           break;
         case 'nextMoves':
+          this.LOG.getInto('processing nextMoves');
           target = $A(data['nextMoves']).findAll(function(obj){
       	         return obj.bid == bid;
       	       }.bind(this));
-          this.LOG.debug('target : ' + Object.toJSON(target));
+          this.LOG.debug('target : ' + JSON.stringify(target));
           var obj = new Moves(this.LOG);
           ret.set('nextMoves', obj.fromDB(target));
+          this.LOG.debug('obj after fromDB : ' + obj.toDelta());
+          this.LOG.debug('ret : ' + JSON.stringify(ret));
+          this.LOG.goOut();
           break;
         case 'prevMoves':
+          this.LOG.getInto('processing prevMoves');
           target = $A(data['prevMoves']).findAll(function(obj){
     	       return obj.nxt_bid == bid;
     	     }.bind(this));
-          ret.set('prevMoves', (new Moves()).fromDB(target));
+          if (target.length > 0){
+            this.LOG.debug('target : ' + JSON.stringify(target));
+            ret.set('prevMoves', (new Moves()).fromDB(target));
+            this.LOG.debug('obj after fromDB : ' + obj.toDelta());
+            this.LOG.debug('ret : ' + JSON.stringify(ret));
+          } else {
+            ret.set('prevMoves', null);
+            this.LOG.debug('ret : ' + JSON.stringify(ret));
+          }
+          this.LOG.goOut();
           break;
         default:
           this.LOG.fatal('Store#makeSlice : wrong data name arrived!');
@@ -261,7 +284,7 @@ var Store = Class.create(Hash, {
       return ret;
     }.bind(this));
     // prevMovesだけは、あるbidの画面にはnxt_bidがbidのオブジェクトを集める
-    LOG.debug('ret : ' + ret.toDebugString());
+    LOG.debug('returning from makeSlice with : ' + ret.toDebugString());
     LOG.goOut();
     return ret; 
   },
@@ -325,7 +348,7 @@ var Store = Class.create(Hash, {
 
       }.bind(this)
     });
-    this.LOG.goOut();
+    LOG.goOut();
     var response = new Ajax.Response(request);
   },
 
@@ -431,14 +454,14 @@ var Store = Class.create(Hash, {
     this.each(function(pair){
       ret += '<tr>'
       ret += '<td>' + pair.key + '</td>';
-      ret += '<td>' + Object.toJSON(pair.value) + '</td>';
+      ret += '<td>' + JSON.stringify(pair.value) + '</td>';
       ret += '</tr>';
     });
     ret += '</table>';
     // slicesを表示
     var ret_slice = '<table class="storeTable">';
     this.slices.each(function(pair){
-      this.LOG.debug('pair.key : ' + Object.toJSON(pair.key));
+      this.LOG.debug('pair.key : ' + JSON.stringify(pair.key));
       this.LOG.debug('pair.value : ' + pair.value.toDebugString());
       ret_slice += '<tr>'
       ret_slice += '<td>' + pair.key + '</td>';
@@ -446,6 +469,8 @@ var Store = Class.create(Hash, {
       ret_slice += '</tr>';
     }.bind(this));
     ret_slice += '</table>';
+    LOG.debug('returning with : ');
+    LOG>debug(JSON.stringify(this));
     LOG.goOut();
     return ret + ret_slice;
   }
