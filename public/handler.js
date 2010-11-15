@@ -130,6 +130,7 @@ var Handler = Class.create({
   makeReviewDelta: function makeReviewDelta(bid){ // Handler
     var delta = {};
     LOG.getInto('Handler#makeReviewDelta');
+    this.controller.count++;
     LOG.debug('bid : ' + bid);
     LOG.debug('typeof bid : ' + typeof bid);
     var value = bid || $('inputText').value;
@@ -155,7 +156,8 @@ var Handler = Class.create({
         this.LOG.debug('key : ' + Object.toJSON(pair.key));
         this.LOG.debug('value : ' + pair.value.toDebugString());
       }.bind(this));
-      delta['mode']  = 'review';
+      delta['mode']  = wave.getState().get('mode') || 'review';
+      delta['count'] = this.controller.count.toString();
       delta['bid']   = value.toString();
       delta['turn']  = (slice.get('board').turn ? 't' : 'f');
       delta['board'] = slice.get('board').toDelta();

@@ -199,9 +199,11 @@ Board = Class.create({
 	/**
 	 * idx2xy(idx)
 	 */
+	// boardを表す文字列の文字の位置を将棋盤の座標に変換する
+        // 入力: stateの文字列のindex(0スタート）
+	// 出力: 座標の配列[x,y]
   idx2xy: function idx2xy(idx) { // Board
     LOG.getInto('Board#idx2xy with : ' + idx, Log.DEBUG2);
-    // stateの文字列のindex(0スタート）を座標の配列[x,y]にして返す
     var h = this.game.height - 1;
     var ret = [Math.floor(idx/h) + 1.0, idx%h + 1.0]
     LOG.info('Board#idx2xy returning with : ' + ret.toString());
@@ -322,10 +324,10 @@ Board = Class.create({
 	 * deleteCellsPieceByIdx(idx)
 	 */
   deleteCellsPieceByIdx: function deleteCellsPieceByIdx(idx){ // Board
-    LOG.getInto();
-    LOG.debug('entered Board#deleteCellsPieceByIdx with idx : ' + idx, {'indent':1});
+    LOG.getInto('Board#deleteCellsPieceByIdx');
+    LOG.debug('entered with idx : ' + idx, {'indent':1});
     var cell = this.getCellByIdx(idx);
-    if(cell.piece){
+    if(cell && cell.piece){
       cell.deleteOwnPiece();
     } else {
       // do nothing
@@ -339,7 +341,7 @@ Board = Class.create({
   removeCellsPieceByIdx: function removeCellsPieceByIdx(idx){ // Board
     LOG.debug('entered Board#remove with idx : ' + idx, {'indent':1});
     var cell = this.getCellByIdx(idx);
-    if(cell.piece){
+    if(cell && cell.piece){
       cell.removeOwnPiece();
     } else {
       // do nothing
@@ -373,8 +375,8 @@ Board = Class.create({
     // stringFromStateを読んだときの処理に使う
     // 置き換えられる駒は消される
     // 置き換える駒は新しく生成される
-    LOG.getInto();
-    LOG.debug('entered Board#replaceByRead with pair: ' + pair.toString() + ', idx : ' + idx);
+    LOG.getInto('Board#replaceByRead');
+    LOG.debug('entered with pair: ' + pair.toString() + ', idx : ' + idx);
     var cell = this.getCellByIdx(idx);
     var new_piece = new Piece(pair[0]);
     if(cell.piece) cell.deleteOwnPiece();
@@ -392,6 +394,7 @@ Board = Class.create({
     // 現在の状態との差分を埋める
     var oldBoard = $A(this.toString());
     var newBoard = $A(strFromState);
+    LOG.debug('oldBoard : ' + this.toString());
     newBoard.zip(oldBoard).each(function(tuple, idx){
         if(tuple[0] != tuple[1]){
            if(tuple[1] == 'x') this.put(tuple[0], idx);

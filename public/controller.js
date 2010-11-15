@@ -357,7 +357,8 @@ GameController = Class.create({
     this.game.setStandPosition();
     $('join-button').hide();
     if (!this.game.board.shown) this.game.board.show();
-    this.game.boardReadFromState(state);  // 盤面の読み込み
+    this.game.boardReadFromDB(state);  // 盤面の読み込み
+    //this.game.boardReadFromState(state);  // 盤面の読み込み
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());

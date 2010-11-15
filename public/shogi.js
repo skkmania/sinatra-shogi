@@ -206,7 +206,7 @@ window.gameController.game = this;
 	 * boardReadFromDB()
 	 */
 	// DBから受け取ったボード情報オブジェクトを読み込む
-  boardReadFromDB: function boardReadFromDB() { // ShogiGame
+  boardReadFromDB: function boardReadFromDB(state) { // ShogiGame
     LOG.getInto('Game#boardReadFromDB: ');
     var boardObj = this.controller.handler.dataStore.currentSlice().get('board');
     this.board.read(boardObj['board'] || this.board.initialString);
@@ -217,6 +217,7 @@ window.gameController.game = this;
 	/**
 	 * boardReadFromState(state)
 	 */
+	// Stateから受け取ったボード情報オブジェクトを読み込む
   boardReadFromState: function boardReadFromState(state) { // ShogiGame
     LOG.getInto('Game#boardReadFromState: ');
     this.board.read(state.get('board', this.board.initialString));

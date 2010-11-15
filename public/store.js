@@ -187,7 +187,7 @@ var Store = Class.create(Hash, {
     }.bind(this));
     LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
     LOG.debug('slices: ');
-    LOG.debug(JSON.stringify(this.slices));
+    LOG.debug(Log.dumpObject(this.slices));
     LOG.goOut();
   },
 	/**
