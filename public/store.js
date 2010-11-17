@@ -210,7 +210,7 @@ var Store = Class.create(Hash, {
       // stateから読んだbidは、これから表示しようとする画面のbid
       // なので、currentBidという名をつけてアクセスを容易にする
       // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
-    var slice = (new Slice(LOG)).fromState(state);
+    var slice = (new Slice()).fromState(state);
 /*
     slice.set('board',     (new BoardData(LOG)).fromDelta(state.get('board')));
     slice.set('nextMoves', (new Moves(LOG)).fromDelta(state.get('next')));
