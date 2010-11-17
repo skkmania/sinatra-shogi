@@ -49,6 +49,10 @@
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
         if(window.gameController.settings['playerSetting'] != 'playGame')
           window.gameController.handler.refreshBoard(1);
+
+        if(window.gameController.handler.dataStore.ready){
+          window.gameController.handler.nextArea.show();
+        }
       });
 
       function addPlayer(name) {

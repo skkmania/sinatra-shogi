@@ -108,6 +108,7 @@ var Slices = Class.create(Hash, {
   read : function read(bid, sliceData) { // Slices
     LOG.getInto('Slices#read');
     LOG.debug('typeof bid : ' + typeof bid);
+    if (typeof bid == 'string') bid = parseInt(bid);
     this.set(bid, sliceData);
     LOG.debug('this['+bid+'] became ' + Object.toJSON(this.get(bid)));
     LOG.goOut();
@@ -138,7 +139,9 @@ var Store = Class.create(Hash, {
        // ユーザアクションを受けてはじめて決まり、
        // 次の画面情報を作成するときに使われる
     // まず初期盤面のデータを取得しておく
-    this.getMsg(1, 1, 3, 7, 'full', true);
+    this.getMsg(1, 1, 3, 7, 'full', false);
+    // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
+    this.ready = true;
     LOG.goOut();
   },
 	/**
@@ -181,13 +184,15 @@ var Store = Class.create(Hash, {
     LOG.debug('bids size : ' + JSON.stringify(bids.length));
     var m = mask || 511;
     bids.each(function(bid){
-      this.LOG.debug('bid : ' + JSON.stringify(bid));
+      this.LOG.debug('bid : ' + JSON.stringify(bid) + ', typof bid: '+ typeof bid);
       this.slices.set(bid, this.makeSlice(bid, data, m));
+      this.LOG.debug('typeof slices key: ' + JSON.stringify(typeof this.slices.keys()[0]));
       this.LOG.debug('slice made : ' + JSON.stringify(this.slices.get(bid).toDebugString()));
     }.bind(this));
     LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
     LOG.debug('slices: keys ');
     LOG.debug(JSON.stringify(this.slices.keys()));
+    LOG.debug('typeof slices key: ' + JSON.stringify(typeof this.slices.keys()[0]));
     LOG.debug('slices: values ');
     LOG.debug(JSON.stringify(this.slices.values()));
     LOG.debug('currentBid: ');
@@ -195,7 +200,7 @@ var Store = Class.create(Hash, {
     LOG.debug('currentSlice: keys');
     LOG.debug(JSON.stringify(this.currentSlice().keys()));
     LOG.debug('currentSlice: get board');
-    LOG.debug(JSON.stringify(this.currentSlice().get('board')));
+    LOG.debug(JSON.stringify(this.currentSlice().get('board')['board']));
     LOG.goOut();
   },
 	/**
@@ -216,8 +221,11 @@ var Store = Class.create(Hash, {
     slice.set('nextMoves', (new Moves(LOG)).fromDelta(state.get('next')));
     slice.set('prevMoves', (new Moves(LOG)).fromDelta(state.get('prev')));
 */
+    if (typeof this.currentBid != 'number'){
+      LOG.fatal('Something wrong : storeData.currentBid became not number!');
+    }
     this.slices.set(this.currentBid, slice);
-    LOG.debug('slieces['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
     LOG.goOut();
   },
 	/**
@@ -351,6 +359,7 @@ var Store = Class.create(Hash, {
         var data= msgpack.unpack(response.responseText);
         this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data, 7);
+        this.ready = true;
         this.LOG.goOut();
         return data;
       }.bind(this),

@@ -30,7 +30,7 @@ var Handler = Class.create({
     this.prevArea = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
     this.prevArea.initOnClick();
     this.prevArea.window.open();
-    this.prevArea.show();
+    //this.prevArea.show(); ここでははやすぎ。まだ初期情報がとれていない。
     // 盤面のエリア
     this.boardArea = new Area(this, 'boardArea', 'Board',{position:[160,100], width:520, height:440});
     this.boardArea.window.open();
@@ -39,7 +39,7 @@ var Handler = Class.create({
     this.nextArea = new Area(this, 'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
     this.nextArea.initOnClick();
     this.nextArea.window.open();
-    this.nextArea.show();
+    //this.nextArea.show();
     // nextMovePoint用のエリア
     this.nextMovePointArea = new Area(this, 'nextMovePoint', 'NextMovePoint',{position:[850,100], width:130, height:400});
     this.nextMovePointArea.initOnClick();
