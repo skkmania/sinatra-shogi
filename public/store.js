@@ -125,14 +125,14 @@ var Store = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super, LOG){
+  initialize : function initialize($super){
     this.LOG = LOG;
     LOG.getInto('Store#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices();
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
-       // stateを読むごとに更新される
+       // stateを読むごとに更新される どこで？
     this.nextBid = null; // 次に表示する画面のbidの値を格納する。
        // 初期値はわからないのでnullとする。
        // ユーザアクションを受けてはじめて決まり、
@@ -186,8 +186,16 @@ var Store = Class.create(Hash, {
       this.LOG.debug('slice made : ' + JSON.stringify(this.slices.get(bid).toDebugString()));
     }.bind(this));
     LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
-    LOG.debug('slices: ');
-    LOG.debug(Log.dumpObject(this.slices));
+    LOG.debug('slices: keys ');
+    LOG.debug(JSON.stringify(this.slices.keys()));
+    LOG.debug('slices: values ');
+    LOG.debug(JSON.stringify(this.slices.values()));
+    LOG.debug('currentBid: ');
+    LOG.debug(JSON.stringify(this.currentBid));
+    LOG.debug('currentSlice: keys');
+    LOG.debug(JSON.stringify(this.currentSlice().keys()));
+    LOG.debug('currentSlice: get board');
+    LOG.debug(JSON.stringify(this.currentSlice().get('board')));
     LOG.goOut();
   },
 	/**

@@ -7,7 +7,7 @@ var Handler = Class.create({
     this.controller = controller;
     this.LOG = LOG;
     LOG.getInto('Handler#initialize');
-    this.dataStore = new Store(LOG); // データをbidごとに再構成したデータの貯蔵庫
+    this.dataStore = new Store(); // データをbidごとに再構成したデータの貯蔵庫
     LOG.debug('dataStore was created.');
     // 以下の３つのプロパティは、保持するキャッシュの肥大化を防ぐ目的で導入
     // 例えば１局の将棋の指し手を次々に読み込んでいけば、そのたびにキャッシュにデータが増える。
@@ -25,15 +25,21 @@ var Handler = Class.create({
     // ControlPanel Area
     this.cpArea = new Area(this, 'controlPanel', 'ControlPanel',{position:[10,0], width:500, height:90});
     this.cpArea.initOnClick();
+    this.cpArea.window.open();
     // 前の手のエリア
     this.prevArea = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
     this.prevArea.initOnClick();
+    this.prevArea.window.open();
+    this.prevArea.show();
     // 盤面のエリア
     this.boardArea = new Area(this, 'boardArea', 'Board',{position:[160,100], width:520, height:440});
+    this.boardArea.window.open();
     this.boardArea.layoutContents();
     // 次の手のエリア
     this.nextArea = new Area(this, 'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
     this.nextArea.initOnClick();
+    this.nextArea.window.open();
+    this.nextArea.show();
     // nextMovePoint用のエリア
     this.nextMovePointArea = new Area(this, 'nextMovePoint', 'NextMovePoint',{position:[850,100], width:130, height:400});
     this.nextMovePointArea.initOnClick();
