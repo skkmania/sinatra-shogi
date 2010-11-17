@@ -26,6 +26,7 @@ window.gameController.game = this;
     this.whiteStand = new Stand('white-stand', this);
     LOG.warn('Stands created.');
     this.makeConfirmActionElement();
+    this.board.show();
     LOG.warn('leaving ShogiGame#initialize',{'indent':-1, 'date':true,3:{'color':'green'}});
     LOG.goOut();
     // this.debug_dump();
@@ -208,7 +209,11 @@ window.gameController.game = this;
 	// DBから受け取ったボード情報オブジェクトを読み込む
   boardReadFromDB: function boardReadFromDB(state) { // ShogiGame
     LOG.getInto('Game#boardReadFromDB: ');
+    //LOG.debug('state: ' + Log.dumpObject(state.getState()));
     var boardObj = this.controller.handler.dataStore.currentSlice().get('board');
+    LOG.debug('boardObj: ' + Log.dumpObject(boardObj));
+    this.board.bid = parseInt(boardObj['bid']);
+    this.board.turn = (boardObj['turn'] == 'true');
     this.board.read(boardObj['board'] || this.board.initialString);
     this.blackStand.read(boardObj['black'] || this.blackStand.initialString);
     this.whiteStand.read(boardObj['white'] || this.whiteStand.initialString);
@@ -372,8 +377,8 @@ window.gameController.game = this;
 
     // この動きがすでにnextMovesのなかにあるならばその動作をすればよい。
     var m = this.makeMove(actionContents);
-    this.findMove(m);
-
+  //?  this.findMove(m);
+  // ないからここに来たんじゃないの?
     // nextMovesに無ければ、まず新手と新局面を作成して、
 
     if (toCell.piece){

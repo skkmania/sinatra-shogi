@@ -126,7 +126,10 @@ ControlPanel = Class.create({
   update: function update(mode) { // ControlPanel             
     LOG.getInto('ControlPanel#update');
     LOG.debug('mode : ' + mode);
+    // counter: の表示を現手数へ更新
     this.counterElm.update(this.controller.count);
+    // bidの表示を現在の盤面のbidへ更新
+    $('inputText').value = this.controller.game.board.bid;
     if (!this.elm) this.elm = $('control-panel');                         
     if (this.controller.top == 1){                                                
       this.player1Elm = $('top-panel');
@@ -363,6 +366,8 @@ GameController = Class.create({
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.controlPanel.update('playing');
+    this.handler.prevArea.show();
+    this.handler.nextArea.show();
     //this.prepareFromState(state);
     LOG.goOut();
   },

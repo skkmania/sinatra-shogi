@@ -72,6 +72,7 @@ Board = Class.create({
 	// 出力 : なし
   fromDelta: function fromDelta(str){ // Board
     LOG.getInto('Board#fromDelta');
+    LOG.debug('str : ' + str);
     var ary = str.split(',');
     if(ary.length != 5) LOG.fatal('Board#fromDelta:read error');
     this.bid = parseInt(ary[0]);
