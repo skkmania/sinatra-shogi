@@ -260,6 +260,16 @@ Board = Class.create({
     LOG.goOut();
   },
 	/**
+	 * initialShow()
+	 */
+  initialShow: function initialShow() {  // Board
+    LOG.getInto('Board#initialShow');
+    this.cells.flatten().invoke('initialShow');
+    this.adjustBorder();
+    this.shown = true;
+    LOG.goOut();
+  },
+	/**
 	 * show()
 	 */
   show: function show() {  // Board

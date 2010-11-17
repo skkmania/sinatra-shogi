@@ -26,7 +26,7 @@ window.gameController.game = this;
     this.whiteStand = new Stand('white-stand', this);
     LOG.warn('Stands created.');
     this.makeConfirmActionElement();
-    this.board.show();
+    this.board.initialShow();
     LOG.warn('leaving ShogiGame#initialize',{'indent':-1, 'date':true,3:{'color':'green'}});
     LOG.goOut();
     // this.debug_dump();

@@ -154,6 +154,30 @@ Cell.prototype = {
     });
   },
 	/**
+	 * initialShow()
+	 */
+	// 初期盤面を表示するときだけ呼び出される
+  initialShow: function initialShow() { // Cell
+    LOG.getInto('Cell#initialShow',Log.DEBUG2);
+    LOG.debug2(this.toDebugString());
+    if (!this.elm) {
+      (this.x === 0 || this.y === 0) ? this.createDummyElm() : this.createElm();
+    }
+    if (this.piece) {
+      this.elm.appendChild(this.piece.elm);
+      if(7 <= this.y && this.y <= 9){
+        this.piece.elm.addClassName('bottom');
+        this.piece.elm.removeClassName('top');
+      } else {
+        if(0 <= this.y && this.y <= 3){
+          this.piece.elm.addClassName('top');
+          this.piece.elm.removeClassName('bottom');
+        }
+      }
+    }
+    LOG.goOut(Log.DEBUG2);
+  },
+	/**
 	 * show()
 	 */
   show: function show() { // Cell
