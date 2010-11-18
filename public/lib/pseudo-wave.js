@@ -266,6 +266,21 @@ wave.State.prototype = {
     LOG.goOut();
     return ret;
   },
+  toDebugHtml: function() {
+    LOG.getInto("wave.State.toDebugHtml");
+    var ret = "<table>";
+    for (var key in this.state) {
+      if(key){
+        ret += '<tr>';
+        ret += '<td>' + key + '</td>';
+        ret += '<td>' + this.state[key] + '</td>';
+        ret += '</tr>';
+      }
+    }
+    ret += '</table>';
+    LOG.goOut();
+    return ret;
+  },
   sync: function(){
     try{
       if (wave.stateCallback) {

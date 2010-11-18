@@ -25,7 +25,9 @@ var Maintainer = Class.create({
   <button id="test-button" class="testbutton t" onclick="new Test.Unit.Runner( testcases, \'testlog\' );">run_test</button>\
   <button id="dumpStore-button" class="dumpStorebutton t" onclick="window.gameController.handler.dataArea.display();">dump_store</button>\
   <button id="clearState-button" class="maintainer t" onclick="window.gameController.maintainer.clearState();">clear_state</button>\
-</div>';
+  <button id="showState-button" class="maintainer t" onclick="window.gameController.maintainer.showState();">show_state</button>\
+</div>\
+<div id="showState"></div>';
     this.area.window_contents.update(contents);
     LOG.goOut();
   }, 
@@ -35,6 +37,14 @@ var Maintainer = Class.create({
   clearState: function clearState() { // Maintainer              
     LOG.getInto('Maintainer#clearState');
     wave.getState().reset();
+    LOG.goOut();
+  }, 
+	/**
+	 * showState()
+	 */
+  showState: function showState() { // Maintainer              
+    LOG.getInto('Maintainer#showState');
+    $('showState').update(wave.getState().toDebugHtml());
     LOG.goOut();
   }, 
 });
