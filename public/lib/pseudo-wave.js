@@ -119,14 +119,24 @@ wave.ws.onmessage = function(event) {
       case "sync" :
         LOG.debug("sync reply arrived : " + event.data);
         wave.getState().fromString(event.data.slice(4));
-        if(wave.getState().get('mode') == 'playing'){
-          // すでにplayerが決まっている'playing'なら、
-          // このクライアントは観戦者なのでIDは自動にふってしまう。
-          wave.setViewer();
-          // そして観戦者ならばjoin Buttonは必要なく
-          $('join-button').hide();
-          // 画面の初期化へ飛んでよい。
-          window.gameController.acceptState();
+        switch(wave.getState().get('mode')){
+          case 'playing':
+            // すでにplayerが決まっている'playing'なら、
+            // このクライアントは観戦者なのでIDは自動にふってしまう。
+            wave.setViewer();
+            // そして観戦者ならばjoin Buttonは必要なく
+            $('join-button').hide();
+            // 画面の初期化へ飛んでよい。
+            window.gameController.acceptState();
+            break;
+          case "onePlayer":
+            // ひとりのplayerが決まっている'onePlayer'なら、
+            // join Buttonを表示したまま、ControlPanelのアップデートの
+            // ために、Stateのコールバックを呼ぶ。
+            window.gameController.acceptState();
+            break;
+          default:
+            break;
         }
         break;
       case "rese" :
