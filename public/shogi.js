@@ -133,10 +133,14 @@ window.gameController.game = this;
 	/**
 	 * reverse()
 	 */
-  reverse: function reverse() { // ShogiGame
+	// 機能: デフォルト動作：盤面の向きを現在とは反対にする。
+	//       強制動作      : 盤面を引数で指定したtop値に合う向きにする。
+	// 入力: 数値 top これが存在する場合は強制動作になる。なければデフォルト動作。入力してよい値は0か1のみ。
+	// 返値：なし
+  reverse: function reverse(top) { // ShogiGame
     LOG.getInto('ShogiGame#reverse');
     var tmp = null;
-    this.controller.top = (this.controller.top === 0 ? 1 : 0);
+    this.controller.top = top || (this.controller.top === 0 ? 1 : 0);
     this.controller.top_by_viewer = this.controller.top;
     this.controller.message('top became ' + this.controller.top);
     this.controller.controlPanel.reverse();

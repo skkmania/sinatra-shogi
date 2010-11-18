@@ -359,7 +359,9 @@ GameController = Class.create({
     // topが決まったので持ち駒の位置も決められる。
     this.game.setStandPosition();
     $('join-button').hide();
-    if (!this.game.board.shown) this.game.board.show();
+    // 最初だけは将棋盤の向きが逆になっているかもしれないので調整。
+    if(this.count === 0) this.adjustDirection();
+    //if (!this.game.board.shown) this.game.board.show();
     this.game.boardReadFromDB(state);  // 盤面の読み込み
     //this.game.boardReadFromState(state);  // 盤面の読み込み
     this.game.toggleDraggable();
@@ -677,14 +679,11 @@ GameController = Class.create({
           LOG.debug('onePlayer: second player added');
           this.players.push(wave.getViewer().getId());
           LOG.debug('players: ' + this.players.join(','));
-          // 2人そろったので、DBから初期盤面データを取得しStoreを構成しておく
-          // もっと早く読んでおいてもよいのかな
-          //this.handler.dataStore.getMsg(1, 1, 3, 7, 'full', false);
-          //LOG.debug('dataStore after getMsg :');
-          //LOG.debug(this.handler.dataStore.toDebugHtml());
           delta = this.setPlayersOrder();
           LOG.debug('returned delta : ' + Log.dumpObject(delta));
           $('join-button').hide();
+          // 先後が決まったので、画面の将棋盤の向きをそれに合わせる。
+          //this.adjustDirection();          
           this.mode = 'playing';
           break;
       }
@@ -702,6 +701,19 @@ GameController = Class.create({
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
     wave.getState().submitDelta(delta);
+  },
+	/**
+	 * adjustDirection()
+	 */
+	// 機能 : 後手が見ている画面なら、盤の１段目を下方にする
+  adjustDirection: function adjustDirection() { // GameController
+    LOG.getInto('GameController#adjustDirection');
+    LOG.debug('player2.name : ' + this.player2.name);
+    LOG.debug('viewer name : ' + wave.getViewer().getDisplayName());
+    if(this.player2.name == wave.getViewer().getId()){
+      this.game.reverse(1);
+    }
+    LOG.goOut();
   },
 	/**
 	 * setPlayersOrder()
