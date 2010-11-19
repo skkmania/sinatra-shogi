@@ -7,7 +7,7 @@
  */
 //  1画面ぶんのデータの集まりを保持するクラス
 //  画面を遷移するごとにStoreからsliceを切り出すのは計算量の面で損だとの考えからつくってみた
-//  keyとして bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
+//  keyとして board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
 var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
@@ -25,9 +25,9 @@ var Slice = Class.create(Hash, {
 	 */
   fromState : function fromState(state){ // Slice
     LOG.getInto('Slice#fromState');
-    this.set('board',     (new BoardData(LOG)).fromDelta(state.get('board',window.gameController.game.board.initialString)));
-    this.set('nextMoves', (new Moves(LOG)).fromDelta(state.get('next', '')));
-    this.set('prevMoves', (new Moves(LOG)).fromDelta(state.get('prev', '')));
+    this.set('board',     (new BoardData()).fromDelta(state.get('board',window.gameController.game.board.initialString)));
+    this.set('nextMoves', (new Moves()).fromDelta(state.get('next', '')));
+    this.set('prevMoves', (new Moves()).fromDelta(state.get('prev', '')));
     LOG.goOut();
     return this;
   },
