@@ -63,10 +63,12 @@ var Area = Class.create({
   show : function show(){ // Area
     LOG.getInto('Area#show');
     LOG.debug(this.container + ' area is to be displayed.');
+debugger;
     var ret = '';
     var str = '<ul>';
     var movesObj = this.handler.dataStore.currentSlice().get(this.title);
-    LOG.debug('title : ' + Object.toJSON(this.title));
+    LOG.debug('movesObj : ' + movesObj.toDebugString());
+    LOG.debug('title : ' + JSON.stringify(this.title));
     str += movesObj.inject(ret, function(acc, pair){
       var kanji = pair.value.toKanji();
       ret = acc + '<li id="' + this.container + pair.value.mid + '">' + kanji + '</li>';

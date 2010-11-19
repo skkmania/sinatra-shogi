@@ -7,7 +7,7 @@
  */
 //  1画面ぶんのデータの集まりを保持するクラス
 //  画面を遷移するごとにStoreからsliceを切り出すのは計算量の面で損だとの考えからつくってみた
-//  keyとして board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
+//  keyとして bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
 var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
@@ -15,7 +15,7 @@ var Slice = Class.create(Hash, {
   initialize : function initialize($super){
     LOG.getInto('Slice#initialize');
     $super();
-    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.LOG = LOG;
     LOG.goOut();
     return this;
@@ -130,7 +130,7 @@ var Store = Class.create(Hash, {
     this.LOG = LOG;
     LOG.getInto('Store#initialize');
     $super();
-    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices();
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
        // stateを読むごとに更新される どこで？
@@ -139,7 +139,8 @@ var Store = Class.create(Hash, {
        // ユーザアクションを受けてはじめて決まり、
        // 次の画面情報を作成するときに使われる
     // まず初期盤面のデータを取得しておく
-    this.getMsg(1, 1, 3, 7, 'full', false);
+    //  mask値がなのは暫定。これは
+    this.getMsg(1, 1, 3, 15, 'full', false);
     // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
     this.ready = true;
     LOG.goOut();
@@ -358,7 +359,7 @@ var Store = Class.create(Hash, {
         this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
         this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
-        this.readDB(data, 7);
+        this.readDB(data, 15);
         this.ready = true;
         this.LOG.goOut();
         return data;
@@ -420,7 +421,7 @@ var Store = Class.create(Hash, {
         window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
               // DBからの返事である、盤面のbid
         // 新しいbidのデータをdataStoreに追加する
-        this.readDB(data, 7);
+        this.readDB(data, 15);
         // registBoardの場合、それだけでは追加が足りない。新局面に至った新手の情報がまだ追加されていないから、それを追加する。
         // 新手の情報とは、この新局面にとってのprevMoves[0]にほかならない。
         this.addMovesAsNextMoves(data['prevMoves'])

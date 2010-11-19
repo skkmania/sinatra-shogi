@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# vi: ts=2 sw=2 sts=0 nu ai ambw=double fo=tcq
+# vi: ts=2 sw=2 sts=0 ai ambw=double fo=tcq
 #
 #  cc_getData.rhtml
 #
@@ -42,6 +42,7 @@ class DbAccessor
     @date	= @params['date']
     
     @data_name = %w|bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
+    #@data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
     @masked_data_name = []
     @data_name.each_with_index{|e,i| @masked_data_name.push e if @mask[i] == 1 }
     
@@ -162,6 +163,7 @@ class DbAccessor
   end
   
   def get_msg
+    @logger.debug { "into get_msg : masked_data_name : #{@masked_data_name.join(',')}" } 
     @gotten = @masked_data_name.inject({}){|res_hash, name|
       result = DB[queries[name]].all
       @logger.debug { "#{name} : #{result.inspect}" } 
