@@ -7,7 +7,7 @@
  */
 //  1画面ぶんのデータの集まりを保持するクラス
 //  画面を遷移するごとにStoreからsliceを切り出すのは計算量の面で損だとの考えからつくってみた
-//  keyとして bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
+//  keyとして board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments
 var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
@@ -15,7 +15,7 @@ var Slice = Class.create(Hash, {
   initialize : function initialize($super){
     LOG.getInto('Slice#initialize');
     $super();
-    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.LOG = LOG;
     LOG.goOut();
     return this;
@@ -130,7 +130,7 @@ var Store = Class.create(Hash, {
     this.LOG = LOG;
     LOG.getInto('Store#initialize');
     $super();
-    this.names = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices();
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
        // stateを読むごとに更新される どこで？
@@ -139,8 +139,8 @@ var Store = Class.create(Hash, {
        // ユーザアクションを受けてはじめて決まり、
        // 次の画面情報を作成するときに使われる
     // まず初期盤面のデータを取得しておく
-    //  mask値がなのは暫定。これは
-    this.getMsg(1, 1, 3, 15, 'full', false);
+    //  mask値が7なのは暫定。これは
+    this.getMsg(1, 1, 3, 7, 'full', false);
     // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
     this.ready = true;
     LOG.goOut();
@@ -272,25 +272,26 @@ var Store = Class.create(Hash, {
       	         return obj.bid == bid;
       	       }.bind(this));
           this.LOG.debug('target : ' + JSON.stringify(target));
-          var obj = new Moves(this.LOG);
+          var obj = new Moves();
           ret.set('nextMoves', obj.fromDB(target));
           this.LOG.debug('obj after fromDB : ' + obj.toDelta());
-          this.LOG.debug('ret : ' + JSON.stringify(ret));
+          this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           this.LOG.goOut();
           break;
         case 'prevMoves':
           this.LOG.getInto('processing prevMoves');
           target = $A(data['prevMoves']).findAll(function(obj){
     	       return obj.nxt_bid == bid;
-    	     }.bind(this));
+    	  });
           if (target.length > 0){
             this.LOG.debug('target : ' + JSON.stringify(target));
-            ret.set('prevMoves', (new Moves()).fromDB(target));
+            var obj = new Moves();
+            ret.set('prevMoves', obj.fromDB(target));
             this.LOG.debug('obj after fromDB : ' + obj.toDelta());
-            this.LOG.debug('ret : ' + JSON.stringify(ret));
+            this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           } else {
             ret.set('prevMoves', (new Moves()));
-            this.LOG.debug('ret : ' + JSON.stringify(ret));
+            this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           }
           this.LOG.goOut();
           break;
@@ -359,7 +360,7 @@ var Store = Class.create(Hash, {
         this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
         this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
-        this.readDB(data, 15);
+        this.readDB(data, 7);
         this.ready = true;
         this.LOG.goOut();
         return data;
@@ -421,7 +422,7 @@ var Store = Class.create(Hash, {
         window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
               // DBからの返事である、盤面のbid
         // 新しいbidのデータをdataStoreに追加する
-        this.readDB(data, 15);
+        this.readDB(data, 7);
         // registBoardの場合、それだけでは追加が足りない。新局面に至った新手の情報がまだ追加されていないから、それを追加する。
         // 新手の情報とは、この新局面にとってのprevMoves[0]にほかならない。
         this.addMovesAsNextMoves(data['prevMoves'])

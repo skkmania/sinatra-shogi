@@ -63,7 +63,6 @@ var Area = Class.create({
   show : function show(){ // Area
     LOG.getInto('Area#show');
     LOG.debug(this.container + ' area is to be displayed.');
-debugger;
     var ret = '';
     var str = '<ul>';
     var movesObj = this.handler.dataStore.currentSlice().get(this.title);

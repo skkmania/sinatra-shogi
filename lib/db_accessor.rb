@@ -41,7 +41,7 @@ class DbAccessor
     @win	= @params['win']
     @date	= @params['date']
     
-    @data_name = %w|bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
+    @data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
     #@data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
     @masked_data_name = []
     @data_name.each_with_index{|e,i| @masked_data_name.push e if @mask[i] == 1 }
