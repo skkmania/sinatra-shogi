@@ -151,7 +151,8 @@ class Wave::State < Hash
   def fromString(str)
     str.split("!!").each{|e|
       a = e.split("|")
-      self[a[0]] = a[1]
+      self[a[0]] = (a[1] || '')
+      # valueが空文字列の場合、a[1]にはnilがくるので、空文字列で置き換える
     }
     Log.debug "fromString : State changed. >> #{self.inspect}"
   end

@@ -244,10 +244,15 @@ wave.State.prototype = {
     LOG.getInto("wave.State.toString");
     var ret = '';
     for (var key in this.state) {
-      if(key && this.state[key])
-        ret += key + '|' + this.state[key] + '!!';
-      else
+      if(key){
+        if(this.state[key]){
+          ret += key + '|' + this.state[key] + '!!';
+        } else {
+          ret += key + '|' + '!!';
+        }
+      } else {
         LOG.debug("undefined value for key: " + key);
+      }
     }
     // 最後の!!は余計なので取り除いて返す
     ret = ret.slice(0,-2);
