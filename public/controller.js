@@ -363,7 +363,8 @@ GameController = Class.create({
     if(this.count === 0) this.adjustDirection();
     //if (!this.game.board.shown) this.game.board.show();
     this.game.boardReadFromDB();  // 盤面の読み込み
-    //this.game.boardReadFromState(state);  // 盤面の読み込み
+    // １手ごとのデータ先読み
+    this.handler.dataStore.getMsg(this.game.board.bid, 1, 3, 7, 'full', true);
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());

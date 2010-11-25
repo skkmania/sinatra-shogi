@@ -196,6 +196,7 @@ var Handler = Class.create({
     var slice = this.dataStore.slices.get(value);
     LOG.debug('slice['+value+'] : ' + Object.toJSON(slice));
     if(!slice){
+      LOG.debug('was not found in slices key, so try getMsg.');
       this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
       //this.dataStore.arrangeByBid(7);
       slice = this.dataStore.slices.get(value);
