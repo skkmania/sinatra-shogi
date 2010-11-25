@@ -211,9 +211,8 @@ window.gameController.game = this;
 	 * boardReadFromDB()
 	 */
 	// DBから受け取ったボード情報オブジェクトを読み込む
-  boardReadFromDB: function boardReadFromDB(state) { // ShogiGame
+  boardReadFromDB: function boardReadFromDB() { // ShogiGame
     LOG.getInto('Game#boardReadFromDB: ');
-    //LOG.debug('state: ' + Log.dumpObject(state.getState()));
     var boardObj = this.controller.handler.dataStore.currentSlice().get('board');
     LOG.debug('boardObj: ' + Log.dumpObject(boardObj));
     this.board.bid = parseInt(boardObj['bid']);

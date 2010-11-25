@@ -362,7 +362,7 @@ GameController = Class.create({
     // 最初だけは将棋盤の向きが逆になっているかもしれないので調整。
     if(this.count === 0) this.adjustDirection();
     //if (!this.game.board.shown) this.game.board.show();
-    this.game.boardReadFromDB(state);  // 盤面の読み込み
+    this.game.boardReadFromDB();  // 盤面の読み込み
     //this.game.boardReadFromState(state);  // 盤面の読み込み
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
@@ -411,7 +411,7 @@ GameController = Class.create({
     this.handler.nextMoves = state.get('next').evalJSON();
     this.handler.prevMoves = state.get('prev').evalJSON();
     LOG.debug(Object.toJSON(this.handler.boardObj));
-    this.game.boardReadFromDB(this.handler.boardObj);
+    this.game.boardReadFromDB();
     this.game.toggleDraggable();
     this.controlPanel.update('slice');
     this.handler.prevArea.show(this.handler.prevMoves);

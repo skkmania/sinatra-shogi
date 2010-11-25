@@ -35,7 +35,7 @@ var Slice = Class.create(Hash, {
 	 * toDebugHtml()
 	 */
   toDebugHtml : function toDebugHtml(){ // Slice
-    LOG.getInto('Slice#toDebugHtml');
+    LOG.getInto('Slice#toDebugHtml',Log.DEBUG2);
     var ret = '<table class="slice">';
     LOG.debug('keys : ' + Object.toJSON(this.keys()));
     LOG.debug('values : ' + this.values().invoke('toDebugString').join('::'));
@@ -51,14 +51,14 @@ var Slice = Class.create(Hash, {
       }
       ret += '</tr>';
     }.bind(this));
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret + '</table>';
   },
 	/**
 	 * toDebugString()
 	 */
   toDebugString : function toDebugString(){ // Slice
-    LOG.getInto('Slice#toDebugString');
+    LOG.getInto('Slice#toDebugString',Log.DEBUG2);
     var ret = '';
     LOG.debug('keys : ' + JSON.stringify(this.keys()));
     //LOG.debug('keys : ' + Object.toJSON(this.keys()));
@@ -75,7 +75,7 @@ var Slice = Class.create(Hash, {
       this.LOG.debug('value: ' + ret);
       this.LOG.goOut();
     }.bind(this));
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   }
 });
