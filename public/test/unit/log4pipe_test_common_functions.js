@@ -4,7 +4,8 @@
 //  log4pipeを使うテストhtmlにて共通に呼び出す
 //
   var elem = null;
-  var HOST = 'http://skkmania.sakura.ne.jp/animal-shogi/';
+//  var HOST = 'http://skkmania.sakura.ne.jp/animal-shogi/';
+  var HOST = 'http://ubu-pg84:4567/';
   var TestCounter = 0;
 
   function getContainerId(){

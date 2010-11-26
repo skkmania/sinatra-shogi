@@ -7,8 +7,6 @@ var Handler = Class.create({
     this.controller = controller;
     this.LOG = LOG;
     LOG.getInto('Handler#initialize');
-    this.dataStore = new Store(); // データをbidごとに再構成したデータの貯蔵庫
-    LOG.debug('dataStore was created.');
     // 以下の３つのプロパティは、保持するキャッシュの肥大化を防ぐ目的で導入
     // 例えば１局の将棋の指し手を次々に読み込んでいけば、そのたびにキャッシュにデータが増える。
     // なので、中盤になったら序盤のデータは捨ててもいいだろう、と判断する
@@ -142,13 +140,12 @@ var Handler = Class.create({
     var value = bid || $('inputText').value;
     //var value = bid.toString() || $('inputText').value;
     LOG.debug('value : ' + value);
-    var slice = this.dataStore.slices.get(value);
+    var slice = dataStore.slices.get(value);
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
-      LOG.debug('slices key is : ' + this.dataStore.slices.keys().join(','));
-      this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      //this.dataStore.arrangeByBid(7);
-      slice = this.dataStore.slices.get(value);
+      LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
+      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      slice = dataStore.slices.get(value);
     }
     LOG.debug('slice : ' + slice.toDebugString());
     LOG.debug('slice.keys : ' + (slice.keys().join(',')));
@@ -193,13 +190,12 @@ var Handler = Class.create({
     var value = $('inputText').value;
     LOG.debug('value : ' + value);
     LOG.debug('typeof value : ' + typeof value);
-    var slice = this.dataStore.slices.get(value);
+    var slice = dataStore.slices.get(value);
     LOG.debug('slice['+value+'] : ' + Object.toJSON(slice));
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
-      this.dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      //this.dataStore.arrangeByBid(7);
-      slice = this.dataStore.slices.get(value);
+      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      slice = dataStore.slices.get(value);
     }
     if(slice){
       window.gameController.game.boardReadFromDB();
@@ -224,14 +220,14 @@ var Handler = Class.create({
     switch(place) {
       case 'nxts' :
 	// この場合、targetによりクリックされた要素のmidが渡されてくる
-        var bid = this.dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
+        var bid = dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
         LOG.debug('bid found : ' + bid);
         window.gameController.sendDelta( this.makeReviewDelta(bid) );
         break;
       case 'pres' :
         // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
         LOG.getInto('clicked innerHTML is : ' + inner);
-        var bid = this.dataStore.currentSlice().get('prevMoves').find(
+        var bid = dataStore.currentSlice().get('prevMoves').find(
           function(pair){
              this.LOG.debug('value.toKanji : ' + pair.value.toKanji());
              return pair.value.toKanji() == inner;
@@ -260,7 +256,7 @@ var Handler = Class.create({
       LOG.debug('range: ' + arguments[2]);
       LOG.debug('async: ' + arguments[3]);
       LOG.goOut();
-      this.dataStore.getMsg(target, uid, this.gLevel, this.mask, range, async);
+      dataStore.getMsg(target, uid, this.gLevel, this.mask, range, async);
   },
 
   set_data_by_bid : function set_data_by_bid(target, responseJSON){
@@ -341,7 +337,7 @@ var Handler = Class.create({
     this.selfArea.display(target);
     this.dataArea.display(target);
     this.nextArea.display(target);
-    $('size').update(this.dataStore.slices.size());
+    $('size').update(dataStore.slices.size());
     LOG.debug('size was updated.');
     var ages = this.age_hash.values().sort().uniq();
     LOG.debug('ages : ' + Object.toJSON(ages));

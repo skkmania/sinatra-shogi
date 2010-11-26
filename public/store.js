@@ -500,3 +500,7 @@ var Store = Class.create(Hash, {
     return ret + ret_slice;
   }
 });
+
+dataStore = new Store();
+LOG.debug('dataStore was created.');
+

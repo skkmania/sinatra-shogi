@@ -64,7 +64,7 @@ window.gameController.game = this;
   findMove: function findMove(move) { // ShogiGame
     LOG.getInto('ShogiGame#findMove');
     LOG.debug('move : ' + move.toDebugString());
-    var ret = this.controller.handler.dataStore.findNextMove(move);
+    var ret = dataStore.findNextMove(move);
     if (ret) {
       LOG.debug('move was found : ' + ret.toDebugString());
       LOG.goOut();
@@ -213,7 +213,7 @@ window.gameController.game = this;
 	// DBから受け取ったボード情報オブジェクトを読み込む
   boardReadFromDB: function boardReadFromDB() { // ShogiGame
     LOG.getInto('Game#boardReadFromDB: ');
-    var boardObj = this.controller.handler.dataStore.currentSlice().get('board');
+    var boardObj = dataStore.currentSlice().get('board');
     LOG.debug('boardObj: ' + Log.dumpObject(boardObj));
     this.board.bid = parseInt(boardObj['bid']);
     this.board.turn = (boardObj['turn'] == 'true');
@@ -405,7 +405,7 @@ window.gameController.game = this;
 
     LOG.goOut();
     // DBサーバに情報を投げ、そのbidとmidを含むsliceを受け取る
-    this.controller.handler.dataStore.registBoard(m);
+    dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
     LOG.debug('doAction: game.new_bid : ' + this.new_bid);
     //var delta =  window.gameController.handler.makeDeltaFromSlice(game.new_bid, data);

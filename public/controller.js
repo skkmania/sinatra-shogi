@@ -351,7 +351,7 @@ GameController = Class.create({
     LOG.getInto('GameController#playing');
 
     // stateから、dataStoreに情報を格納する
-    this.handler.dataStore.readState(state);
+    dataStore.readState(state);
 
     this.count = state.get('count') || 0;
     if(!this.player1) this.getPlayersFromState(state);
@@ -364,7 +364,7 @@ GameController = Class.create({
     //if (!this.game.board.shown) this.game.board.show();
     this.game.boardReadFromDB();  // 盤面の読み込み
     // １手ごとのデータ先読み
-    this.handler.dataStore.getMsg(this.game.board.bid, 1, 3, 7, 'full', true);
+    dataStore.getMsg(this.game.board.bid, 1, 3, 7, 'full', true);
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
@@ -383,10 +383,10 @@ GameController = Class.create({
     LOG.getInto('GameController#review');
 
     // stateから、dataStoreに情報を格納する
-    this.handler.dataStore.readState(state);
+    dataStore.readState(state);
 
     // 画面を更新する
-    $('inputText').value = this.handler.dataStore.currentBid;
+    $('inputText').value = dataStore.currentBid;
     this.game.board.turn = this.readTurnFromState(state);
     this.game.board.bid    = parseInt(state.get('bid') || 1);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
@@ -742,9 +742,9 @@ GameController = Class.create({
     delta['turn'] = 't';
     delta['board'] = this.game.board.initialString;
     LOG.debug('slices: ');
-    LOG.debug(JSON.stringify(this.handler.dataStore.slices));
-    delta['next']  = this.handler.dataStore.slices.get(1).get('nextMoves').toDelta();
-    delta['prev']  = this.handler.dataStore.slices.get(1).get('prevMoves').toDelta();
+    LOG.debug(JSON.stringify(dataStore.slices));
+    delta['next']  = dataStore.slices.get(1).get('nextMoves').toDelta();
+    delta['prev']  = dataStore.slices.get(1).get('prevMoves').toDelta();
     LOG.debug('leaving with delta : ' + Log.dumpObject(delta));
     LOG.goOut();
     return delta;

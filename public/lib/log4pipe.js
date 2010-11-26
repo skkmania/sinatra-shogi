@@ -7,7 +7,6 @@
 さもなくば、ひとつのwindowに重ねて書き込まれてしまう。
 生成されるpopup windowの見た目や大きさはcssにより指定すること。
 */
-LOG = null;
 
 var window_factory = function(container,title,options){
    var window_header = new Element('div',{
@@ -424,3 +423,10 @@ Log.dumpObject=function (obj,indent) {
 		s+=indent+"}";
 		return s;
 }
+
+// global object
+//LOG = makeLogObj('LOG', {width:800, height:550, resizable:false});
+
+LOG = new Log(Log.DEBUG, 'popup', {width:800, height:550, resizable:false});
+LOG.debug('this log window is created under this options : ');
+LOG.debug(Log.dumpObject(opt));

@@ -65,7 +65,7 @@ var Area = Class.create({
     LOG.debug(this.container + ' area is to be displayed.');
     var ret = '';
     var str = '<ul>';
-    var movesObj = this.handler.dataStore.currentSlice().get(this.title);
+    var movesObj = dataStore.currentSlice().get(this.title);
     LOG.debug('movesObj : ' + movesObj.toDebugString());
     LOG.debug('title : ' + JSON.stringify(this.title));
     str += movesObj.inject(ret, function(acc, pair){
@@ -114,23 +114,23 @@ var Area = Class.create({
     switch (this.container){
       case 'pres':
    	str = '<ul>';
-	this.handler.dataStore.currentSlice().get('prevMoves').each(function(paer){
+	dataStore.currentSlice().get('prevMoves').each(function(paer){
           });
 /*
-	 if(this.handler.dataStore.slices.get(target)){
+	 if(dataStore.slices.get(target)){
    	      str = '<ul>';
-	   $A(this.handler.dataStore.slices.get(target).get('bids')[0]['pres']).each(function(e){
+	   $A(dataStore.slices.get(target).get('bids')[0]['pres']).each(function(e){
 	     str += '<li>' + e + '</li>';
 	   });
    	      str += '</ul>';
 	 } else {
-	   if(!this.handler.dataStore.slices.get(target)){
+	   if(!dataStore.slices.get(target)){
 	     str = '<ul><li>now loading</li></ul>';
 	     this.window_contents.update(str);
            }
            str = '<ul>';
-           if (this.handler.dataStore.slices.get(this.handler.target_store)) {
-	     $A(this.handler.dataStore.slices.get(target_store).get('bids')[0]['pres']).each(function(e){
+           if (dataStore.slices.get(this.handler.target_store)) {
+	     $A(dataStore.slices.get(target_store).get('bids')[0]['pres']).each(function(e){
 	       str += '<li>' + e + '</li>';
              });
            }
@@ -144,31 +144,31 @@ var Area = Class.create({
            str = '<ul><li>' + target + '</li></ul>';
            break;
       case 'data':
-           str = this.handler.dataStore.toDebugHtml();
+           str = dataStore.toDebugHtml();
            break;
       case 'nxts':
         LOG.debug('nxts : str -> ' + str);
         LOG.debug('nxts : target -> ' + target);
-       	LOG.debug('dataStore -> ' + Object.toJSON(this.handler.dataStore));
-       	LOG.debug('slice -> ' + Object.toJSON(this.handler.dataStore.slices));
+       	LOG.debug('dataStore -> ' + Object.toJSON(dataStore));
+       	LOG.debug('slice -> ' + Object.toJSON(dataStore.slices));
 
-       	if(this.handler.dataStore.slices.get(target)){
-       	  LOG.debug('slices.get('+target+') -> ' + Object.toJSON(this.handler.dataStore.slices.get(target)));
+       	if(dataStore.slices.get(target)){
+       	  LOG.debug('slices.get('+target+') -> ' + Object.toJSON(dataStore.slices.get(target)));
           str = '<ul>';
-	  LOG.debug(Object.toJSON(this.handler.dataStore.slices.get(target).get('bids')[0]['nxts']));
-	   $A(this.handler.dataStore.slices.get(target).get('bids')[0]['nxts']).each(function(e){
+	  LOG.debug(Object.toJSON(dataStore.slices.get(target).get('bids')[0]['nxts']));
+	   $A(dataStore.slices.get(target).get('bids')[0]['nxts']).each(function(e){
 	     str += '<li>' + e + '</li>';
 	   });
 	  str += '</ul>';
           LOG.debug('str -> ' + str);
         } else {
-	  if(!this.handler.dataStore.slices.get(target)){
+	  if(!dataStore.slices.get(target)){
 	    str = '<ul><li>now loading</li></ul>';
 	    this.window_contents.update(str);
           }
           str = '<ul>';
-          if (this.handler.dataStore.slices.get(this.handler.target_store)) {
-	    $A(this.handler.dataStore.slices.get(this.target_store).get('bids')[0]['nxts']).each(function(e){
+          if (dataStore.slices.get(this.handler.target_store)) {
+	    $A(dataStore.slices.get(this.target_store).get('bids')[0]['nxts']).each(function(e){
 	      str += '<li>' + e + '</li>';
             });
            }
