@@ -51,7 +51,7 @@ Log = Class.create({
   initialize: function(level, logger, options){
        this.defaultOptions();
        this.currentLevel = level || Log.WARN;
-       this.setDiv = true;
+       this.setDiv = false;
        switch(logger){
        case 'write':
          this.logger = this.write; // default to write Logger
@@ -65,9 +65,6 @@ Log = Class.create({
        case 'popup':
          var title = (options && options['title'])? options['title'] : 'popupLogger';
          this.popupInitialize(title, options);
-         this.goOut = this.goOut;
-         this.getInto = this.getInto;
-         this.logger = this.entry;
          break;
        default:
          this.logger = this.write; // default to write Logger
@@ -136,15 +133,18 @@ Log = Class.create({
      */
 
   popupInitialize: function(title, options){
+    // setDivが有効なのはpopupのときだけ。
+    this.setDiv = true;
     this.window = null;
     this.title = title;
     if(!this.title)  this.title = options['title'] || '';
+    this.logger = this.entry;
     this.divStack = [];
     this.openWindow(options);
     this.createTopDiv(title);
   },
   openWindow: function openWindow(options){
-     var container = options && options['container'] ? $(options['container']) : $('popup_logger');
+     var container = (options && options.container) ? $(options.container) : $('popup_logger');
      if (!this.window || !this.window.document) {
        this.window = window_factory(container, this.title, options);
        if (!this.window) {
@@ -426,7 +426,8 @@ Log.dumpObject=function (obj,indent) {
 
 // global object
 //LOG = makeLogObj('LOG', {width:800, height:550, resizable:false});
-
-LOG = new Log(Log.DEBUG, 'popup', {width:800, height:550, resizable:false});
+var opt =  {'container':'logger0', width:800, height:550, resizable:false};
+LOG = new Log(Log.DEBUG, 'console',opt);
+//LOG = new Log(Log.DEBUG, 'popup', {'container':'logger0', width:800, height:550, resizable:false});
 LOG.debug('this log window is created under this options : ');
 LOG.debug(Log.dumpObject(opt));

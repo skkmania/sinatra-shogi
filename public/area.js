@@ -65,14 +65,20 @@ var Area = Class.create({
     LOG.debug(this.container + ' area is to be displayed.');
     var ret = '';
     var str = '<ul>';
-    var movesObj = dataStore.currentSlice().get(this.title);
-    LOG.debug('movesObj : ' + movesObj.toDebugString());
-    LOG.debug('title : ' + JSON.stringify(this.title));
-    str += movesObj.inject(ret, function(acc, pair){
-      var kanji = pair.value.toKanji();
-      ret = acc + '<li id="' + this.container + pair.value.mid + '">' + kanji + '</li>';
-      return ret;
-    }.bind(this));
+    
+    var curSlc = dataStore.currentSlice();
+    if(curSlc){
+      var movesObj = curSlc.get(this.title);
+      LOG.debug('movesObj : ' + movesObj.toDebugString());
+      LOG.debug('title : ' + JSON.stringify(this.title));
+      str += movesObj.inject(ret, function(acc, pair){
+        var kanji = pair.value.toKanji();
+        ret = acc + '<li id="' + this.container + pair.value.mid + '">' + kanji + '</li>';
+        return ret;
+      }.bind(this));
+    } else {
+      LOG.debug('currentSlice not found.');
+    }
     str += '</ul>';
     LOG.debug('str : ' + str);
     LOG.debug('container : ' + this.window.container.id);
