@@ -60,12 +60,12 @@ var Slice = Class.create(Hash, {
   toDebugString : function toDebugString(){ // Slice
     LOG.getInto('Slice#toDebugString',Log.DEBUG2);
     var ret = '';
-    LOG.debug('keys : ' + JSON.stringify(this.keys()));
+    LOG.debug2('keys : ' + JSON.stringify(this.keys()));
     //LOG.debug('keys : ' + Object.toJSON(this.keys()));
     // LOG.debug('values : ' + Object.toJSON(this.values()));
     this.keys().each(function(key){
       var obj = this.get(key);
-      this.LOG.getInto('key : ' + key);
+      this.LOG.getInto('key : ' + key, Log.DEBUG2);
       ret += key + '::';
       if (!obj){
          ret += '[]';
@@ -73,7 +73,7 @@ var Slice = Class.create(Hash, {
          ret += obj.toDelta();
       }
       this.LOG.debug('value: ' + ret);
-      this.LOG.goOut();
+      this.LOG.goOut(Log.DEBUG2);
     }.bind(this));
     LOG.goOut(Log.DEBUG2);
     return ret;
@@ -140,9 +140,9 @@ var Store = Class.create(Hash, {
        // 次の画面情報を作成するときに使われる
     // まず初期盤面のデータを取得しておく
     //  mask値が7なのは暫定。これは
-    this.getMsg(1, 1, 3, 7, 'full', false);
+    this.getMsg(1, 1, 3, 7, 'full', true);
     // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
-    this.ready = true;
+    // this.ready = true;
     LOG.goOut();
   },
 	/**
@@ -251,7 +251,7 @@ var Store = Class.create(Hash, {
       this.LOG.debug('name : ' + JSON.stringify(name));
       switch(name){
         case 'board':
-          this.LOG.getInto('processing board');
+          this.LOG.getInto('processing board',Log.DEBUG2);
           target = data['board'].find(function(e){
              return e.bid == bid;
           });
@@ -264,10 +264,10 @@ var Store = Class.create(Hash, {
           this.LOG.debug('obj after fromDB : ' + obj.toDelta());
           ret.set('board', obj);
           this.LOG.debug('ret[board] became : ' + JSON.stringify(ret.get('board')));
-          this.LOG.goOut();
+          this.LOG.goOut(Log.DEBUG2);
           break;
         case 'nextMoves':
-          this.LOG.getInto('processing nextMoves');
+          this.LOG.getInto('processing nextMoves',Log.DEBUG2);
           target = $A(data['nextMoves']).findAll(function(obj){
       	         return obj.bid == bid;
       	       }.bind(this));
@@ -276,10 +276,10 @@ var Store = Class.create(Hash, {
           ret.set('nextMoves', obj.fromDB(target));
           this.LOG.debug('obj after fromDB : ' + obj.toDelta());
           this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
-          this.LOG.goOut();
+          this.LOG.goOut(Log.DEBUG2);
           break;
         case 'prevMoves':
-          this.LOG.getInto('processing prevMoves');
+          this.LOG.getInto('processing prevMoves',Log.DEBUG2);
           target = $A(data['prevMoves']).findAll(function(obj){
     	       return obj.nxt_bid == bid;
     	  });
@@ -293,7 +293,7 @@ var Store = Class.create(Hash, {
             ret.set('prevMoves', (new Moves()));
             this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           }
-          this.LOG.goOut();
+          this.LOG.goOut(Log.DEBUG2);
           break;
         default:
           this.LOG.fatal('Store#makeSlice : wrong data name arrived!');
@@ -361,6 +361,7 @@ var Store = Class.create(Hash, {
         var data= msgpack.unpack(response.responseText);
         this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
         this.readDB(data, 7);
+ //       this.LOG.debug('store.toDebugHtml : ' + this.toDebugHtml());
         this.ready = true;
         this.LOG.goOut();
         return data;
@@ -495,7 +496,7 @@ var Store = Class.create(Hash, {
     }.bind(this));
     ret_slice += '</table>';
     LOG.debug('returning with : ');
-    LOG>debug(JSON.stringify(this));
+    LOG.debug(JSON.stringify(this));
     LOG.goOut();
     return ret + ret_slice;
   }

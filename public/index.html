@@ -32,12 +32,6 @@
 
     <script>
       Event.observe(window, 'load', function() {
-        // log window を表示するためのリンクアンカーをページに追加
-        var elem = new Element('a',{'id':'Loganchor', 'href':'#Log', 'title':'Log'});
-        elem.insert('Log');
-        $('links_pool').appendChild(elem);
-        LOG.popupInitialize('Log', {'container':'Loganchor', width:800, height:550, resizable:true});
-        LOG.setLevel('debug');
       //  $('Log').insert(new Element('img',
       //   {id:'handle0', src:"img/lib/window_close.gif"}));
        // new Resizable('Log',{handle:'handle0'});
@@ -56,6 +50,12 @@
         if(dataStore.ready){
           window.gameController.handler.nextArea.show();
         }
+        // log window を表示するためのリンクアンカーをページに追加
+        var elem = new Element('a',{'id':'Loganchor', 'href':'#Log', 'title':'Log'});
+        elem.insert('Log');
+        $('links_pool').appendChild(elem);
+        LOG.popupInitialize('Log', {'container':'Loganchor', width:800, height:550, resizable:true});
+        LOG.setLevel('debug');
       });
 
       function addPlayer(name) {

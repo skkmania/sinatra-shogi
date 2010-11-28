@@ -20,7 +20,7 @@ var Move = Class.create({
 
   initialize : function initialize(str){ // Move
     this.LOG = LOG;
-    LOG.getInto('Move#initialize');
+    LOG.getInto('Move#initialize', Log.DEBUG2);
     if (str && str.length == 6){
       this.from    = parseInt(str.slice(0,2));
       this.to      = parseInt(str.slice(2,4));
@@ -28,7 +28,7 @@ var Move = Class.create({
       this.promote = str.slice(-1) == 't' ? true : false;
       this.toStr   = str;
     }
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return this;
   },
 
@@ -305,10 +305,10 @@ var Moves = Class.create(Hash, {
         // : でつなげた文字列をかえす
         // 自身が空の場合、空文字列をかえす
   toDelta : function toDelta(){ // Moves
-    LOG.getInto('Moves#toDelta');
+    LOG.getInto('Moves#toDelta', Log.DEBUG2);
     var res = this.values().invoke('toDelta').join(':');
     LOG.debug('returning : ' + res);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return res;
   },
 	/*
@@ -318,15 +318,15 @@ var Moves = Class.create(Hash, {
 	// ただし、midがないmoveは読み込まない
 	// 読み込むmoveのmidが既存の場合、新しいmoveで上書きされる
   fromDelta : function fromDelta(str){ // Moves
-    LOG.getInto('Moves#fromDelta');
+    LOG.getInto('Moves#fromDelta', Log.DEBUG2);
     if(!str){
       LOG.fatal('Fatal ERROR! argument str is invalid');
-      LOG.goOut();
+      LOG.goOut(Log.DEBUG2);
       return this;
     }
     if(str.length == 0){
-      LOG.debug('nothing to do because argument str size is 0');
-      LOG.goOut();
+      LOG.debug2('nothing to do because argument str size is 0');
+      LOG.goOut(Log.DEBUG2);
       return this;
     }
     var ary = str.split(':');
@@ -336,10 +336,10 @@ var Moves = Class.create(Hash, {
       this.LOG.debug('m : ' + m.toDelta());
       if (Object.isNumber(m.mid)){
         this.set(m.mid, m);
-        this.LOG.debug('m was set to Moves : ' + m.toDelta());
+        this.LOG.debug2('m was set to Moves : ' + m.toDelta());
       }
     }.bind(this));
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return this;
   },
 

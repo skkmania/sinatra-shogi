@@ -78,6 +78,7 @@ var Area = Class.create({
       }.bind(this));
     } else {
       LOG.debug('currentSlice not found.');
+      LOG.debug('currentBid : ' + dataStore.currentBid);
     }
     str += '</ul>';
     LOG.debug('str : ' + str);
