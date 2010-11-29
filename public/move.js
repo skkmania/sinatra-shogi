@@ -258,6 +258,12 @@ var Moves = Class.create(Hash, {
     this.LOG = LOG;
     LOG.getInto('Moves#initialize');
     $super();
+    // 以下のようにしたい
+    /*
+    this.area = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
+    this.area.initOnClick();
+    this.area.window.open();
+    */
     LOG.goOut();
   },
 	/*
