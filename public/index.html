@@ -46,10 +46,6 @@
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
         if(window.gameController.settings['playerSetting'] != 'playGame')
           window.gameController.handler.refreshBoard(1);
-
-        if(dataStore.ready){
-          window.gameController.handler.nextArea.show();
-        }
         // log window を表示するためのリンクアンカーをページに追加
         var elem = new Element('a',{'id':'Loganchor', 'href':'#Log', 'title':'Log'});
         elem.insert('Log');

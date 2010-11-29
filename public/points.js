@@ -47,7 +47,7 @@ var MovePoints = Class.create({
     this.area = new Area(this, 'nextMovePoints', 'NextMovePoints',{position:[850,100], width:130, height:400});
     this.area.initOnClick();
   },
-});
+
   setBid : function(bid){ this.bid = bid; },
 
   clearMovePoints : function(){
