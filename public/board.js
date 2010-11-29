@@ -5,13 +5,14 @@ Board = Class.create({
 	/**
 	 * initialize(elm, game)
 	 */
-  initialize: function initialize(elm, game) {
+  initialize: function initialize(game) {
     LOG.getInto('Board#initialize');
     this.bid = 1;
     this.LOG = LOG;
     this.game = game;
     //this.top = game.controller.top;
-    this.elm = elm || document.body;
+    this.initArea();
+    this.elm = this.area.boardPanel || document.body;
     this.shown = false;
     this.turn = true; // trueは先手番、falseは後手番。初期化なので先手スタート
     $('boardTurn').update('board : ' + this.turn.toString());
@@ -46,6 +47,15 @@ Board = Class.create({
     }.bind(this));
     LOG.debug('leaving Board#initialize');
     LOG.goOut();
+  },
+	/**
+	 * initArea()
+	 */
+  initArea : function initArea() {
+    // 盤面のエリア
+    this.area = new Area(this, 'boardArea', 'Board',{position:[160,100], width:520, height:440});
+    this.area.window.open();
+    this.area.layoutContents();
   },
 	/**
 	 * toDelta()

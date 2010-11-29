@@ -25,18 +25,15 @@ var Handler = Class.create({
     this.prevArea.initOnClick();
     this.prevArea.window.open();
     //this.prevArea.show(); ここでははやすぎ。まだ初期情報がとれていない。
-    // 盤面のエリア
-    this.boardArea = new Area(this, 'boardArea', 'Board',{position:[160,100], width:520, height:440});
-    this.boardArea.window.open();
-    this.boardArea.layoutContents();
     // 次の手のエリア
     this.nextArea = new Area(this, 'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
     this.nextArea.initOnClick();
     this.nextArea.window.open();
     //this.nextArea.show();
-    this.book = new Book(this);
-    this.book.showBookForm();
-    this.book.showInputBox();
+// 一時退避
+    //this.book = new Book(this);
+    //this.book.showBookForm();
+    //this.book.showInputBox();
     LOG.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';

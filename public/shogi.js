@@ -20,7 +20,7 @@ window.gameController.game = this;
     this.settings = settings;
     this.container = $(settings.containerId);
     this.container.style.width = this.width * 35 + 'px';
-    this.board = new Board(this.controller.handler.boardArea.boardPanel, this);
+    this.board = new Board(this);
     LOG.warn('Board created.');
     this.blackStand = new Stand('black-stand', this);
     this.whiteStand = new Stand('white-stand', this);
