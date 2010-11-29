@@ -34,26 +34,9 @@ var Handler = Class.create({
     this.nextArea.initOnClick();
     this.nextArea.window.open();
     //this.nextArea.show();
-    // nextMovePoint用のエリア
-    this.nextMovePointArea = new Area(this, 'nextMovePoint', 'NextMovePoint',{position:[850,100], width:130, height:400});
-    this.nextMovePointArea.initOnClick();
-    // nextMoveComment用のエリア
-    this.nextMoveCommentArea = new Area(this, 'nextMoveComment', 'NextMoveComment',{position:[1010,100], width:180, height:400});
-    this.nextMoveCommentArea.initOnClick();
-    // boardPoint用のエリア
-    this.boardPointArea = new Area(this, 'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
-    this.boardPointArea.initOnClick();
-    // boardComment用のエリア
-    this.boardCommentArea = new Area(this, 'boardComment', 'BoardComment',{position:[10,580], width:700, height:100});
-    this.boardCommentArea.initOnClick();
-    // 棋譜読み込み用のエリア
-    this.readBookArea = new Area(this, 'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
-    this.readBookArea.initOnClick();
     this.book = new Book(this);
     this.book.showBookForm();
     this.book.showInputBox();
-    // dataStoreのdebug dump用のエリア
-    this.dataArea = new Area(this, 'data', 'dataStore',{position:[10,680], width:830, height:270});
     LOG.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';
@@ -331,7 +314,7 @@ var Handler = Class.create({
     LOG.getInto();
     this.prevArea.display(target);
     this.selfArea.display(target);
-    this.dataArea.display(target);
+    dataStore.area.display(target);
     this.nextArea.display(target);
     $('size').update(dataStore.slices.size());
     LOG.debug('size was updated.');

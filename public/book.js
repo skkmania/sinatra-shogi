@@ -11,13 +11,22 @@ var Book = Class.create({
   initialize: function initialize(handler, id){
     this.handler = handler;
     this.LOG     = LOG;
-    this.area    = handler.readBookArea;
     this.textAreaId  = id;
     LOG.getInto('Book#initialize');
     this.book = [];
     this.kid = null;
        // Moveオブジェクトの配列
 
+    LOG.goOut();
+  },
+	/*
+	 * initArea()
+	 */
+  initArea: function initArea(){
+    LOG.getInto('Book#initArea');
+    // 棋譜読み込み用のエリア
+    this.area = new Area(this, 'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
+    this.area.initOnClick();
     LOG.goOut();
   },
 	/*
