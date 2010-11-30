@@ -207,3 +207,14 @@ var Area = Class.create({
   },
 
 });
+
+areaSettings = {
+  'board' : {
+              'container': 'boardArea',
+              'title'    : 'Board',
+              'position' : [160,100],
+              'width'    : 520,
+              'height'   : 440
+            },
+};
+

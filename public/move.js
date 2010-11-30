@@ -270,6 +270,28 @@ var Moves = Class.create(Hash, {
     this.area.window.open();
   },
 	/*
+	 * show()
+	 */
+	// 自身のwindowに内容を表示する
+  show : function show(){ // Area
+    LOG.getInto('Moves#show');
+    var ret = '';
+    var str = '<ul>';
+    var container = areaSettings[this.title]['container'];
+    
+    str += this.inject(ret, function(acc, pair){
+      ret = acc +
+            '<li id="' + container + pair.value.mid + '">' +
+             pair.value.toKanji() +
+            '</li>';
+      return ret;
+    });
+    str += '</ul>';
+    LOG.debug('str : ' + str);
+    this.area.window_contents.update(str);
+    LOG.goOut();
+  },
+	/*
 	 * search(m)
 	 */
 	// 盤上で生成した指し手が、指し手候補にふくまれているかどうか調べるために使う関数
