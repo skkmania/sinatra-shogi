@@ -27,7 +27,7 @@ var Area = Class.create({
               height:500 };
     // window_headerにwindow_titleとwindow_closeを挿入してから
     this.options = Object.extend(this.default_options, options || {});
-    LOG.debug(container + ' window is opening');
+    LOG.debug(this.container + ' window is opening');
     this.openWindow();
     LOG.goOut();
   },
@@ -64,7 +64,7 @@ var Area = Class.create({
     LOG.getInto();
     LOG.debug(this.container + ' stand is to be displayed.');
     LOG.debug('target is ' + target);
-    LOG.debug('target_store is ' + this.handler.target_store);
+    //LOG.debug('target_store is ' + this.handler.target_store);
     var str = '';
     switch (this.container){
       case 'pres':
@@ -138,6 +138,7 @@ var Area = Class.create({
     LOG.goOut();
   },
 
+  // これも実はMovesにしか対応していないので、ここに置くのはおかしい？
   initOnClick : function initOnClick_Area(){ // Area
     LOG.getInto('Area#initOnClick');
     LOG.goOut();
@@ -178,14 +179,14 @@ areaSettings = {
               'width'    : 520,
               'height'   : 440
             },
-  'prevArea' : {
+  'prevMoves' : {
               'container': 'pres',
               'title'    : 'prevMoves',
               'position' : [10,100],
               'width'    : 120,
               'height'   : 300
             },
-  'nextArea' : {
+  'nextMoves' : {
               'container': 'nxts',
               'title'    : 'nextMoves',
               'position' : [690,100],
@@ -240,12 +241,13 @@ function Areas(opt) {
   this.initialize(opt);
 };
 
+Areas.data_name = $w('data controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook');
 Areas.prototype = {
   initialize: function(opt) {
-    for (key in opt){
-      this[key] = new Area(opt[key]);
-    }
-  },
+    Areas.data_name.each(function(name){
+      this[name] = new Area(opt[name]);
+    }.bind(this));
+  }
 };
 
 areas = new Areas(areaSettings);

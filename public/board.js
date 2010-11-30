@@ -10,10 +10,10 @@ Board = Class.create({
     this.bid = 1;
     this.LOG = LOG;
     this.game = game;
+    this.name = 'board';
     //this.top = game.controller.top;
-    this.area = areas.board;
     this.initArea();
-    this.elm = this.area.boardPanel || document.body;
+    this.elm = this.boardPanel || document.body;
     this.shown = false;
     this.turn = true; // trueは先手番、falseは後手番。初期化なので先手スタート
     $('boardTurn').update('board : ' + this.turn.toString());
@@ -55,6 +55,7 @@ Board = Class.create({
 	// boardAreaに、駒台と盤のための要素を追加する
   initArea : function initArea() { // Board
     LOG.getInto('Board#initArea');
+    this.area = areas[this.name];
     this.topStand = new Element('div',{ id: 'top-stand' });
     this.area.window_contents.appendChild(this.topStand);
     this.boardPanel = new Element('div',{ id: 'board-panel' });
@@ -62,6 +63,7 @@ Board = Class.create({
     this.bottomStand = new Element('div',{ id: 'bottom-stand' });
     this.bottomStand.setStyle({ margin:'150px 0px 0px 400px' });
     this.area.window_contents.appendChild(this.bottomStand);
+    this.area.window.open();
     LOG.goOut();
   },
 	/**

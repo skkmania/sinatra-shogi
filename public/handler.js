@@ -178,8 +178,8 @@ var Handler = Class.create({
     if(slice){
       window.gameController.game.boardReadFromDB();
       window.gameController.game.board.show();
-      this.prevArea.show();
-      this.nextArea.show();
+      areas['prevMoves'].show();
+      areas['nextMoves'].show();
     } else {
       LOG.fatal('cannot get slice');
     }
@@ -309,6 +309,7 @@ var Handler = Class.create({
       LOG.goOut();
   },
   
+// 使われていないなあ。調査の上、削除かどうか決めること
   updateDisplay : function updateDisplay(target){ // Handler
     LOG.getInto();
     this.prevArea.display(target);

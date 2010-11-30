@@ -68,18 +68,18 @@ ControlPanel = Class.create({
   initialize: function initialize(controller) { // ControlPanel
     LOG.getInto('ControlPanel#initialize');
     this.controller = controller;
-    this.areaInit();
+    this.name = 'controlPanel';
+    this.initArea();
     this.counterElm = $('counterNum');
     LOG.goOut();
   },
 	/**
-	 * areaInit()
+	 * initArea()
 	 */
-  areaInit: function areaInit() { // ControlPanel              
-//    this.area = new Area(this, 'controlPanel', 'ControlPanel',{position:[10,0], width:500, height:90});
-//    this.area.initOnClick();
-//    this.area.window.open();
-    LOG.getInto('ControlPanel#areaInit');
+  initArea: function initArea() { // ControlPanel              
+    this.area = areas[this.name];
+    this.area.initOnClick();
+    LOG.getInto('ControlPanel#initArea');
     var contents =   '<div id="sidebar">\
                        <div id="control-panel">\
                          <div id="message">\
@@ -97,6 +97,7 @@ ControlPanel = Class.create({
         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span> : <span class="t">waiting</span></div>';
         contents += '<div id="top-panel" class="player"><span class="t">gote</span> : <span class="t">waiting</span></div>';
     this.area.window_contents.update(contents);
+    this.area.window.open();
     LOG.goOut();
   }, 
 	/**
@@ -371,8 +372,8 @@ GameController = Class.create({
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.controlPanel.update('playing');
-    this.handler.prevArea.show();
-    this.handler.nextArea.show();
+    dataStore.currentSlice().get('nextMoves').show();
+    dataStore.currentSlice().get('prevMoves').show();
     //this.prepareFromState(state);
     LOG.goOut();
   },
@@ -395,8 +396,8 @@ GameController = Class.create({
     this.game.boardReadFromDB();
     this.game.toggleDraggable();
     this.controlPanel.update('review');
-    this.handler.prevArea.show();
-    this.handler.nextArea.show();
+    dataStore.currentSlice().get('nextMoves').show();
+    dataStore.currentSlice().get('prevMoves').show();
     LOG.goOut();
   },
 	/**
@@ -417,8 +418,8 @@ GameController = Class.create({
     this.game.boardReadFromDB();
     this.game.toggleDraggable();
     this.controlPanel.update('slice');
-    this.handler.prevArea.show(this.handler.prevMoves);
-    this.handler.nextArea.show(this.handler.nextMoves);
+    dataStore.currentSlice().get('nextMoves').show();
+    dataStore.currentSlice().get('prevMoves').show();
     LOG.goOut();
   },
 	/**
@@ -818,7 +819,9 @@ GameController = Class.create({
     if (!this.messageElm) {
       this.messageElm = $('message-body');
     }
-    this.messageElm.innerHTML = message;
+    if (this.messageElm) {
+      this.messageElm.innerHTML = message;
+    }
     LOG.debug(message);
     LOG.goOut();
   },

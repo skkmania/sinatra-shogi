@@ -8,16 +8,16 @@ var Maintainer = Class.create({
   initialize : function initialize(controller) {
     LOG.getInto('Maintainer#initialize');
     this.controller = controller;
-//    this.area = new Area(this, 'maintainer', 'Maintainer',{position:[600,800], width:400, height:150});
-//    this.areaInit();
-//    this.area.window.open();
+    this.name = 'maintainer';
+    this.initArea();
     LOG.goOut();
   },
 	/**
-	 * areaInit()
+	 * initArea()
 	 */
-  areaInit: function areaInit() { // Maintainer              
-     LOG.getInto('Maintainer#areaInit');
+  initArea: function initArea() { // Maintainer              
+     LOG.getInto('Maintainer#initArea');
+    this.area = areas[this.name];
      var contents =
 '<div id="rev-b">\
   <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>\
@@ -29,6 +29,7 @@ var Maintainer = Class.create({
 </div>\
 <div id="showState"></div>';
     this.area.window_contents.update(contents);
+    this.area.window.open();
     LOG.goOut();
   }, 
 	/**

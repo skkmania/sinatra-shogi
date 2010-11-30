@@ -254,10 +254,15 @@ var Move = Class.create({
 //   value : Move オブジェクト
 var Moves = Class.create(Hash, {
 
-  initialize : function($super){ // Moves
+	/*
+	 * initialize(name)
+	 */
+        // 入力 文字列 name  自身がnextMovesなのか、prevMovesなのかを保持
+  initialize : function($super, name){ // Moves
     this.LOG = LOG;
     LOG.getInto('Moves#initialize');
     $super();
+    this.name = name;
     this.initArea();
     LOG.goOut();
   },
@@ -265,19 +270,19 @@ var Moves = Class.create(Hash, {
 	 * initArea()
 	 */
   initArea : function initArea() {
-//    this.area = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
-//    this.area.initOnClick();
-//    this.area.window.open();
+    this.area = areas[this.name];
+    this.area.initOnClick();
+    this.area.window.open();
   },
 	/*
 	 * show()
 	 */
 	// 自身のwindowに内容を表示する
-  show : function show(){ // Area
+  show : function show(){ // Moves
     LOG.getInto('Moves#show');
     var ret = '';
     var str = '<ul>';
-    var container = areaSettings[this.title]['container'];
+    var container = areaSettings[this.name]['container'];
     
     str += this.inject(ret, function(acc, pair){
       ret = acc +

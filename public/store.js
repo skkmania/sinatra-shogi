@@ -26,8 +26,8 @@ var Slice = Class.create(Hash, {
   fromState : function fromState(state){ // Slice
     LOG.getInto('Slice#fromState');
     this.set('board',     (new BoardData()).fromDelta(state.get('board',window.gameController.game.board.initialString)));
-    this.set('nextMoves', (new Moves()).fromDelta(state.get('next', '')));
-    this.set('prevMoves', (new Moves()).fromDelta(state.get('prev', '')));
+    this.set('nextMoves', (new Moves('nextMoves')).fromDelta(state.get('next', '')));
+    this.set('prevMoves', (new Moves('prevMoves')).fromDelta(state.get('prev', '')));
     LOG.goOut();
     return this;
   },
@@ -279,7 +279,7 @@ var Store = Class.create(Hash, {
       	         return obj.bid == bid;
       	       }.bind(this));
           this.LOG.debug('target : ' + JSON.stringify(target));
-          var obj = new Moves();
+          var obj = new Moves('nextMoves');
           ret.set('nextMoves', obj.fromDB(target));
           this.LOG.debug('obj after fromDB : ' + obj.toDelta());
           this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
@@ -292,12 +292,12 @@ var Store = Class.create(Hash, {
     	  });
           if (target.length > 0){
             this.LOG.debug('target : ' + JSON.stringify(target));
-            var obj = new Moves();
+            var obj = new Moves('prevMoves');
             ret.set('prevMoves', obj.fromDB(target));
             this.LOG.debug('obj after fromDB : ' + obj.toDelta());
             this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           } else {
-            ret.set('prevMoves', (new Moves()));
+            ret.set('prevMoves', (new Moves('prevMoves')));
             this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           }
           this.LOG.goOut(Log.DEBUG2);
@@ -468,7 +468,7 @@ var Store = Class.create(Hash, {
       this.LOG.debug('slice : ' + slice.toDebugString());
       var nm = slice.get('nextMoves');
       if (!nm) {
-        nm =  new Moves();
+        nm =  new Moves('nextMoves');
         slice.set('nextMoves',nm);
       }
       this.LOG.debug('nextMoves before : ' + nm.toDebugString());
