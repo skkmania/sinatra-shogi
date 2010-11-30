@@ -7,15 +7,14 @@
 // livepipeのwindowを使う
 var Area = Class.create({
 
-  initialize : function initialize(hand, container, title, options){
+  initialize : function initialize(options){
     LOG.getInto('Area#initialize');
-    this.handler = hand;
     this.LOG = LOG;
-    this.container = container;
-    this.title = title;
+    this.container = options.container;
+    this.title = options.title;
     this.window_header = new Element('div',{ className: 'window_header' });  
     this.window_title = new Element('div',{  className: 'window_title'  });  
-    this.window_title.insert(title);
+    this.window_title.insert(this.title);
     this.window_close = new Element('div',{  className: 'window_close'  });  
     this.window_contents = new Element('div',{  className: 'window_contents'  });  
     this.default_options = { 
@@ -53,57 +52,6 @@ var Area = Class.create({
       }
     }
     //this.window.open();
-    LOG.goOut();
-  },
-	/*
-	 * show()
-	 */
-	// dataStoreのデータをもとに、自身のwindowに内容を表示する
-	// 現状では、(2010.6.24) nextMovesとprevMovesのAreaにのみ対応する
-  show : function show(){ // Area
-    LOG.getInto('Area#show');
-    LOG.debug(this.container + ' area is to be displayed.');
-    var ret = '';
-    var str = '<ul>';
-    
-    var curSlc = dataStore.currentSlice();
-    if(curSlc){
-      var movesObj = curSlc.get(this.title);
-      LOG.debug('movesObj : ' + movesObj.toDebugString());
-      LOG.debug('title : ' + JSON.stringify(this.title));
-      str += movesObj.inject(ret, function(acc, pair){
-        var kanji = pair.value.toKanji();
-        ret = acc + '<li id="' + this.container + pair.value.mid + '">' + kanji + '</li>';
-        return ret;
-      }.bind(this));
-    } else {
-      LOG.debug('currentSlice not found.');
-      LOG.debug('currentBid : ' + dataStore.currentBid);
-    }
-    str += '</ul>';
-    LOG.debug('str : ' + str);
-    LOG.debug('container : ' + this.window.container.id);
-    this.window_contents.update(str);
-    LOG.goOut();
-  },
-	/*
-	 * layoutContents()
-	 */
-	// boardArea のためのメソッド
-	// boardAreaに、駒台と盤のための要素を追加する
-  layoutContents : function layoutContents(){ // Area
-    LOG.getInto('Area#layoutContents');
-   // this.whiteStand = new Element('div',{ id: 'white-stand' });
-    this.topStand = new Element('div',{ id: 'top-stand' });
-   // this.topStand.appendChild(this.whiteStand);
-    this.window_contents.appendChild(this.topStand);
-    this.boardPanel = new Element('div',{ id: 'board-panel' });
-    this.window_contents.appendChild(this.boardPanel);
-   // this.blackStand = new Element('div',{ id: 'black-stand' });
-    this.bottomStand = new Element('div',{ id: 'bottom-stand' });
-    this.bottomStand.setStyle({ margin:'150px 0px 0px 400px' });
-   // this.bottomStand.appendChild(this.blackStand);
-    this.window_contents.appendChild(this.bottomStand);
     LOG.goOut();
   },
 	/*
@@ -209,6 +157,20 @@ var Area = Class.create({
 });
 
 areaSettings = {
+  'controlPanel' : {
+              'container': 'controlPanel',
+              'title'    : 'ControlPanel',
+              'position' : [10,0],
+              'width'    : 500,
+              'height'   : 90 
+            },
+  'data' : {
+              'container': 'data',
+              'title'    : 'dataStore',
+              'position' : [160,100],
+              'width'    : 520,
+              'height'   : 440
+            },
   'board' : {
               'container': 'boardArea',
               'title'    : 'Board',
@@ -216,5 +178,74 @@ areaSettings = {
               'width'    : 520,
               'height'   : 440
             },
+  'prevArea' : {
+              'container': 'pres',
+              'title'    : 'prevMoves',
+              'position' : [10,100],
+              'width'    : 120,
+              'height'   : 300
+            },
+  'nextArea' : {
+              'container': 'nxts',
+              'title'    : 'nextMoves',
+              'position' : [690,100],
+              'width'    : 120,
+              'height'   : 400
+            },
+  'nextMovePoints' : {
+              'container': 'nextMovePoints',
+              'title'    : 'NextMovePoints',
+              'position' : [690,100],
+              'width'    : 120,
+              'height'   : 400
+            },
+  'nextMoveComments' : {
+              'container': 'nextMoveComments',
+              'title'    : 'NextMoveComments',
+              'position' : [1010,100],
+              'width'    : 180,
+              'height'   : 400
+            },
+  'boardPoint' : {
+              'container': 'boardPoint',
+              'title'    : 'BoardPoint',
+              'position' : [10,450],
+              'width'    : 120,
+              'height'   : 100
+            },
+  'boardComments' : {
+              'container': 'boardComments',
+              'title'    : 'BoardComments',
+              'position' : [10,580],
+              'width'    : 700,
+              'height'   : 100
+            },
+  'readBook' : {
+              'container': 'readBook',
+              'title'    : 'ReadBook',
+              'position' : [850,580],
+              'width'    : 220,
+              'height'   : 380
+            },
+  'maintainer' : {
+              'container': 'maintainer',
+              'title'    : 'Maintainer',
+              'position' : [600,800],
+              'width'    : 400,
+              'height'   : 200
+            }
 };
 
+function Areas(opt) {
+  this.initialize(opt);
+};
+
+Areas.prototype = {
+  initialize: function(opt) {
+    for (key in opt){
+      this[key] = new Area(opt[key]);
+    }
+  },
+};
+
+areas = new Areas(areaSettings);

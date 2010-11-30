@@ -44,7 +44,7 @@ var MovePoints = Class.create({
 
   initArea : function initArea() {
     // nextMovePoint用のエリア
-    this.area = new Area(this, 'nextMovePoints', 'NextMovePoints',{position:[850,100], width:130, height:400});
+  //  this.area = new Area(this, 'nextMovePoints', 'NextMovePoints',{position:[850,100], width:130, height:400});
     this.area.initOnClick();
   },
 
@@ -121,7 +121,7 @@ var BoardPoint = Class.create({
 
   initArea : function initArea() {
     // boardPoint用のエリア
-    this.area = new Area(this, 'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
-    this.area.initOnClick();
+//    this.area = new Area(this, 'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
+//    this.area.initOnClick();
   }
 });

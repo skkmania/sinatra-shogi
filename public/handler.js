@@ -20,6 +20,7 @@ var Handler = Class.create({
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
     LOG.debug('areas are being initialized');
+/*
     // 前の手のエリア
     this.prevArea = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
     this.prevArea.initOnClick();
@@ -30,6 +31,7 @@ var Handler = Class.create({
     this.nextArea.initOnClick();
     this.nextArea.window.open();
     //this.nextArea.show();
+*/
 // 一時退避
     //this.book = new Book(this);
     //this.book.showBookForm();

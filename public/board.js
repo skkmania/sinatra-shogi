@@ -11,6 +11,7 @@ Board = Class.create({
     this.LOG = LOG;
     this.game = game;
     //this.top = game.controller.top;
+    this.area = areas.board;
     this.initArea();
     this.elm = this.area.boardPanel || document.body;
     this.shown = false;
@@ -51,11 +52,17 @@ Board = Class.create({
 	/**
 	 * initArea()
 	 */
-  initArea : function initArea() {
-    // 盤面のエリア
-    this.area = new Area(this, 'boardArea', 'Board',{position:[160,100], width:520, height:440});
-    this.area.window.open();
-    this.area.layoutContents();
+	// boardAreaに、駒台と盤のための要素を追加する
+  initArea : function initArea() { // Board
+    LOG.getInto('Board#initArea');
+    this.topStand = new Element('div',{ id: 'top-stand' });
+    this.area.window_contents.appendChild(this.topStand);
+    this.boardPanel = new Element('div',{ id: 'board-panel' });
+    this.area.window_contents.appendChild(this.boardPanel);
+    this.bottomStand = new Element('div',{ id: 'bottom-stand' });
+    this.bottomStand.setStyle({ margin:'150px 0px 0px 400px' });
+    this.area.window_contents.appendChild(this.bottomStand);
+    LOG.goOut();
   },
 	/**
 	 * toDelta()

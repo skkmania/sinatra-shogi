@@ -150,7 +150,7 @@ var Store = Class.create(Hash, {
          */
   initArea: function initArea(){
     // dataStoreのdebug dump用のエリア
-    this.area = new Area(this, 'data', 'dataStore',{position:[10,680], width:830, height:270});
+//    this.area = new Area(this, 'data', 'dataStore',{position:[10,680], width:830, height:270});
   },
 	/**
 	 * currentSlice()

@@ -25,8 +25,8 @@ var Book = Class.create({
   initArea: function initArea(){
     LOG.getInto('Book#initArea');
     // 棋譜読み込み用のエリア
-    this.area = new Area(this, 'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
-    this.area.initOnClick();
+//    this.area = new Area(this, 'readBook', 'ReadBook',{position:[850,580], width:200, height:380});
+//    this.area.initOnClick();
     LOG.goOut();
   },
 	/*

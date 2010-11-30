@@ -76,9 +76,9 @@ ControlPanel = Class.create({
 	 * areaInit()
 	 */
   areaInit: function areaInit() { // ControlPanel              
-    this.area = new Area(this, 'controlPanel', 'ControlPanel',{position:[10,0], width:500, height:90});
-    this.area.initOnClick();
-    this.area.window.open();
+//    this.area = new Area(this, 'controlPanel', 'ControlPanel',{position:[10,0], width:500, height:90});
+//    this.area.initOnClick();
+//    this.area.window.open();
     LOG.getInto('ControlPanel#areaInit');
     var contents =   '<div id="sidebar">\
                        <div id="control-panel">\

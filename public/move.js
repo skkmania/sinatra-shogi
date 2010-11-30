@@ -265,9 +265,9 @@ var Moves = Class.create(Hash, {
 	 * initArea()
 	 */
   initArea : function initArea() {
-    this.area = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
-    this.area.initOnClick();
-    this.area.window.open();
+//    this.area = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
+//    this.area.initOnClick();
+//    this.area.window.open();
   },
 	/*
 	 * show()

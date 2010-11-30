@@ -26,8 +26,8 @@ var MoveComments = Class.create({
 
   initArea : function initArea() {
     // nextMoveComment用のエリア
-    this.area = new Area(this, 'nextMoveComments', 'NextMoveComments',{position:[1010,100], width:180, height:400});
-    this.area.initOnClick();
+ //   this.area = new Area(this, 'nextMoveComments', 'NextMoveComments',{position:[1010,100], width:180, height:400});
+ //   this.area.initOnClick();
   },
 
   setBid : function(bid){ this.bid = bid; },
@@ -61,7 +61,7 @@ var BoardComments = Class.create({
 
   initArea : function initArea() {
     // boardComment用のエリア
-    this.area = new Area(this, 'boardComment', 'BoardComment',{position:[10,580], width:700, height:100});
-    this.area.initOnClick();
+//    this.area = new Area(this, 'boardComment', 'BoardComment',{position:[10,580], width:700, height:100});
+//    this.area.initOnClick();
   },
 });

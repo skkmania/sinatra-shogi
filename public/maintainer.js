@@ -8,9 +8,9 @@ var Maintainer = Class.create({
   initialize : function initialize(controller) {
     LOG.getInto('Maintainer#initialize');
     this.controller = controller;
-    this.area = new Area(this, 'maintainer', 'Maintainer',{position:[600,800], width:400, height:150});
-    this.areaInit();
-    this.area.window.open();
+//    this.area = new Area(this, 'maintainer', 'Maintainer',{position:[600,800], width:400, height:150});
+//    this.areaInit();
+//    this.area.window.open();
     LOG.goOut();
   },
 	/**
