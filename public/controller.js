@@ -78,7 +78,6 @@ ControlPanel = Class.create({
 	 */
   initArea: function initArea() { // ControlPanel              
     this.area = areas[this.name];
-    this.area.initOnClick();
     LOG.getInto('ControlPanel#initArea');
     var contents =   '<div id="sidebar">\
                        <div id="control-panel">\
@@ -489,6 +488,52 @@ GameController = Class.create({
     }
     LOG.goOut();
     return delta;
+  },
+	/**
+	 * makeAndSendReviewDelta(bid)
+	 */
+	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
+	// 入力 : bid 数値 表示したい局面のbid
+	//  ただし、これはnullでも可。そのときは画面上のbid入力エリアの値を使う
+	//  それもない場合は初期値である１を使用する。
+        // 出力 : 作成されたdelta オブジェクト
+  makeAndSendReviewDelta: function makeAndSendReviewDelta(bid){ // GameController
+    var delta = {};
+    LOG.getInto('GameController#makeAndSendReviewDelta');
+    this.count++;
+    LOG.debug('bid : ' + bid);
+    LOG.debug('typeof bid : ' + typeof bid);
+    var value = bid || $('inputText').value || 1;
+    LOG.debug('value : ' + value);
+    var slice = dataStore.slices.get(value);
+    if(!slice){
+      LOG.debug('was not found in slices key, so try getMsg.');
+      LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
+      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      slice = dataStore.slices.get(value);
+    }
+    LOG.debug('slice : ' + slice.toDebugString());
+    LOG.debug('slice.keys : ' + (slice.keys().join(',')));
+    if(slice){
+      LOG.debug('slices[' + value + '] : ' + slice.toDebugString());
+      LOG.debug('slice.keys : ' + (slice.keys().join(',')));
+      slice.each(function(pair){
+        this.LOG.debug2('key : ' + Object.toJSON(pair.key));
+        this.LOG.debug2('value : ' + pair.value.toDebugString());
+      }.bind(this));
+      delta['mode']  = wave.getState().get('mode') || 'review';
+      delta['count'] = this.count.toString();
+      delta['bid']   = value.toString();
+      delta['turn']  = (slice.get('board').turn ? 't' : 'f');
+      delta['board'] = slice.get('board').toDelta();
+      delta['next']  = slice.get('nextMoves').toDelta();
+      delta['prev']  = slice.get('prevMoves').toDelta();
+      LOG.debug('delta : ' + JSON.stringify(delta));
+    } else {
+      LOG.fatal('cannot get slice');
+    }
+    LOG.goOut();
+    wave.getState().submitDelta(delta);
   },
 	/**
 	 * sendDelta()

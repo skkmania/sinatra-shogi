@@ -10,6 +10,8 @@ var Area = Class.create({
   initialize : function initialize(options){
     LOG.getInto('Area#initialize');
     this.LOG = LOG;
+    this.notInited = true;  // 対応するオブジェクトがinitAreaの中でfalseにする
+      // 複数のオブジェクトが同じエリアを使いまわすときに役立てるフラグ
     this.container = options.container;
     this.title = options.title;
     this.window_header = new Element('div',{ className: 'window_header' });  
@@ -136,25 +138,7 @@ var Area = Class.create({
     this.window_contents.update(str);
     this.window.open();
     LOG.goOut();
-  },
-
-  // これも実はMovesにしか対応していないので、ここに置くのはおかしい？
-  initOnClick : function initOnClick_Area(){ // Area
-    LOG.getInto('Area#initOnClick');
-    LOG.goOut();
-    this.window_contents.observe('click',
-      function(evt){ 
-        this.LOG.getInto('Area#initOnClick#observe');
-        this.LOG.debug('id of clicked element : ' + evt.findElement('li').id);
-        var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
-        this.LOG.debug('mid of clicked element : ' + mid);
-        var inner = evt.findElement('li').innerHTML;
-        this.handler.areaClicked(this.container, mid, inner);
-        this.LOG.goOut();
-      }.bind(this)
-    );
-  },
-
+  }
 });
 
 areaSettings = {

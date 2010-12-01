@@ -270,9 +270,67 @@ var Moves = Class.create(Hash, {
 	 * initArea()
 	 */
   initArea : function initArea() {
+    LOG.getInto('Moves#initArea');
     this.area = areas[this.name];
-    this.area.initOnClick();
-    this.area.window.open();
+    if (this.area.notInited) {
+      this.area.initOnClick();
+      this.area.window.open();
+    }
+    LOG.goOut();
+  },
+	/*
+	 * initArea()
+	 */
+  initOnClick : function initOnClick_Area(){ // Moves
+    LOG.getInto('Moves#initOnClick');
+    this.area.notInited = false;
+    LOG.goOut();
+    this.area.window_contents.observe('click',
+      function(evt){ 
+        this.LOG.getInto('Moves#initOnClick#observe');
+        this.LOG.debug('id of clicked element : ' + evt.findElement('li').id);
+        var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
+        this.LOG.debug('mid of clicked element : ' + mid);
+        var inner = evt.findElement('li').innerHTML;
+        this.areaClicked(mid, inner);
+        this.LOG.goOut();
+      }.bind(this)
+    );
+  },
+	/*
+	 * areaClicked(target, inner)
+	 */
+	// クリックされた要素の情報をもとに必要な処理を行う
+	// 入力 : target 数値 li要素のプロパティからとった数字
+	//        inner  クリックされた要素のinnnerHTML
+  areaClicked : function areaClicked(target, inner){ // Moves
+    LOG.getInto('Moves#areaClicked');
+    switch(this.name) {
+      case 'nextMoves' :
+	// この場合、targetによりクリックされた要素のmidが渡されてくる
+        var bid = dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
+        LOG.debug('bid found : ' + bid);
+        window.gameController.makeAndSendReviewDelta(bid);
+        break;
+      case 'prevMoves' :
+        // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
+        LOG.getInto('clicked innerHTML is : ' + inner);
+        var bid = dataStore.currentSlice().get('prevMoves').find(
+          function(pair){
+             this.LOG.debug('value.toKanji : ' + pair.value.toKanji());
+             return pair.value.toKanji() == inner;
+           }.bind(this)).value.bid;
+        if(bid) {
+          LOG.debug('bid found : ' + bid);
+          window.gameController.makeAndSendReviewDelta(bid);
+        } else {
+          LOG.fatal('Moves#areaClicked: clicked move was not found');
+        }
+        break;
+      default :
+        break;
+    }
+    LOG.goOut();
   },
 	/*
 	 * show()

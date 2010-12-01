@@ -226,8 +226,8 @@ var Store = Class.create(Hash, {
     var slice = (new Slice()).fromState(state);
 /*
     slice.set('board',     (new BoardData(LOG)).fromDelta(state.get('board')));
-    slice.set('nextMoves', (new Moves()).fromDelta(state.get('next')));
-    slice.set('prevMoves', (new Moves()).fromDelta(state.get('prev')));
+    slice.set('nextMoves', (new Moves('nextMoves')).fromDelta(state.get('next')));
+    slice.set('prevMoves', (new Moves('prevMoves')).fromDelta(state.get('prev')));
 */
     if (typeof this.currentBid != 'number'){
       LOG.fatal('Something wrong : storeData.currentBid became not number!');
