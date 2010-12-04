@@ -130,6 +130,8 @@ var Store = Class.create(Hash, {
     this.LOG = LOG;
     LOG.getInto('Store#initialize');
     $super();
+    this.name  = 'data';
+    this.initArea();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
     this.slices = new Slices();
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
@@ -140,7 +142,7 @@ var Store = Class.create(Hash, {
        // 次の画面情報を作成するときに使われる
     // まず初期盤面のデータを取得しておく
     //  mask値が7なのは暫定。これは
-    this.getMsg(1, 1, 3, 7, 'full', true);
+    this.getMsg(1, 1, 3, 7, 'full', false);
     // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
     // this.ready = true;
     LOG.goOut();
@@ -148,9 +150,11 @@ var Store = Class.create(Hash, {
 	/**
 	 * initArea()
          */
+	// dataStoreのdebug dump用のエリア
   initArea: function initArea(){
-    // dataStoreのdebug dump用のエリア
-//    this.area = new Area(this, 'data', 'dataStore',{position:[10,680], width:830, height:270});
+    LOG.getInto('Store#initArea');
+    this.area = areas[this.name];
+    LOG.goOut();
   },
 	/**
 	 * currentSlice()
@@ -265,7 +269,7 @@ var Store = Class.create(Hash, {
           this.LOG.debug('target : ' + JSON.stringify(target));
           this.LOG.debug('target.bid : ' + JSON.stringify(target.bid));
           this.LOG.debug('target.board : ' + JSON.stringify(target.board));
-          var obj = new BoardData(this.LOG);
+          var obj = new BoardData();
           this.LOG.debug('obj after initialize : ' + obj.toDelta());
           obj.fromDB(target);
           this.LOG.debug('obj after fromDB : ' + obj.toDelta());
@@ -482,6 +486,7 @@ var Store = Class.create(Hash, {
 	 */
   toDebugHtml: function toDebugHtml() { // Store
     LOG.getInto('Store#toDebugHtml'); 
+    LOG.debug('keys.size : ' + this.keys().length);
     // 自身を表示
     var ret = '<table class="storeTable">';
     this.each(function(pair){
@@ -503,7 +508,7 @@ var Store = Class.create(Hash, {
     }.bind(this));
     ret_slice += '</table>';
     LOG.debug('returning with : ');
-    LOG.debug(JSON.stringify(this));
+    //LOG.debug(JSON.stringify(this));
     LOG.goOut();
     return ret + ret_slice;
   }

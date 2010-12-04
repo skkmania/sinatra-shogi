@@ -269,19 +269,19 @@ var Moves = Class.create(Hash, {
 	/*
 	 * initArea()
 	 */
-  initArea : function initArea() {
+  initArea : function initArea() { // Moves
     LOG.getInto('Moves#initArea');
     this.area = areas[this.name];
     if (this.area.notInited) {
-      this.area.initOnClick();
+      this.initOnClick();
       this.area.window.open();
     }
     LOG.goOut();
   },
 	/*
-	 * initArea()
+	 * initOnClick()
 	 */
-  initOnClick : function initOnClick_Area(){ // Moves
+  initOnClick : function initOnClick(){ // Moves
     LOG.getInto('Moves#initOnClick');
     this.area.notInited = false;
     LOG.goOut();

@@ -64,9 +64,7 @@ var Area = Class.create({
 	// 出力 : なし
   display : function display_Area(target){ // Area
     LOG.getInto();
-    LOG.debug(this.container + ' stand is to be displayed.');
-    LOG.debug('target is ' + target);
-    //LOG.debug('target_store is ' + this.handler.target_store);
+    LOG.debug(this.container + ' area is to be displayed.');
     var str = '';
     switch (this.container){
       case 'pres':
@@ -98,6 +96,7 @@ var Area = Class.create({
            this.handler.board.read();
            break;
       case 'self':
+           LOG.debug('target is ' + target);
            str = '<ul><li>' + target + '</li></ul>';
            break;
       case 'data':

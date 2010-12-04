@@ -15,6 +15,7 @@ var window_factory = function(container,title,options){
    var window_title = new Element('div',{
       className: 'window_title'
    });
+   window_title.update(title)
    var window_close = new Element('div',{
       className: 'window_close'
    });
@@ -43,13 +44,13 @@ var window_factory = function(container,title,options){
    window_header.insert(window_close);
    if(opt.resizable) w.container.insert(window_resizable);
    w.container.insert(window_contents);
-   w.contents = window_contents;
-   w.contents.id = title;
+   w.window_contents = window_contents;
+   //w.window_contents.id = title;
    return w;
 };
 Log = Class.create({
   initialize: function(level, logger, options){
-       this.defaultOptions();
+       options ? this.mergeOptions(options) : this.defaultOptions();
        this.currentLevel = level || Log.WARN;
        this.setDiv = false;
        switch(logger){
@@ -63,14 +64,13 @@ Log = Class.create({
          this.logger = this.console;
          break;
        case 'popup':
-         var title = (options && options['title'])? options['title'] : 'popupLogger';
+         var title = this.options['title'] || 'popupLogger';
          this.popupInitialize(title, options);
          break;
        default:
          this.logger = this.write; // default to write Logger
        // logger:function that will be called when a log event needs to be displayed
        }
-       options ? this.mergeOptions(options) : this.defaultOptions();
        this.prefix = this.options['prefix'] || false;
          // {String} prefix  will be prepended to all messages.
        this.levels = $w('dummy debug3 debug2 debug1 debug info warn error fatal none');
@@ -137,16 +137,18 @@ Log = Class.create({
     this.setDiv = true;
     this.window = null;
     this.title = title;
+    this.anchor = new Element('a',{'id':this.title+'anchor', 'href':'#' + this.title, 'title': this.title });
+    this.anchor.insert(this.title);
+    $('links_pool').appendChild(this.anchor);
     if(!this.title)  this.title = options['title'] || '';
     this.logger = this.entry;
     this.divStack = [];
-    this.openWindow(options);
+    //this.openWindow(options);
     this.createTopDiv(title);
   },
-  openWindow: function openWindow(options){
-     var container = (options && options.container) ? $(options.container) : $('popup_logger');
+  openWindow: function openWindow(){
      if (!this.window || !this.window.document) {
-       this.window = window_factory(container, this.title, options);
+       this.window = window_factory(this.anchor, this.title, this.options);
        if (!this.window) {
          alert("Error : popup window not generated.");
          return;
@@ -174,7 +176,7 @@ Log = Class.create({
     this.top.appendChild(topLine);
 //    $$('.window .window_contents')[0].insert(this.top);
     //this.window.contents.insert(this.top);
-    this.window.contents.appendChild(this.top);
+//    this.window.contents.appendChild(this.top);
     this.divStack.push(this.top);
   },
   currentDiv: function currentDiv(){
@@ -426,8 +428,12 @@ Log.dumpObject=function (obj,indent) {
 
 // global object
 //LOG = makeLogObj('LOG', {width:800, height:550, resizable:false});
-var opt =  {'container':'logger0', width:800, height:550, resizable:false};
-LOG = new Log(Log.DEBUG, 'console',opt);
-//LOG = new Log(Log.DEBUG, 'popup', {'container':'logger0', width:800, height:550, resizable:false});
+//var opt =  {'container':'logger0', width:800, height:550, resizable:false};
+//LOG = new Log(Log.DEBUG, 'console',opt);
+var tmp_opt = {'title':'LOG','container':'#LOG'
+             , 'position': [400, 400]
+             , 'width':800, 'height':550
+             , 'resizable':true};
+LOG = new Log(Log.DEBUG, 'popup', tmp_opt);
 LOG.debug('this log window is created under this options : ');
-LOG.debug(Log.dumpObject(opt));
+LOG.debug(Log.dumpObject(tmp_opt));

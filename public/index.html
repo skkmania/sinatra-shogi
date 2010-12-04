@@ -12,9 +12,6 @@
     <script src="lib/livepipe/window.js"></script>
     <script src="lib/scriptaculous/unittest.js"></script>
     <script src="lib/m17n.js" charset="UTF-8"></script>
-    <script src="test/unit/log4pipe_test_common_functions.js" charset="UTF-8"></script>
-    <script src="lib/log4pipe.js" charset="UTF-8"></script>
-    <script src="lib/common-utils.js" charset="UTF-8"></script>
     <link rel="stylesheet" href="css/log4pipe.css" type="text/css" />
     <link rel="stylesheet" href="css/shogi.css" type="text/css" />
     <link rel="stylesheet" href="css/shogi_old.css" type="text/css" />
@@ -86,28 +83,25 @@
    </div>
 
 </body>
+    <script src="lib/log4pipe.js" charset="UTF-8"></script>
+    <script src="lib/common-utils.js" charset="UTF-8"></script>
     <script src="area.js"></script>
     <script src="lib/pseudo-wave.js"></script>
     <script src="lib/msgpack.js"></script>
     <script src="maintainer.js" charset="UTF-8"></script>
     <script src="move.js" charset="UTF-8"></script>
+    <script src="piece.js" charset="UTF-8"></script>
+    <script src="cell.js" charset="UTF-8"></script>
+    <script src="board.js" charset="UTF-8"></script>
     <script src="store.js"></script>
     <script src="handler.js"></script>
     <script src="book.js"></script>
     <script src="controller.js" charset="UTF-8"></script>
-    <script src="piece.js" charset="UTF-8"></script>
-    <script src="cell.js" charset="UTF-8"></script>
-    <script src="board.js" charset="UTF-8"></script>
     <script src="stand.js" charset="UTF-8"></script>
     <script src="shogi.js" charset="UTF-8"></script>
 
     <script>
       Event.observe(window, 'load', function() {
-      /*
-        Areas.data_name.each(function(name){
-          areas[name].openWindow();
-        });
-      */
       //  $('Log').insert(new Element('img',
       //   {id:'handle0', src:"img/lib/window_close.gif"}));
        // new Resizable('Log',{handle:'handle0'});
@@ -115,19 +109,14 @@
         if(wave){
           window.gameController = new GameController({containerId:'shogi',
                'playerSetting':'playGame', 'gameConstructor':'shogi'});
-               //'playerSetting':'review', 'gameConstructor':'shogi'});
         }
         // if (wave && wave.isInWaveContainer())
         if(wave) 
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
         if(window.gameController.settings['playerSetting'] != 'playGame')
           window.gameController.handler.refreshBoard(1);
-        // log window を表示するためのリンクアンカーをページに追加
-        var elem = new Element('a',{'id':'Loganchor', 'href':'#Log', 'title':'Log'});
-        elem.insert('Log');
-        $('links_pool').appendChild(elem);
-        LOG.popupInitialize('Log', {'container':'Loganchor', width:800, height:550, resizable:true});
-        LOG.setLevel('debug');
+        LOG.openWindow();
+        LOG.window.window_contents.update(LOG.top);
       });
 
       function addPlayer(name) {
