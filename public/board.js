@@ -561,12 +561,16 @@ var BoardData = Class.create(Hash, {
 	 */
 	// BoardData#toDeltaの出力した文字列を自身に読み込む
   fromDelta : function fromDelta(str){ // BoardData
+    LOG.getInto('BoardData#fromDelta');
+    LOG.debug('argument str : ' + str);
     var ary = str.split(',');
     this.bid     = parseInt(ary[0]);
     this.turn    = (ary[1] == 't');
     this.board   = ary[2];
     this.black   = ary[3];
     this.white   = ary[4];
+    LOG.debug('returning with : ' + this.toDelta());
+    LOG.goOut();
     return this;
   },
 	/*

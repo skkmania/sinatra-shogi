@@ -214,7 +214,7 @@ window.gameController.game = this;
   boardReadFromDB: function boardReadFromDB() { // ShogiGame
     LOG.getInto('Game#boardReadFromDB: ');
     var boardObj = dataStore.currentSlice().get('board');
-    LOG.debug('boardObj: ' + Log.dumpObject(boardObj));
+    LOG.debug('boardObj: ' + boardObj.toDebugString());
     this.board.bid = parseInt(boardObj['bid']);
     this.board.turn = (boardObj['turn'] == 'true');
     this.board.read(boardObj['board'] || this.board.initialString);

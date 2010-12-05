@@ -366,7 +366,7 @@ GameController = Class.create({
     //if (!this.game.board.shown) this.game.board.show();
     this.game.boardReadFromDB();  // 盤面の読み込み
     // １手ごとのデータ先読み
-    dataStore.getMsg(this.game.board.bid, 1, 3, 7, 'full', true);
+    dataStore.getMsg((this.game.board.bid || 1), 1, 3, 7, 'full', true);
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
     $('boardTurn').update('board : ' + this.game.board.turn.toString());
@@ -786,9 +786,10 @@ GameController = Class.create({
     }
     var delta = this.addPlayersToDelta();
     delta['mode']  = 'playing';
+    delta['count']   = 0;
     delta['bid']   = 1;
     delta['turn'] = 't';
-    delta['board'] = this.game.board.initialString;
+    delta['board'] = '1,t,' + this.game.board.initialString + ',,';
     LOG.debug('slices: ');
     LOG.debug(JSON.stringify(dataStore.slices));
     delta['next']  = dataStore.slices.get(1).get('nextMoves').toDelta();

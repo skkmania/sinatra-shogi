@@ -224,6 +224,7 @@ var Store = Class.create(Hash, {
   readState : function readState(state) { // Store
     LOG.getInto('Store#readState');
     this.currentBid = parseInt(state.get('bid'));
+    LOG.debug('currentBid became : ' + this.currentBid);
       // stateから読んだbidは、これから表示しようとする画面のbid
       // なので、currentBidという名をつけてアクセスを容易にする
       // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
