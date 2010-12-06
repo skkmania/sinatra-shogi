@@ -547,6 +547,8 @@ var BoardData = Class.create(Hash, {
 	/*
 	 * toDelta()
 	 */
+	// 入力：なし。（自分自身が処理対象）
+	// 出力：文字列 str 形式はカンマ区切り文字列
   toDelta : function toDelta(){ // BoardData
     LOG.getInto('BoardData#toDelta');
     var ret;
@@ -562,6 +564,8 @@ var BoardData = Class.create(Hash, {
 	 * fromDelta()
 	 */
 	// BoardData#toDeltaの出力した文字列を自身に読み込む
+	// 入力：文字列 str 形式はカンマ区切り文字列
+	// 出力：BoardDataオブジェクト　つまり自分自身
   fromDelta : function fromDelta(str){ // BoardData
     LOG.getInto('BoardData#fromDelta');
     LOG.debug('argument str : ' + str);
