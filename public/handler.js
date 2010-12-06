@@ -66,42 +66,6 @@ var Handler = Class.create({
 
     LOG.goOut();
   },
-
-
-	/**
-	 * makeDeltaFromSlice(bid, slice)
-	 */
-	// 入力されたsliceからdeltaを生成し返す
-	// 入力 : bid 数値 表示したい局面のbid
-	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
-	//      : slice  オブジェクト
-          // 例：
-          //  {"prevMoves": [{"promote": "f", "m_to": "96",
-	//                    "piece": "P", "bid": "1", "mid": 5,
-	//                    "m_from": "97", "nxt_bid": 73630}],
-	//     "nextMoves": [],
-	//     "board"    : [{"white": "", "black": "", "bid": "1",
-	//                    "board": "lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxPxxL", "turn": "f"}]}
-        // 出力 : 作成されたdelta オブジェクト
-  makeDeltaFromSlice: function makeDeltaFromSlice(bid, slice){ // Handler
-    var delta = {};
-    LOG.getInto();
-      delta['mode']  = 'review';
-      delta['bid']   = Object.toJSON(bid);
-      delta['turn']  = (bid % 2 == 0) ? 'f':'t';
-      delta['board'] = Object.toJSON(slice.board);
-      delta['next']  = Object.toJSON(slice.nextMoves);
-      delta['prev']  = Object.toJSON(slice.prevMoves);
-/*
-      delta['bid']   = bid;
-      delta['board'] = slice.board;
-      delta['next']  = slice.nextMoves;
-      delta['prev']  = slice.prevMoves;
-*/
-      LOG.debug('delta : ' + Object.toJSON(delta));
-    LOG.goOut();
-    return delta;
-  },
 	/**
 	 * makeReviewDelta(bid)
 	 */

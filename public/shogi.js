@@ -408,14 +408,9 @@ window.gameController.game = this;
     dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
     LOG.debug('doAction: game.new_bid : ' + this.new_bid);
-    //var delta =  window.gameController.handler.makeDeltaFromSlice(game.new_bid, data);
     var delta =  window.gameController.handler.makeReviewDelta(this.new_bid);
     LOG.debug('delta : ' + Object.toJSON(delta));
     window.gameController.sendDelta(delta);
-    //this.controller.sendDelta( this.controller.handler.makeReviewDelta(this.new_bid) );
-
-    // reviewモードではここから先は通らないはず。
-    //this.controller.reportActEnds(this.controller.playerInTurn(), movingPieceType, moveTo, capturedPieceType);
   },
 	/**
 	 * doActionWithPromote(actionContents)
