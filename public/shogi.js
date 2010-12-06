@@ -139,7 +139,15 @@ window.gameController.game = this;
 	// 返値：なし
   reverse: function reverse(top) { // ShogiGame
     LOG.getInto('ShogiGame#reverse');
+    if(top){
+      if(top == this.controller.top){
+        LOG.debug('same top requested, so will do nothing and return');
+        LOG.goOut();
+        return;
+      }
+    } 
     var tmp = null;
+    var old_top = this.controller.top;
     this.controller.top = top || (this.controller.top === 0 ? 1 : 0);
     this.controller.top_by_viewer = this.controller.top;
     this.controller.message('top became ' + this.controller.top);
@@ -147,14 +155,30 @@ window.gameController.game = this;
     this.board.reverse();
     this.board.adjust();
     if($('top-stand') && $('bottom-stand')){
-      if(this.controller.top == 0){
+      if(old_top == 0){
         tmp = $('top-stand').removeChild($('white-stand'));
-        tmp = $('bottom-stand').replaceChild($('black-stand'),tmp);
-        $('top-stand').appendChild(tmp);
+        if(tmp){
+          tmp = $('bottom-stand').replaceChild(tmp,$('black-stand'));
+          if(tmp){
+            $('top-stand').appendChild(tmp);
+          } else {
+            LOG.fatal('black-stand not found under bottom-stand');
+          }
+        } else {
+          LOG.fatal('white-stand not found under top-stand');
+        }
       } else {
         tmp = $('top-stand').removeChild($('black-stand'));
-        tmp = $('bottom-stand').replaceChild($('white-stand'),tmp);
-        $('top-stand').appendChild(tmp);
+        if(tmp){
+          tmp = $('bottom-stand').replaceChild(tmp,$('white-stand'));
+          if(tmp){
+            $('top-stand').appendChild(tmp);
+          } else {
+            LOG.fatal('white-stand not found under bottom-stand');
+          }
+        } else {
+          LOG.fatal('black-stand not found under top-stand');
+        }
       }
 
       tmp = $$('#top-stand img', '#bottom-stand img');

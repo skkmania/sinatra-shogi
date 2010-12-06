@@ -254,9 +254,9 @@ Board = Class.create({
 	 * adjustBorder()
 	 */
   adjustBorder: function adjustBorder() { // Board
-    LOG.getInto('Board#adjustBoarder');
     if(!this.cells[1][1].elm) return;
     if(!this.game) return;
+    LOG.getInto('Board#adjustBoarder');
     if(this.game.controller.top === 0){
       for (var r = 1; r < this.game.height; r++) {
         this.cells[r][1].elm.addClassName('rightCell');
