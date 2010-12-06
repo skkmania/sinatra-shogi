@@ -223,17 +223,6 @@ window.gameController.game = this;
     LOG.goOut();
   },
 	/**
-	 * boardReadFromState(state)
-	 */
-	// Stateから受け取ったボード情報オブジェクトを読み込む
-  boardReadFromState: function boardReadFromState(state) { // ShogiGame
-    LOG.getInto('Game#boardReadFromState: ');
-    this.board.read(state.get('board', this.board.initialString));
-    this.blackStand.read(state.get('bstand', this.blackStand.initialString));
-    this.whiteStand.read(state.get('wstand', this.whiteStand.initialString));
-    LOG.goOut();
-  },
-	/**
 	 * initialDraggable(turn)
 	 */
         // turnには'black','white',falseのいずれかが渡る。

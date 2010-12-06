@@ -433,7 +433,9 @@ GameController = Class.create({
     if(!this.player1) this.getPlayersFromState(state);
     $('join-button').hide();
     if (!this.game.board.shown) this.game.board.show();
-    this.game.boardReadFromState(state);  // 盤面の読み込み
+//  ここの処理は他のコールバックを参考に書き直すこと
+//    this.game.boardReadFromState(state);  // 盤面の読み込み
+//    boardReadFromStateは廃止した
     this.controlPanel.update('over');
       // draggableは消してしまい、ゲームを継続できなくする
     this.game.allPieces().pluck('drag').compact().invoke('destroy');
