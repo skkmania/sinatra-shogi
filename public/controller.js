@@ -889,17 +889,20 @@ GameController = Class.create({
 	/**
 	 * readTurnFromState(state)
 	 */
+	// 機能 stateから新しいturnを読み取り返す。このturn値が次のstateが
+	//      降ってくるまでのゲーム全体のturn値の基礎となる。
+	//      stateにturn情報がない場合はtrueを返す
+	// 入力 state
+	// 出力 turn 論理値 stateから読み取る
   readTurnFromState: function readTurnFromState(state) { // GameController
-    // 機能 stateから新しいturnを読み取り返す。このturn値が次のstateが
-    //      降ってくるまでのゲーム全体のturn値の基礎となる。
-    //      stateにturn情報がない場合はtrueを返す
-    // 入力 state
-    // 出力 turn 論理値 stateから読み取る
     LOG.getInto('GameController#readTurnFromState');
     var ret = state.get('turn');
     LOG.debug('state[turn] : ' + ret);
     if (!ret){
-      LOG.fatal('cannot get read turn from state!, instead trying to read turn from state[board]');
+      LOG.fatal('cannot get read turn from state!, so, returning true.');
+      LOG.goOut();
+      return true;
+/*  この処理は無くしたい。
       ret = state.get('board');
       LOG.debug('state[board] : ' + Object.toJSON(ret));
       if(ret){
@@ -909,6 +912,7 @@ GameController = Class.create({
       } else {
         ret = true;
       }
+*/
     }
     switch(ret){
       case 't':
