@@ -520,9 +520,9 @@ GameController = Class.create({
       LOG.debug('slices[' + value + '] : ' + slice.toDebugString());
       LOG.debug('slice.keys : ' + (slice.keys().join(',')));
       slice.each(function(pair){
-        this.LOG.debug2('key : ' + Object.toJSON(pair.key));
-        this.LOG.debug2('value : ' + pair.value.toDebugString());
-      }.bind(this));
+        window.LOG.debug2('key : ' + Object.toJSON(pair.key));
+        window.LOG.debug2('value : ' + pair.value.toDebugString());
+      });
       delta['mode']  = wave.getState().get('mode') || 'review';
       delta['count'] = this.count.toString();
       delta['bid']   = value.toString();
