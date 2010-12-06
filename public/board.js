@@ -415,15 +415,17 @@ Board = Class.create({
     LOG.goOut();
   },
 	/**
-	 * read(strFromState)
+	 * read(str)
 	 */
-  read: function read(strFromState){ // Board
+	// 盤を表現する文字列を元に駒を盤上に置く
+	// 現在の状態との差分を埋める
+	// 入力：文字列 str 盤上のコマを１文字であらわした８１文字の文字列
+	// 出力：なし
+  read: function read(str){ // Board
     LOG.getInto('Board#read');
-    LOG.debug('entered with : ' + strFromState);
-    // stateから読んだ文字列を元に駒を盤上に置く
-    // 現在の状態との差分を埋める
+    LOG.debug('entered with : ' + str);
     var oldBoard = $A(this.toString());
-    var newBoard = $A(strFromState);
+    var newBoard = $A(str);
     LOG.debug('oldBoard : ' + this.toString());
     newBoard.zip(oldBoard).each(function(tuple, idx){
         if(tuple[0] != tuple[1]){
