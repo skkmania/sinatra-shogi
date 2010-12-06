@@ -897,8 +897,9 @@ GameController = Class.create({
     // 出力 turn 論理値 stateから読み取る
     LOG.getInto('GameController#readTurnFromState');
     var ret = state.get('turn');
-    LOG.debug('state[turn] : ' + Object.toJSON(ret));
+    LOG.debug('state[turn] : ' + ret);
     if (!ret){
+      LOG.fatal('cannot get read turn from state!, instead trying to read turn from state[board]');
       ret = state.get('board');
       LOG.debug('state[board] : ' + Object.toJSON(ret));
       if(ret){
@@ -909,9 +910,18 @@ GameController = Class.create({
         ret = true;
       }
     }
-    if (ret == 't' || ret == 'true' ) ret = true;
-    if (ret == 'f'|| ret == 'false') ret = false;
-    LOG.debug('returning : ' + Object.toJSON(ret));
+    switch(ret){
+      case 't':
+      case 'true':  ret = true;
+        break;
+      case 'f':
+      case 'false': ret = false;
+        break;
+      default:
+        LOG.fatal('wrong value read as turn from state!: ' + JSON.stringify(ret));
+        break;
+    }
+    LOG.debug('returning : ' + JSON.stringify(ret));
     LOG.goOut();
     return ret;
   },
