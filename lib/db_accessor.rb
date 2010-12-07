@@ -93,6 +93,9 @@ class DbAccessor
       kekka = DB[query]
       @logger.debug { 'kekka : ' + kekka.inspect } 
       @bids = kekka.map(:bid)
+			@bids.push @bid
+			  # getChildは@bidの子孫しか返さないので@bidは含まない
+			  # しかしクライアントは@bidも@bidsに含めてほしいので追加しておく
       @logger.debug { 'bid_range : ' + @bids.join(',') } 
     rescue => error
       @logger.error { "determine_bid_range : error !" + error.message } 
