@@ -314,7 +314,7 @@ var Moves = Class.create(Hash, {
         break;
       case 'prevMoves' :
         // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
-        LOG.getInto('clicked innerHTML is : ' + inner);
+        LOG.debug('clicked innerHTML is : ' + inner);
         var bid = dataStore.currentSlice().get('prevMoves').find(
           function(pair){
              this.LOG.debug('value.toKanji : ' + pair.value.toKanji());

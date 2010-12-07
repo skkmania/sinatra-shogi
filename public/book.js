@@ -9,16 +9,14 @@ var Book = Class.create({
 	 * initialize(controller)
 	 */
   initialize: function initialize(controller, id){
+    LOG.getInto('Book#initialize');
     this.controller = controller;
     this.LOG     = LOG;
     this.name = 'readBook';
     this.initArea();
     this.textAreaId  = id;
-    LOG.getInto('Book#initialize');
     this.book = [];
     this.kid = null;
-       // Moveオブジェクトの配列
-
     LOG.goOut();
   },
 	/*
@@ -28,7 +26,28 @@ var Book = Class.create({
   initArea: function initArea(){
     LOG.getInto('Book#initArea');
     this.area = areas[this.name];
+    this.initOnClick();
+    this.showBookForm();
+    this.showInputBox();
     LOG.goOut();
+  },
+	/*
+	 * initOnClick()
+	 */
+  initOnClick : function initOnClick(){ // Book
+    LOG.getInto('Book#initOnClick');
+    LOG.goOut();
+    this.area.window_contents.observe('click',
+      function(evt){ 
+        this.LOG.getInto('Book#initOnClick#observe');
+        this.LOG.debug('id of clicked element : ' + evt.findElement('li').id);
+        var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
+        this.LOG.debug('mid of clicked element : ' + mid);
+        var inner = evt.findElement('li').innerHTML;
+        this.controller.makeAndSendReviewDelta(mid);
+        this.LOG.goOut();
+      }.bind(this)
+    );
   },
 	/*
 	 * showInputBox()

@@ -196,8 +196,6 @@ GameController = Class.create({
     this.maintainer = new Maintainer(this);
     this.handler = new Handler(this);
     this.book = new Book(this);
-    this.book.showBookForm();
-    this.book.showInputBox();
     this.container = $(this.settings['containerId']);
     this.playerSetting = settings['playerSetting'] || 'viewer';
     this.players = $A([]);       // playerのIDの文字列の配列

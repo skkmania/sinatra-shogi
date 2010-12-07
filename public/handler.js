@@ -19,10 +19,6 @@ var Handler = Class.create({
     this.data_name = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
-// 一時退避
-    //this.book = new Book(this);
-    //this.book.showBookForm();
-    //this.book.showInputBox();
     this.gUid = 1;
     this.gRange = 'only';
   // range は 'only' か 'full'の２値をとる。
