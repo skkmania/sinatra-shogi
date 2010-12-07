@@ -81,9 +81,11 @@ class DbAccessor
     @logger.debug { "into determine_bid_range" } 
     case @range
       when 'full'
-        query = "select bid, nxts, pres from cc_getBids(#{@bid}, #{@level});"
+        #query = "select bid, nxts, pres from cc_getBids(#{@bid}, #{@level});"
+        query = "SELECT * from  getChildBidsFullSQL(#{@bid}, #{@level}) AS bid;"
       when 'only'
-        query = "select bid, nxts, pres from cc_getBids(#{@bid}, #{@level}) where ll = #{@level};"
+			  # 未実装
+        # query = "SELECT * from  getChildBidsOnlySQL(#{@bid}, #{@level}) AS bid;"
     end
   
     @logger.debug { "query : #{query}" } 
