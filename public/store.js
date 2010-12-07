@@ -483,6 +483,16 @@ var Store = Class.create(Hash, {
     LOG.goOut();
   },
 	/**
+	 * dump()
+	 */
+	// 自身のエリアにHtml形式で自身の情報を表示する
+  dump: function dump() { // Store
+    LOG.getInto('Store#dump'); 
+    this.area.window_contents.update(this.toDebugHtml());
+    this.area.window.open();
+    LOG.goOut();
+  },
+	/**
 	 * toDebugHtml()
 	 */
   toDebugHtml: function toDebugHtml() { // Store
