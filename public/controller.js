@@ -194,7 +194,6 @@ GameController = Class.create({
       LOG.debug('settings : ' + Object.toJSON(this.settings));
     }
     this.maintainer = new Maintainer(this);
-    this.handler = new Handler(this);
     this.book = new Book(this);
     this.container = $(this.settings['containerId']);
     this.playerSetting = settings['playerSetting'] || 'viewer';
@@ -396,28 +395,6 @@ GameController = Class.create({
     this.game.boardReadFromDB();
     this.game.toggleDraggable();
     this.controlPanel.update('review');
-    dataStore.currentSlice().get('nextMoves').show();
-    dataStore.currentSlice().get('prevMoves').show();
-    LOG.goOut();
-  },
-	/**
-	 * slice(state)
-	 */
-        // reviewモードにおいて、sliceの配布がなされたときに受け取って処理するためのコールバック
-        // 
-  slice: function slice(state) { // GameController
-    LOG.getInto('GameController#slice');
-    this.handler.boardObj  = state.get('board').evalJSON();
-    $('inputText').value = this.handler.boardObj['bid'];
-    this.game.board.turn = this.readTurnFromState(state);
-    $('boardTurn').update('board : ' + this.game.board.turn.toString());
-    this.game.board.bid    = parseInt(state.get('bid'));
-    this.handler.nextMoves = state.get('next').evalJSON();
-    this.handler.prevMoves = state.get('prev').evalJSON();
-    LOG.debug(Object.toJSON(this.handler.boardObj));
-    this.game.boardReadFromDB();
-    this.game.toggleDraggable();
-    this.controlPanel.update('slice');
     dataStore.currentSlice().get('nextMoves').show();
     dataStore.currentSlice().get('prevMoves').show();
     LOG.goOut();
