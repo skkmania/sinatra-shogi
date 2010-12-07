@@ -19,24 +19,10 @@ var Handler = Class.create({
     this.data_name = $w('bids board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
 
     this.target_store = 0;  // nxts or pres をクリックしたときのtargetを保管する。now loadingになったときに復活するために使う。
-    LOG.debug('areas are being initialized');
-/*
-    // 前の手のエリア
-    this.prevArea = new Area(this, 'pres', 'prevMoves',{position:[10,100], width:120, height:300});
-    this.prevArea.initOnClick();
-    this.prevArea.window.open();
-    //this.prevArea.show(); ここでははやすぎ。まだ初期情報がとれていない。
-    // 次の手のエリア
-    this.nextArea = new Area(this, 'nxts', 'nextMoves',{position:[690,100], width:120, height:400});
-    this.nextArea.initOnClick();
-    this.nextArea.window.open();
-    //this.nextArea.show();
-*/
 // 一時退避
     //this.book = new Book(this);
     //this.book.showBookForm();
     //this.book.showInputBox();
-    LOG.debug('areas were initialized');
     this.gUid = 1;
     this.gRange = 'only';
   // range は 'only' か 'full'の２値をとる。
@@ -66,89 +52,6 @@ var Handler = Class.create({
 
     LOG.goOut();
   },
-	/**
-	 * makeReviewDelta(bid)
-	 */
-	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
-	// 入力 : bid 数値 表示したい局面のbid
-	//  ただし、これはnullでも可。そのときは画面上のbid入力エリアの値を使う
-        // 出力 : 作成されたdelta オブジェクト
-  makeReviewDelta: function makeReviewDelta(bid){ // Handler
-    var delta = {};
-    LOG.getInto('Handler#makeReviewDelta');
-    this.controller.count++;
-    LOG.debug('bid : ' + bid);
-    LOG.debug('typeof bid : ' + typeof bid);
-    var value = bid || $('inputText').value;
-    //var value = bid.toString() || $('inputText').value;
-    LOG.debug('value : ' + value);
-    var slice = dataStore.slices.get(value);
-    if(!slice){
-      LOG.debug('was not found in slices key, so try getMsg.');
-      LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
-      dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      slice = dataStore.slices.get(value);
-    }
-    LOG.debug('slice : ' + slice.toDebugString());
-    LOG.debug('slice.keys : ' + (slice.keys().join(',')));
-    //slice = $H(slice);
-    //if(slice && !slice.constructor) slice = $H(slice);
-    //LOG.debug('slice constructor 2 : ' + Object.toJSON(slice.constructor));
-    if(slice){
-      LOG.debug('slices[' + value + '] : ' + slice.toDebugString());
-      LOG.debug('slice.keys : ' + (slice.keys().join(',')));
-      slice.each(function(pair){
-        this.LOG.debug('key : ' + Object.toJSON(pair.key));
-        this.LOG.debug('value : ' + pair.value.toDebugString());
-      }.bind(this));
-      delta['mode']  = wave.getState().get('mode') || 'review';
-      delta['count'] = this.controller.count.toString();
-      delta['bid']   = value.toString();
-      delta['turn']  = (slice.get('board').turn ? 't' : 'f');
-      delta['board'] = slice.get('board').toDelta();
-      delta['next']  = slice.get('nextMoves').toDelta();
-      delta['prev']  = slice.get('prevMoves').toDelta();
-      LOG.debug('delta : ' + Object.toJSON(delta));
-    } else {
-      LOG.fatal('cannot get slice');
-    }
-    LOG.goOut();
-    return delta;
-  },
-
-
-	/**
-	 * refreshBoard
-	 */
-	// 入力されたbidのboard情報を取得し、盤面を書き換える。
-	// 入力 : bid 数値 表示したい局面のbid
-	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
-  refreshBoard: function refreshBoard(bid){ // Handler
-    LOG.getInto('Handler#refreshBoard');
-    LOG.debug('bid : ' + bid);
-    var boardObj, nextMoves, prevMoves;
-
-    if(bid) $('inputText').value = bid;
-    var value = $('inputText').value;
-    LOG.debug('value : ' + value);
-    LOG.debug('typeof value : ' + typeof value);
-    var slice = dataStore.slices.get(value);
-    LOG.debug('slice['+value+'] : ' + Object.toJSON(slice));
-    if(!slice){
-      LOG.debug('was not found in slices key, so try getMsg.');
-      dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      slice = dataStore.slices.get(value);
-    }
-    if(slice){
-      window.gameController.game.boardReadFromDB();
-      window.gameController.game.board.show();
-      areas['prevMoves'].show();
-      areas['nextMoves'].show();
-    } else {
-      LOG.fatal('cannot get slice');
-    }
-    LOG.goOut();
-  },
 	/*
 	 * areaClicked(place, target, inner)
 	 */
@@ -160,27 +63,6 @@ var Handler = Class.create({
     LOG.getInto('Handler#areaClicked');
     LOG.debug('place -> ' + Object.toJSON(place) + ',  target -> ' + Object.toJSON(target));
     switch(place) {
-      case 'nxts' :
-	// この場合、targetによりクリックされた要素のmidが渡されてくる
-        var bid = dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
-        LOG.debug('bid found : ' + bid);
-        window.gameController.sendDelta( this.makeReviewDelta(bid) );
-        break;
-      case 'pres' :
-        // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
-        LOG.getInto('clicked innerHTML is : ' + inner);
-        var bid = dataStore.currentSlice().get('prevMoves').find(
-          function(pair){
-             this.LOG.debug('value.toKanji : ' + pair.value.toKanji());
-             return pair.value.toKanji() == inner;
-           }.bind(this)).value.bid;
-        if(bid) {
-          LOG.debug('bid found : ' + bid);
-          window.gameController.sendDelta( this.makeReviewDelta(bid) );
-        } else {
-          LOG.fatal('clicked move was not found');
-        }
-        break;
       case 'readBook' :
         LOG.getInto('clicked innerHTML is : ' + inner);
         window.gameController.sendDelta( this.makeReviewDelta(target) );
@@ -190,45 +72,30 @@ var Handler = Class.create({
     }
     LOG.goOut();
   },
-
-  updateData : function updateData(target, uid, range, async){ // Handler
-      LOG.getInto(); 
-      LOG.debug('target: ' + arguments[0]);
-      LOG.debug('uid: ' + arguments[1]);
-      LOG.debug('range: ' + arguments[2]);
-      LOG.debug('async: ' + arguments[3]);
-      LOG.goOut();
-      dataStore.getMsg(target, uid, this.gLevel, this.mask, range, async);
-  },
-
+/*
   set_data_by_bid : function set_data_by_bid(target, responseJSON){
       var bids_ary;
       LOG.getInto();
       LOG.debug('contents of responseJSON follows:');
-/*
       masked_data_name.each(function(e){
         LOG.debug('name : ' + e);
         if(responseJSON[e]) LOG.debug('responseJSON['+e+'] : ' + responseJSON[e]);
         else LOG.debug('responseJSON['+e+'] not exist');
       });
-*/
       var data_hash = responseJSON;
       //var data_hash = $H();
       this.age += 1;
       LOG.debug('responseJSONをハッシュdata_hashに格納する');
       // DBから文字列としてうけたものを、JSONオブジェクトとして評価する
-/*
       masked_data_name.each(function(e){
 	data_hash.set(e, responseJSON[e]);
       });
-*/
       LOG.debug('data_hash をJSONオブジェクトとして表示してみる');
       LOG.debug(Object.toJSON(data_hash), 3);
       LOG.debug('データをbidごとに再構成する');
       LOG.debug('まずdata_hash[bids]からbidを抽出する');
 //      LOG.debug('data_hash[bids]は文字列で、カンマ区切りのオブジェクトの配列という形。');
 //      LOG.debug('したがって、まずsplitし、個々の要素をevalすればobjectの配列となる。');
-/*
       try {
         bids_ary = eval(data_hash.get('bids'));
         LOG.debug('data_hash[bids] size : ' + bids_ary.size());
@@ -241,7 +108,6 @@ var Handler = Class.create({
       });
       LOG.debug('eval bids_ary[0] : ' + Object.toJSON(eval(bids_ary[0])));
       LOG.debug('bids_ary -> ' + Object.toJSON(bids_ary));
-*/
       //bids_ary = bids_ary.map(function(e){ return eval(e); }).pluck('bid');
       bids_ary = data_hash['bids'].pluck('bid');
       LOG.debug('bids_ary -> ' + Object.toJSON(bids_ary));
@@ -272,8 +138,9 @@ var Handler = Class.create({
       LOG.debug('updateData : age_hash after gc -> ' + Object.toJSON(age_hash), 3);
       LOG.goOut();
   },
-  
+*/  
 // 使われていないなあ。調査の上、削除かどうか決めること
+/*
   updateDisplay : function updateDisplay(target){ // Handler
     LOG.getInto();
     this.prevArea.display(target);
@@ -295,7 +162,6 @@ var Handler = Class.create({
     $('age').update(agestr);
     LOG.goOut();
   },
-
   cs_gc : function cs_garbageCollect(){
     LOG.getInto();
     LOG.debug('values : ' + Object.toJSON(cs.values()),3); 
@@ -307,11 +173,12 @@ var Handler = Class.create({
     });
     LOG.goOut();
   }
+*/
 });
 //-----------------------------------------------------------------
 //  main
 //-----------------------------------------------------------------
-
+/*
 function data_by_bid_to_table(target){
   var retstr = '<table style="font-size: 9pt" class="data_by_bid">';
   if (arguments.size == 0){
@@ -332,7 +199,6 @@ function data_by_bid_to_table(target){
   retstr += '</table>';
   return retstr;
 }
-
 function extract_from_data_hash_by_bid(target,data_hash){
   LOG.getInto();
   var ret_hash = $H();
@@ -349,3 +215,4 @@ function extract_from_data_hash_by_bid(target,data_hash){
   LOG.goOut();
   return ret_hash;
 }
+*/

@@ -76,7 +76,7 @@ window.gameController.game = this;
     }
 /*
     if(ret){
-      this.controller.sendDelta( this.controller.handler.makeReviewDelta(ret.nxt_bid) );
+      this.controller.sendDelta( this.controller.makeReviewDelta(ret.nxt_bid) );
     } else
       return false;
 */
@@ -415,7 +415,7 @@ window.gameController.game = this;
     dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
     LOG.debug('doAction: game.new_bid : ' + this.new_bid);
-    var delta =  window.gameController.handler.makeReviewDelta(this.new_bid);
+    var delta =  window.gameController.makeReviewDelta(this.new_bid);
     LOG.debug('delta : ' + Object.toJSON(delta));
     window.gameController.sendDelta(delta);
   },

@@ -441,7 +441,7 @@ var Store = Class.create(Hash, {
         this.addMovesAsNextMoves(data['prevMoves'])
         this.LOG.debug('slice read done : ');
 //        this.LOG.debug('this.slices['+game.new_bid+'] : '+Object.toJSON(this.slices.get(game.new_bid)));
-        //var delta =  window.gameController.handler.makeReviewDelta(game.new_bid);
+        //var delta =  window.gameController.makeReviewDelta(game.new_bid);
         this.LOG.goOut();
         return data;
       }.bind(this),

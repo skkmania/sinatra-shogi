@@ -114,7 +114,7 @@
         if(wave) 
           wave.setStateCallback(window.gameController.acceptState.bind(window.gameController));
         if(window.gameController.settings['playerSetting'] != 'playGame')
-          window.gameController.handler.refreshBoard(1);
+          window.gameController.refreshBoard(1);
         LOG.openWindow();
         LOG.window.window_contents.update(LOG.top);
       });

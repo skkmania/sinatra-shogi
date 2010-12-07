@@ -90,7 +90,7 @@ ControlPanel = Class.create({
         contents +=  '<div id="Title">\
                        <p id="kid">局面ID: </p>\
                        <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
-                       <button onclick="javascript:window.gameController.handler.refreshBoard();" id="submitButton">jump</button>\
+                       <button onclick="javascript:window.gameController.refreshBoard();" id="submitButton">jump</button>\
                     </div>';
         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span> : <span class="t">waiting</span></div>';
@@ -452,6 +452,38 @@ GameController = Class.create({
     LOG.goOut();
   },
 	/**
+	 * refreshBoard
+	 */
+	// 入力されたbidのboard情報を取得し、盤面を書き換える。
+	// 入力 : bid 数値 表示したい局面のbid
+	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
+  refreshBoard: function refreshBoard(bid){ // GameController
+    LOG.getInto('GameController#refreshBoard');
+    LOG.debug('bid : ' + bid);
+    var boardObj, nextMoves, prevMoves;
+
+    if(bid) $('inputText').value = bid;
+    var value = $('inputText').value;
+    LOG.debug('value : ' + value);
+    LOG.debug('typeof value : ' + typeof value);
+    var slice = dataStore.slices.get(value);
+    LOG.debug('slice['+value+'] : ' + Object.toJSON(slice));
+    if(!slice){
+      LOG.debug('was not found in slices key, so try getMsg.');
+      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      slice = dataStore.slices.get(value);
+    }
+    if(slice){
+      this.game.boardReadFromDB();
+      this.game.board.show();
+      areas['prevMoves'].show();
+      areas['nextMoves'].show();
+    } else {
+      LOG.fatal('cannot get slice');
+    }
+    LOG.goOut();
+  },
+	/**
 	 * makeDelta()
 	 */
   makeDelta: function makeDelta(flag, winner){ // GameController
@@ -487,6 +519,51 @@ GameController = Class.create({
         break;
       default:
         break;
+    }
+    LOG.goOut();
+    return delta;
+  },
+	/**
+	 * makeReviewDelta(bid)
+	 */
+	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
+	// 入力 : bid 数値 表示したい局面のbid
+	//  ただし、これはnullでも可。そのときは画面上のbid入力エリアの値を使う
+        // 出力 : 作成されたdelta オブジェクト
+  makeReviewDelta: function makeReviewDelta(bid){ // GameController
+    var delta = {};
+    LOG.getInto('GameController#makeReviewDelta');
+    this.count++;
+    LOG.debug('bid : ' + bid);
+    LOG.debug('typeof bid : ' + typeof bid);
+    var value = bid || $('inputText').value;
+    LOG.debug('value : ' + value);
+    var slice = dataStore.slices.get(value);
+    if(!slice){
+      LOG.debug('was not found in slices key, so try getMsg.');
+      LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
+      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      slice = dataStore.slices.get(value);
+    }
+    LOG.debug('slice : ' + slice.toDebugString());
+    LOG.debug('slice.keys : ' + (slice.keys().join(',')));
+    if(slice){
+      LOG.debug('slices[' + value + '] : ' + slice.toDebugString());
+      LOG.debug('slice.keys : ' + (slice.keys().join(',')));
+      slice.each(function(pair){
+        window.LOG.debug('key : ' + Object.toJSON(pair.key));
+        window.LOG.debug('value : ' + pair.value.toDebugString());
+      });
+      delta['mode']  = wave.getState().get('mode') || 'review';
+      delta['count'] = this.count.toString();
+      delta['bid']   = value.toString();
+      delta['turn']  = (slice.get('board').turn ? 't' : 'f');
+      delta['board'] = slice.get('board').toDelta();
+      delta['next']  = slice.get('nextMoves').toDelta();
+      delta['prev']  = slice.get('prevMoves').toDelta();
+      LOG.debug('delta : ' + Object.toJSON(delta));
+    } else {
+      LOG.fatal('cannot get slice');
     }
     LOG.goOut();
     return delta;
