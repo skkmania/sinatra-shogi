@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# vi: ts=2 sw=2 sts=0 nu ai ambw=double fo=tcq
+# vi: ts=2 sw=2 sts=0 ai ambw=double fo=tcq
 #
-#  cc_getData.rhtml
+#  cc_getData.rb
 #
 #  入力: bid, uid, mask, level, range
 #        mask : どのデータを取得するかを示す２進数の10進表現

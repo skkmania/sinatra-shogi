@@ -3,7 +3,6 @@ require 'sinatra'
 require 'msgpack'
 require 'json'
 require 'get84.rb'
-require 'lib/cc_getData.rb'
 require 'lib/db_accessor.rb'
 
   class Hash
@@ -36,17 +35,6 @@ get %r{/board/([\d]+)} do
   end
 end
 
-=begin
-# これは上の条件にあわなかったすべての文字列にヒットすることに注意
-get '/:bid' do |bid|
-  logger.debug { ' ----------  into bid' }
-  bid.to_s
-  dataset = DB["select * from boards where bid = #{bid.to_s}"]
-  dataset.inject('') do |all, row|
-    all += row.to_a.join(':') + '\n'
-  end
-end
-=end
 # サーバ側でデータを返すだけならこのようなコードになる
 # この場合、クライアント側で受け取ったデータを各要素に充填していく
 get %r{/json/board/([\d]+)} do
@@ -72,8 +60,6 @@ end
 get '/getMsg' do
     logger2.debug { ' ----------  into getMsg' }
     logger2.debug { 'params : ' + params.inspect }
-  #ct = CacheTest.new( params, logger2 )
-  # 動作確認できたらここはすぐに消すこと。
   ct = DbAccessor.new( params, logger2 )
     logger2.debug { 'ct initialized' }
   ct.determine_bid_range
