@@ -61,13 +61,7 @@ class DbAccessor
 
   def queries
     bids_expr = @bids.join(',').gsub('bid','')
-    { "bids" => 
-        case @range
-          when 'full'
-    	"select bid, nxts, pres from cc_getBids(#{@bid}, #{@level});"
-          when 'only'
-    	"select bid, nxts, pres from cc_getBids(#{@bid}, #{@level}) where ll = #{@level};"
-        end,
+    {
     "board"		=> "select * from boards where bid in ( #{bids_expr} );",
     "nextMoves"	=> "select * from moves where bid in ( #{bids_expr} ) order by mid;",
     "prevMoves"	=> "select * from moves where nxt_bid in ( #{bids_expr} );",
@@ -173,15 +167,7 @@ class DbAccessor
 #    @logger.debug { "gotten : #{log_format(@gotten)}" } 
     return @gotten.to_msgpack
   end
-  
-  def get_bids
-    result = DB[queries['bids']].all
-    @logger.debug { "result.inspect : #{result.inspect}" } 
-    @logger.debug { "result : #{result}" } 
-    @logger.debug { "result.msgpack : #{result.to_msgpack}" } 
-    return result.to_msgpack
-  end
-  
+
   def get_book
     @logger.debug { "get_book : query : #{queries['book']}" } 
     result = DB[queries['book']].all
