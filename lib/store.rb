@@ -18,7 +18,16 @@ class Store < Hash
     self[@current_bid] = state.get(@current_bid, 'dummy')
   end
 
-  def update
-    self[@current_bid] =  'dummy'
+  def update(params=nil)
+    params = params ||
+	{'bid'	=> @current_bid,
+	'mask'	=> 7,
+	'level'	=> 3,
+	'range' => 'full'}
+    @dba.read_params(params)
+    @dba.set_masked_data_name
+    @dba.determine_bid_range
+    @dba.get_msg
+    self.merge @dba.gotten
   end
 end

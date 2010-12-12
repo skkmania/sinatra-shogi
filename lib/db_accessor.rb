@@ -23,6 +23,19 @@ class DbAccessor
     @logger = logger
     @logger.debug { 'DbAccessor new : param : ' + param.to_s }
     @logger.debug { "DbAccessor new : param bid : #{param['bid'] or 'nothing'}" }
+    read_params(param)
+    @data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
+    set_masked_data_name
+    
+    @post_book_query = ''
+    @bids = []
+    @res = ''
+    @gotten = {}
+    @logger.debug { 'DbAccessor new : leaving : ' }
+  end
+  attr_accessor :params, :gotten, :logger, :masked_data_name
+  
+  def read_params(param)
     @params	= param
     @bid	= @params['oldbid'] || @params['bid'] || 1
     @name	= @params['name']
@@ -45,21 +58,13 @@ class DbAccessor
     @player2	= @params['player2']
     @win	= @params['win']
     @date	= @params['date']
-    
-    @data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
-    #@data_name = %w|board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments|
+  end
+
+  def set_masked_data_name
     @masked_data_name = []
     @data_name.each_with_index{|e,i| @masked_data_name.push e if @mask[i] == 1 }
-    
-    @post_book_query = ''
-    @bids = []
-    @res = ''
-    @gotten = {}
-    @logger.debug { 'DbAccessor new : leaving : ' }
   end
-  
-  attr_accessor :gotten, :logger, :masked_data_name
-  
+
   def send_query(query)
     DB[query].all
   end
