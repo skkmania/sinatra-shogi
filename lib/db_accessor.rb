@@ -12,9 +12,14 @@ require 'date'
 require '24kifu_tools.rb'
 require '2chkifutools.rb'
 require 'post_book_query.rb'
+require 'logger' unless Logger
+require 'sequel'
+# localhostへの接続
+DB = Sequel.connect("postgres://skkmania:skkmania@ubu-pg84:5432/shogi84",
+    :max_connections => 10, :logger => Logger.new('log/db.log'))
 
 class DbAccessor
-  def initialize(param, logger)
+  def initialize(param={}, logger=Logger.new('log/db_accessor.log'))
     @logger = logger
     @logger.debug { 'DbAccessor new : param : ' + param.to_s }
     @logger.debug { "DbAccessor new : param bid : #{param['bid'] or 'nothing'}" }

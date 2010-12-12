@@ -122,7 +122,7 @@ class Wave::State < Hash
     Log.debug "State initialized."
     self.merge! opt
   end
-  def get(key, optDefault)
+  def get(key, optDefault=nil)
     self[key] || optDefault
   end
   def put(key, value)
@@ -201,14 +201,17 @@ class PseudoWaveConnection < Rev::WebSocket
 	end
 end
 
-host = '0.0.0.0'
-port = 8081
-$wave = Wave.new
+if $0 == __FILE__
+  host = '0.0.0.0'
+  port = 8081
+  $wave = Wave.new
+  
+  $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
+  $server.attach(Rev::Loop.default)
+  # $pubsub.publish("this connection was attached to Psuedo Wave Server")
+  
+  Log.debug "start on #{host}:#{port}"
+  
+  Rev::Loop.default.run
 
-$server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
-$server.attach(Rev::Loop.default)
-# $pubsub.publish("this connection was attached to Psuedo Wave Server")
-
-Log.debug "start on #{host}:#{port}"
-
-Rev::Loop.default.run
+end

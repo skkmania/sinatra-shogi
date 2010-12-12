@@ -1,6 +1,4 @@
 require 'rubygems'
-require 'get84.rb'
-#require 'lib/db_accessor.rb'
 require 'shogi.rb'
 require 'test/unit'
 require 'mocha'

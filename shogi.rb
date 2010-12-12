@@ -2,8 +2,8 @@ require 'rubygems'
 require 'sinatra'
 require 'msgpack'
 require 'json'
-require 'get84.rb'
 require 'lib/db_accessor.rb'
+require 'lib/gpsclient.rb'
 
   class Hash
     # keyの配列を渡すと、その順に並べたvalueの配列を返す
