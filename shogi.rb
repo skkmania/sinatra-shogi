@@ -64,7 +64,7 @@ get '/getMsg' do
     logger2.debug { 'ct initialized' }
   ct.determine_bid_range
     logger2.debug { 'determined' }
-  body = ct.get_msg
+  body = ct.get_msg.to_msgpack
     logger2.debug { 'data gotten' }
   r = Sinatra::Response.new(body,200,{"Content-Type" => "text/plain"})
   r.finish

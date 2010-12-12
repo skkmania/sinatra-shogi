@@ -138,6 +138,12 @@ class DbAccessor
       ret
   end
   
+  #
+  # get_msg
+  #   @maskで指定したデータをDBから取得する
+  #   入力 : なし 実質的には@masked_data_nameがその役割をはたす
+  #   出力 : DBから取得したデータをまとめたHash @gottenというプロパティに格納される
+  #
   def get_msg
     @logger.debug { "into get_msg : masked_data_name : #{@masked_data_name.join(',')}" } 
     @gotten = @masked_data_name.inject({}){|res_hash, name|
@@ -147,7 +153,7 @@ class DbAccessor
       res_hash
     }
 #    @logger.debug { "gotten : #{log_format(@gotten)}" } 
-    return @gotten.to_msgpack
+    return @gotten
   end
 
   def get_book
