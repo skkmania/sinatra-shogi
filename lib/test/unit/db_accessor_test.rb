@@ -7,17 +7,6 @@ class DbAccessorTest < Test::Unit::TestCase
 
   @@logger = Logger.new('log/db_accessor_test.log')
 
-  def test_get_data
-    params = { 'bid' => 1, 'oldbid' => 1 , 'uid' =>1, 'level' => 3, 'mask' => 15, 'range' => 'full' }
-    dba = DbAccessor.new(params, @@logger)
-    assert_equal ['bids','board','nextMoves','prevMoves'], dba.masked_data_name
-    dba.get_data
-    assert dba.gotten['bids'].size > 0
-    assert dba.gotten['board'].size > 0
-    assert dba.gotten['nextMoves'].size > 0
-    assert dba.gotten['prevMoves'].size > 0
-  end
-
   def delete_board(b)
     query = "delete from boards where board = '#{b['board']}' \
              and white = '#{b['white']}' and black = '#{b['black']}' and turn = '#{b['turn']}'"

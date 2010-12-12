@@ -114,34 +114,6 @@ class DbAccessor
   
   {:nxts=>"{3,235}", :pres=>"{1}", :bid=>2}   
 =end
-  def get_data
-    kekka = nil
-    begin
-      @masked_data_name.each{|name|
-      @logger.debug { "name : #{name}" } 
-      @logger.debug { "query : #{queries[name]}" } 
-      kekka = DB[queries[name]]
-      @logger.debug { "kekka.inspect : #{kekka.inspect}" } 
-      @gotten[name] = []
-      kekka.each do |row|
-        @logger.debug { row.inspect.to_s }
-        modified_row = row.inspect.gsub(/:(\w+)/){ '"' + $1 + '"' }.gsub('=>',':').gsub('"{','[').gsub('}"',']')
-        #modified_row = row.inspect.gsub('"{','[').gsub('}"',']').gsub(/:(\w+)/){ '"' + $1 + '"' }.gsub('=>',':').gsub('"{','{')
-        @gotten[name].push modified_row
-        #rowJsonObj = row.inspect.to_json
-        #@gotten[name].push rowJsonObj
-    
-    end
-    #  これではまずい。nameとカラム名が一致してるほうがすくない
-      @logger.debug { "gotten[#{name}] : #{@gotten[name].join(',')}" } 
-    }
-    rescue => error
-      @res = { 'error' => -1 }
-    ensure
-      #kekka.clear if kekka
-    end
-    return @gotten
-  end
 
   # @gottenの出力を読みやすく整形する
   def log_format(obj)
