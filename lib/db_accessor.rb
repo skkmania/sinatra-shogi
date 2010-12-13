@@ -90,8 +90,10 @@ class DbAccessor
   end
 
   def set_masked_data_name
+    @logger.debug { "set_masked_data_name : entered : #@mask" }
     @masked_data_name = []
     @data_name.each_with_index{|e,i| @masked_data_name.push e if @mask[i] == 1 }
+    @logger.debug { "set_masked_data_name : leaving : #@masked_data_name" }
   end
 
   def send_query(query)
@@ -117,7 +119,7 @@ class DbAccessor
   end
   
   def determine_bid_range
-    @logger.debug { "into determine_bid_range" } 
+    @logger.debug { "into determine_bid_range : #@range" } 
     case @range
       when 'full'
         #query = "select bid, nxts, pres from cc_getBids(#{@bid}, #{@level});"
@@ -126,8 +128,8 @@ class DbAccessor
 			  # 未実装
         # query = "SELECT * from  getChildBidsOnlySQL(#{@bid}, #{@level}) AS bid;"
     end
-  
-    @logger.debug { "query : #{query}" } 
+    @logger.debug { "query became : #{query}" } 
+
     begin
       kekka = DB[query]
       @logger.debug { 'kekka : ' + kekka.inspect } 

@@ -19,7 +19,7 @@ class Store < Hash
     self[@current_bid] = state.get(@current_bid, 'dummy')
   end
 
-  def update(params=nil)
+  def update_store(params=nil)
     params = params ||
 	{'bid'	=> @current_bid,
 	'mask'	=> 7,
@@ -34,5 +34,6 @@ class Store < Hash
   end
 
   def read_from_db(data)
+    self.merge! data
   end
 end

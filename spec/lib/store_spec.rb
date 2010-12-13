@@ -33,13 +33,13 @@ describe Store, "は#fromState state を実行したとき" do
   end
 end
 
-describe Store, "は#update を実行したとき" do
+describe Store, "は#update_store を実行したとき" do
   before do
     @store = Store.new(SpecLog)
   end
   it "サイズが変わる" do
     lambda {
-      @store.update
+      @store.update_store
     }.should change(@store, :size)
   end
 end
