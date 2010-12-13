@@ -7,7 +7,8 @@ require 'pseudo_wave.rb'
 require 'lib/db_accessor.rb'
 
 class Store < Hash
-  def initialize
+  def initialize(logger=Logger.new('log/store.log'))
+    @logger = logger
     @current_bid = 1
     @dba = DbAccessor.new
     @keys = %w[board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments]
@@ -28,6 +29,7 @@ class Store < Hash
     @dba.set_masked_data_name
     @dba.determine_bid_range
     @dba.get_msg
+    @logger.debug(@dba.gotten.inspect)
     self.merge @dba.gotten
   end
 end

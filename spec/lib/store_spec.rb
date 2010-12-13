@@ -6,9 +6,10 @@
 require 'lib/store.rb'
 require 'pseudo_wave.rb'
 
+SpecLog = Logger.new('log/store_spec.log')
 describe Store, 'は初期化したとき' do
   before do
-    @store = Store.new
+    @store = Store.new(SpecLog)
   end
 
   it "DbAccessor をプロパティとして持つ" do
@@ -22,7 +23,7 @@ end
 
 describe Store, "は#fromState state を実行したとき" do
   before do
-    @store = Store.new
+    @store = Store.new(SpecLog)
     @state = Wave::State.new
   end
   it "サイズがひとつ大きくなる" do
@@ -34,7 +35,7 @@ end
 
 describe Store, "は#update を実行したとき" do
   before do
-    @store = Store.new
+    @store = Store.new(SpecLog)
   end
   it "サイズが変わる" do
     lambda {
