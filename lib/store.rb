@@ -29,7 +29,10 @@ class Store < Hash
     @dba.set_masked_data_name
     @dba.determine_bid_range
     @dba.get_msg
-    @logger.debug(@dba.gotten.inspect)
-    self.merge @dba.gotten
+    @logger.debug(@dba.log_format @dba.gotten)
+    read_from_db @dba.gotten
+  end
+
+  def read_from_db(data)
   end
 end

@@ -18,6 +18,35 @@ require 'sequel'
 DB = Sequel.connect("postgres://skkmania:skkmania@ubu-pg84:5432/shogi84",
     :max_connections => 10, :logger => Logger.new('log/db.log'))
 
+# utility
+  class Hash
+    # keyの配列を渡すと、その順に並べたvalueの配列を返す
+    # 値の存在しないkeyが含まれると、その場所にはnilがはいる
+    def to_a_with_order(ary)
+      ary.inject([]){|res, e| res.push self[e].to_s }
+    end
+    def board_hash_to_s
+      to_a_with_order([:bid,:turn,:board,:black,:white]).map{|e|
+        sprintf("%5s", e) }.join(',')
+    end
+    def move_hash_to_s
+      ret = ''
+      to_a_with_order([:bid,:mid,:m_from,:m_to,:piece,:promote,:nxt_bid]).each_with_index{|e, i|
+        case i
+          when 0
+            ret += sprintf("%6s", e) + ','
+          when 1,2,3,4
+            ret += sprintf("%2s", e) + ','
+          when 5
+            ret += sprintf("%5s", e) + ','
+          when 6
+            ret += sprintf("%6s", e)
+        end
+      }
+      ret
+    end
+  end
+
 class DbAccessor
   def initialize(param={}, logger=Logger.new('log/db_accessor.log'))
     @logger = logger
@@ -121,26 +150,31 @@ class DbAccessor
 =end
 
   # @gottenの出力を読みやすく整形する
+  # 入力 obj @gottenを受け取ることを想定. @gottenは hash である
+  # 出力 ret @gottenの値を整形した文字列
   def log_format(obj)
+    moves_tos = lambda{|obj, ret, name|
+      nmgrp = obj[name].group_by{|m| m[:bid] }.sort
+        # group_byの結果はHash. bidをkeyとする。
+      nmgrp.each{|bid, moves|
+        ret += "\n"
+        moves.each_with_index{|m, i|
+          ret += m.move_hash_to_s + " :"
+          ret += "\n" if (i+1) % 4 == 0
+        }
+        ret += "\n"
+      }
+      return ret
+    }
     ret = "board :\n"
-    # obj は hash
       # obj['board'] は array. その要素はhash
-    ret += obj['board'].map{|bh| bh.to_a_with_order([:bid,:turn,:board,:black,:white]).join(',') }.join("\n")
+    ret += obj['board'].map(&:board_hash_to_s).join("\n")
 
     ret += "\nnextMoves :\n"
-    nmgrp = obj['nextMoves'].group_by{|m| m[:bid] }.sort
-    nmgrp.each{|bid, moves|
-      ret += moves.map{|bh| bh.to_a_with_order([:bid,:mid,:m_from,:m_to,:piece,:promote,:nxt_bid]).join(',') }.join("::")
-      ret += "\n"
-    }
+    ret += moves_tos.call(obj, ret, 'nextMoves')
 
     ret += "\nprevMoves :\n"
-    nmgrp = obj['prevMoves'].group_by{|m| m[:bid] }.sort
-    nmgrp.each{|bid, moves|
-      ret += moves.map{|bh| bh.to_a_with_order([:bid,:mid,:m_from,:m_to,:piece,:promote,:nxt_bid]).join(',') }.join("::")
-      ret += "\n"
-    }
-      ret
+    ret += moves_tos.call(obj, ret, 'prevMoves')
   end
   
   #

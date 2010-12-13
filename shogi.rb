@@ -5,14 +5,6 @@ require 'json'
 require 'lib/db_accessor.rb'
 require 'lib/gpsclient.rb'
 
-  class Hash
-    # keyの配列を渡すと、その順に並べたvalueの配列を返す
-    # 値の存在しないkeyが含まれると、その場所にはnilがはいる
-    def to_a_with_order(ary)
-      ary.inject([]){|res, e| res.push self[e].to_s }
-    end
-  end
-
 configure do
   LOGGER = Logger.new("log/sinatra.log") 
   LOGGER2 = Logger.new('log/shogi.log')

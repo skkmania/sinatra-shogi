@@ -43,3 +43,15 @@ describe Store, "は#update を実行したとき" do
     }.should change(@store, :size)
   end
 end
+
+describe Store, "は#read_from_db を実行したとき" do
+  before do
+    @store = Store.new(SpecLog)
+    @dummy = {1 => {}, 2 => {}}
+  end
+  it "サイズが変わる" do
+    lambda {
+      @store.read_from_db @dummy
+    }.should change(@store, :size)
+  end
+end
