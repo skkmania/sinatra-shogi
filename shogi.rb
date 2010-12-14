@@ -3,7 +3,6 @@ require 'sinatra'
 require 'msgpack'
 require 'json'
 require 'lib/db_accessor.rb'
-require 'lib/gpsclient.rb'
 
 configure do
   LOGGER = Logger.new("log/sinatra.log") 

@@ -3,7 +3,6 @@
 #
 #  store.rb
 #
-require 'pseudo_wave.rb'
 require 'lib/db_accessor.rb'
 
 class Store < Hash

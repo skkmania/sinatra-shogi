@@ -206,6 +206,7 @@ if $0 == __FILE__
   host = '0.0.0.0'
   port = 8081
   $wave = Wave.new
+  $gpsclient = GpsClient.new
   
   $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
   $server.attach(Rev::Loop.default)
