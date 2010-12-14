@@ -3,9 +3,10 @@
 
 require 'rubygems'
 require 'lib/rev/websocket'
+require 'lib/gpsclient.rb'
 require 'logger'
 
-Log = Logger.new("log/pseudo-wave.log")
+Log = Logger.new("log/pseudo_wave.log")
 
 class PubSub
 	def initialize
