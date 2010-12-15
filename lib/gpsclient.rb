@@ -15,8 +15,17 @@ class GpsClient < GpsShogi
     super config
     #@gps    = GpsShogi.new(config)
   end
-  attr_accessor :status, :store
+  attr_accessor :status, :store, :board
     
+  def make_delta
+  end
+
+  def send_delta
+  end
+
+  def read_state
+  end
+
   def send(move)
     super(move)
     @status = 'sent'

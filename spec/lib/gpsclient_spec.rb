@@ -34,8 +34,14 @@ describe GpsClient, "は初期化されたとき" do
   it "のstore プロパティをもつ" do
     @gpsclient.store.should_not be_nil
   end
+
+  it "のboard プロパティをもつ" do
+    @gpsclient.board.should_not be_nil
+  end
 end
 
+describe GpsClient, "は#make_deltaしたあと" do
+end
 describe GpsClient, "は#sendしたあと" do
   before(:all) do
     @gpsclient = GpsClient.new($gps_config)
