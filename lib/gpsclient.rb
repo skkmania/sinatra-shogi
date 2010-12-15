@@ -1,10 +1,17 @@
+# -*- coding: utf-8 -*-
+# vim: set fileencoding=utf-8 :
+#
+#  gpsclient.rb
+#
 require 'rb_gpsshogi.rb'
 require 'lib/store.rb'
+require 'lib/shogi_model.rb'
 
 class GpsClient < GpsShogi
   def initialize(config)
     @status = nil
     @store  = Store.new
+    @board  = Board.new
     super config
     #@gps    = GpsShogi.new(config)
   end
