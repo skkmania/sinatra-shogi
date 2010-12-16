@@ -279,9 +279,10 @@ class DbAccessor
       ret['prevMoves'] = [{"promote"=> @promote, "m_from"=> @from, "m_to"=> @to, "bid"=> @bid, "nxt_bid"=> new_bid.to_s, "mid"=> new_mid.to_s, "piece"=> @piece}]
          # わざとすべて文字列の値としている
       @logger.debug { "returning hash : #{ret.inspect}" } 
-      packed_ret = ret.to_msgpack
-      @logger.debug { "ret.msgpack : #{packed_ret}" } 
-      return packed_ret
+      return ret
+      #packed_ret = ret.to_msgpack
+      #@logger.debug { "ret.msgpack : #{packed_ret}" } 
+      #return packed_ret
     else
       # 既存の局面だった場合(midはregist_boardの答えには含まれない）
       @bid = new_bid

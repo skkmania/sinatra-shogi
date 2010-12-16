@@ -64,12 +64,14 @@ end
 # パラメータ：board, moveの情報
 # 機能：DBにそれらを登録
 post '/bid' do
-    logger2.debug { '-------  into post bid --------' }
-    logger2.debug { 'params : ' + params.inspect }
+  logger2.debug { '-------  into post bid --------' }
+  logger2.debug { 'params : ' + params.inspect }
   da = DbAccessor.new( params, logger2 )
   body = da.regist_board
-    logger2.debug { 'response.body : ' + MessagePack.unpack(body).inspect }
-  r = Sinatra::Response.new(body,200,{"Content-Type" => "text/plain"})
+  logger2.debug { 'response.body : ' + body.inspect }
+  #logger2.debug { 'response.body : ' + MessagePack.unpack(body).inspect }
+  r = Sinatra::Response.new(body.to_msgpack,
+                            200,{"Content-Type" => "text/plain"})
   r.finish
 end
 
