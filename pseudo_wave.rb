@@ -1,6 +1,9 @@
-# vim: set expandtab ts=2 :
-# WebSocket pseudo wave server
-
+# -*- coding: utf-8 -*-
+# vim: set ts=2 :
+#
+#  pseudo_wave.rb
+#	WebSocket pseudo wave server
+#
 require 'rubygems'
 require 'lib/rev/websocket'
 require 'lib/gpsclient.rb'
@@ -171,9 +174,9 @@ class PseudoWaveConnection < Rev::WebSocket
 			send_message data
 		}
 		$record.each {|data| send_message data }
-    #open_msg = $wave.state.toString
+		#open_msg = $wave.state.toString
 		#Log.debug "sending open message : #{open_msg}"
-    #send_message open_msg
+		#send_message open_msg
 	end
 
 	def on_message(data)
@@ -187,6 +190,11 @@ class PseudoWaveConnection < Rev::WebSocket
         Log.debug "reset request arrived : #{data}"
         $wave.state.clear
         $pubsub.publish('reset state')
+      when /^gpsc/
+        # gpsclientとして参加しているクライアントはstateの先頭は必ず
+        # gpsc|_!!として送ること
+        $wave.state.fromString(data)
+        $gpsclient.accept($wave.state)
       else
         $wave.state.fromString(data)
         Log.debug "read state done : #{$wave.state.inspect}"
