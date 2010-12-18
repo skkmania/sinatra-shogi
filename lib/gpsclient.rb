@@ -4,44 +4,46 @@
 #  gpsclient.rb
 #
 require 'rb_gpsshogi.rb'
-require 'lib/store.rb'
 require 'lib/shogi_model.rb'
-require 'lib/db_accessor.rb'
 
 class GpsClient < GpsShogi
-  def initialize(config)
+  def initialize(wave, config)
+    @wave   = wave
     @status = nil
-    @store  = Store.new
     @board  = Board.new
-    @dba    = DbAccessor.new
     super config
-    @th = read_thread
+    @th     = read_thread
   end
   attr_accessor :status, :store, :board
 
   def read_thread
     Thread.start do
       while line = read
-        @board.apply(line)
-        if find_move(line)
-          send_delta(make_delta(line))
-        else
-          result = regist_board(@board)
-          send_delta(make_delta(result))
-        end
+        delta = @board.apply(line)
+        send_delta(merge_delta(delta))
       end
     end
   end
 
   # WebSocketServerからstateを受け取る    
   def accept(state)
-    send(state.get_move)
+    send(to_csa(state))
   end
 
-  def make_delta
+  #
+  #  to_csa
+  #
+  def to_csa
   end
 
-  def send_delta
+  #
+  # 入力：stateにmergeしてほしいHash
+  # 出力：
+  def merge_delta
+  end
+
+  def send_delta(data)
+    @wave.state.submitDelta(data)
   end
 
   def read_state

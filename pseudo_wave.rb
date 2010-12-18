@@ -165,22 +165,22 @@ class Wave::State < Hash
 end
 
 class PseudoWaveConnection < Rev::WebSocket
-	def on_open
-		@host = peeraddr[2]
-		Log.debug "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
-		# send_message
+  def on_open
+    @host = peeraddr[2]
+    Log.debug "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
+    # send_message
+    
+    @sid = $pubsub.subscribe {|data|
+    	send_message data
+    }
+    $record.each {|data| send_message data }
+    #open_msg = $wave.state.toString
+    #Log.debug "sending open message : #{open_msg}"
+    #send_message open_msg
+  end
 
-		@sid = $pubsub.subscribe {|data|
-			send_message data
-		}
-		$record.each {|data| send_message data }
-		#open_msg = $wave.state.toString
-		#Log.debug "sending open message : #{open_msg}"
-		#send_message open_msg
-	end
-
-	def on_message(data)
-		Log.debug "state received: '#{data}'"
+  def on_message(data)
+    Log.debug "state received: '#{data}'"
     case data
       when /^sync/
         Log.debug "sync request arrived : #{data}"
@@ -194,27 +194,27 @@ class PseudoWaveConnection < Rev::WebSocket
         # gpsclientとして参加しているクライアントはstateの先頭は必ず
         # gpsc|_!!として送ること
         $wave.state.fromString(data)
-        $gpsclient.accept($wave.state)
+        $gpsclient.accept(self, $wave.state)
       else
         $wave.state.fromString(data)
         Log.debug "read state done : #{$wave.state.inspect}"
         $pubsub.publish($wave.state.toString)
     end
-	end
+  end
 
-	def on_close
-		Log.debug "connection closed: <#{@host}>"
+  def on_close
+    Log.debug "connection closed: <#{@host}>"
 
-		$pubsub.unsubscribe(@sid)
-		$pubsub.publish("msg:bye, I'm closing...")
-	end
+    $pubsub.unsubscribe(@sid)
+    $pubsub.publish("msg:bye, I'm closing...")
+  end
 end
 
 if $0 == __FILE__
   host = '0.0.0.0'
   port = 8081
   $wave = Wave.new
-  $gpsclient = GpsClient.new
+  $gpsclient = GpsClient.new($wave)
   
   $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
   $server.attach(Rev::Loop.default)

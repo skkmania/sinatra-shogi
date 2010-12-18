@@ -3,7 +3,7 @@
 #
 #  store_spec.rb
 #
-require 'lib/store.rb'
+#require 'lib/store.rb'
 require 'pseudo_wave.rb'
 
 SpecLog = Logger.new('log/store_spec.log')
@@ -36,11 +36,12 @@ end
 describe Store, "は#update_store を実行したとき" do
   before do
     @store = Store.new(SpecLog)
+    @store.update_store
   end
-  it "サイズが変わる" do
-    lambda {
-      @store.update_store
-    }.should change(@store, :size)
+  it "board, nextMoves, prevMoves 各キーの値を持つ" do
+    @store['board'].size.should >= 1
+    @store['nextMoves'].size.should >= 1
+    @store['prevMoves'].size.should >= 1
   end
 end
 
@@ -53,5 +54,19 @@ describe Store, "は#read_from_db を実行したとき" do
     lambda {
       @store.read_from_db @dummy
     }.should change(@store, :size)
+  end
+end
+
+describe Store, "は#get_section を実行したとき" do
+  before do
+    @store = Store.new(SpecLog)
+    @store.update_store
+    @result = @store.get_section @store.current_bid
+  end
+  it "返り値resultはbid,board,next,prev 各キーの値を持つ" do
+    @result['bid'].size.should >= 1
+    @result['board'].size.should >= 1
+    @result['next'].size.should >= 1
+    @result['prev'].size.should >= 1
   end
 end
