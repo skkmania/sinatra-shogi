@@ -61,7 +61,8 @@ describe Store, "は#get_section を実行したとき" do
   before do
     @store = Store.new(SpecLog)
     @store.update_store
-    @result = @store.get_section @store.current_bid
+    @move = Move.new [77,76,'P',false]
+    @result = @store.get_section @store.current_bid, @move
   end
   it "返り値resultはbid,board,next,prev 各キーの値を持つ" do
     @result['bid'].size.should >= 1

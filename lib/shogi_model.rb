@@ -5,16 +5,16 @@
 #
 require 'lib/store.rb'
 class Board
-  @@initial_board_string =
+  Board::Initial_board_string =
    'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL';
   def self.initial_board_string
-    @@initial_board_string
+    Board::Initial_board_string
   end
 
   def initialize
     @store  = Store.new
     @bid   = 1
-    @board = @@initial_board_string
+    @board = Board::Initial_board_string.clone
     @black = ''
     @white = ''
     @turn  = true
@@ -31,20 +31,63 @@ class Board
     ret = {}
     @turn = !@turn
     ret['turn'] = (@turn ? 't' : 'f')
-    move = Move.new.parse_csa(self, line)
+    move = Move.new
+    move.parse_csa(self, line)
+    _apply(move)
     ret.merge! @store.get_section @bid, move
     ret
   end
 
   #
-  #  get_piece(index)
+  #  get_piece(pairdec)
   #    盤上の駒の文字を取得する
   #    入力: 2桁の数字 7六 -> 76
   #    出力: 文字
   #
-  def get_piece(index)
-    x, y = index.divmod 10
-    self.board[(x-1)*9 + y - 1].chr
+  def get_piece(pairdec)
+    @board[pairdec2index(pairdec)].chr
+  end
+
+  #private
+  #
+  #  _apply(move)
+  #
+  def _apply(move)
+    players_stand  = (move[:piece].upcase == move[:piece] ? @black : @white)
+    destination_piece = @board[pairdec2index(move[:m_to])].chr
+    case
+      when move.from_hand # 持ち駒を打つとき
+        players_stand.sub! move[:piece], ''
+        @board[pairdec2index(move[:m_to])] = move[:piece]
+      when move.on_board  # 盤上の指し手
+        if destination_piece != 'x'  # 駒をとる
+           players_stand += destination_piece.swapcase
+        end 
+        if move[:promote]   # 成り
+          @board[pairdec2index(move[:m_to])] = move.promoted_piece
+        else                # 成りではない
+          @board[pairdec2index(move[:m_to])] = move[:piece]
+        end
+        @board[pairdec2index(move[:m_from])] = 'x'
+    end
+  end
+
+  # pairdec とは7六 -> 76のように盤の符号を10進の数字にしたもの
+  #    入力: 2桁の数字 7六 -> 76
+  #    出力: [7,6]のように符号を数字の組pairにして配列にして返す
+  def pairdec2pair(pairdec)
+    pairdec.divmod 10
+  end
+
+  # pair2index とは7六 -> [7,6]のように盤の符号数字の配列を
+  #  @board文字列のindexに変換して返す(0始まり。1一が0)
+  #    入力: [7,6]のように符号を数字の組pairにした配列
+  #    出力: 数字
+  def pair2index(x, y)
+    (x-1)*9 + y - 1
+  end
+  def pairdec2index(pairdec)
+    pair2index(*pairdec2pair(pairdec))
   end
 end
 
@@ -63,6 +106,17 @@ class Move < Hash
               'UM' => 'h', 'RY' => 'd'}
   def self.pieces
     @@pieces
+  end
+  
+  @@promotes = {'p' => 'q', 'l' => 'm', 'n' => 'o', 's' => 't', 'r' => 'd', 'b' => 'h' }
+  @@un_promotes = {'q' => 'p', 'm' => 'l', 'o' => 'n', 't' => 's', 'd' => 'r', 'h' => 'b' }
+
+  def initialize(ary = [])
+    super
+    self[:m_from]  = ary[0]
+    self[:m_to]    = ary[1]
+    self[:piece]   = ary[2]
+    self[:promote] = ary[3]
   end
   #
   #  parse_csa
@@ -90,6 +144,22 @@ class Move < Hash
         'plnsbr'.index(self[:piece].downcase) then
                                     # 動かす前が成り駒でないとき
       self[:promote] = true  
+    end
+  end
+
+  def from_hand
+    self[:m_from] == 0
+  end
+
+  def on_board
+    self[:m_from] != 0
+  end
+
+  def promoted_piece
+    if self[:piece].downcase == self[:piece]
+      @@promotes[self[:piece].downcase]
+    else
+      @@promotes[self[:piece].downcase].upcase
     end
   end
 end

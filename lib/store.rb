@@ -41,6 +41,7 @@ class Store < Hash
   #    入力: bid 数値 targetとなるsectionのキーになるbid
   #    出力: Hash stateの元となるデータ
   def get_section(bid, move)
+    @logger.debug("into get_section with #{bid}, #{move.inspect}")
     ret = {}
     if target_bid = find_move(bid, move)
       ret['bid']   = target_bid
@@ -64,8 +65,8 @@ class Store < Hash
   #          nil      指し手が見つからなかったとき、nilを返す
   def find_move(bid, move)
     res = self['nextMoves'].select{|h| h[:bid] == bid }.find{|e|
-            (e[:m_from]  == move[:from]) &&
-            (e[:m_to]    == move[:to]) &&
+            (e[:m_from]  == move[:m_from]) &&
+            (e[:m_to]    == move[:m_to]) &&
             (e[:piece]   == move[:piece]) &&
             (e[:promote] == move[:promote])
       }

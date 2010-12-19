@@ -17,27 +17,79 @@ describe Board, "は初期化されたとき" do
 
 end
 
-describe Board, "はmoveを#applyしたあと" do
+describe Board, "は初期盤面に'+7776FU\n'を#applyしたあと" do
   before(:all) do
     @board = Board.new
+    @board.store.update_store
+    @board.apply "+7776FU\n"
   end
 
   after(:all) do
   end
 
-  it "のturn は変化する" do
-    lambda{
-      @board.apply "+7776FU\n"
-    }.should change(@board, :turn)
+  it "のturn はfalseになる" do
+    @board.turn.should == false
   end
-
+  it "の76のpieceは'P'になる" do
+    @board.get_piece(76).should == 'P'
+  end
+  it "の77のpieceは'x'になる" do
+    @board.get_piece(77).should == 'x'
+  end
 end
 
-describe Move, "はcsa形式文字列を与えられると" do
+describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyしたあと" do
   before(:all) do
     @board = Board.new
+    @board.store.update_store
+    @board.apply "+7776FU\n"
+    @board.apply "-3334FU\n"
+    @board.apply "+8822UM\n"
   end
+
+  after(:all) do
+  end
+
+  it "のturn はtrueになる" do
+    @board.turn.should == true
+  end
+  it "の76のpieceは'P'になる" do
+    @board.get_piece(76).should == 'P'
+  end
+  it "の77のpieceは'x'になる" do
+    @board.get_piece(77).should == 'x'
+  end
+  it "の34のpieceは'p'になる" do
+    @board.get_piece(34).should == 'p'
+  end
+  it "の33のpieceは'x'になる" do
+    @board.get_piece(33).should == 'x'
+  end
+  it "の88のpieceは'x'になる" do
+    @board.get_piece(88).should == 'x'
+  end
+  it "の22のpieceは'H'になる" do
+    @board.get_piece(22).should == 'H'
+  end
+  it "の先手の持駒はは'B'になる" do
+    @board.black.should == 'B'
+  end
+end
+
+describe Move, "のpromoteをテストする" do
+  it "pのpromoteは" do
+    m = Move.new [77, 76, 'p', true]
+    m.promoted_piece.should == 'q'
+  end
+  it "Pのpromoteは" do
+    m = Move.new [77, 76, 'P', true]
+    m.promoted_piece.should == 'Q'
+  end
+end
+
+describe Move, "は初期盤面とcsa形式文字列を与えられると" do
   before do
+    @board = Board.new
     @move  = Move.new
   end
   it "'+7776FU'に対して" do
