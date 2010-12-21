@@ -72,7 +72,7 @@ describe Store, "は#complement を実行したとき" do
   end
 end
 
-describe Store, "は#get_section を実行したとき" do
+describe Store, "は#get_section 1 を実行したとき" do
   before do
     @store = Store.new(SpecLog)
     @store.update_store
@@ -80,9 +80,9 @@ describe Store, "は#get_section を実行したとき" do
     @result = @store.get_section 1
   end
   it "返り値resultはbid,board,next,prev 各キーの値を持つ" do
-    @result['bid'].size.should >= 1
-    @result['board'].size.should >= 1
+    @result['bid'].should == 1
+    @result['board'][0][:board].should == Board.initial_board_string
     @result['next'].size.should >= 1
-    @result['prev'].size.should >= 1
+    @result['prev'].size.should == 0
   end
 end

@@ -42,9 +42,9 @@ describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyした�
   before(:all) do
     @board = Board.new
     @board.store.update_store
-    @board.apply "+7776FU\n"
-    @board.apply "-3334FU\n"
-    @board.apply "+2726FU\n"
+    @res = @board.apply "+7776FU\n"
+    @res = @board.apply "-3334FU\n"
+    @res = @board.apply "+2726FU\n"
   end
 
   after(:all) do
@@ -70,6 +70,12 @@ describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyした�
   end
   it "の26のpieceは'P'になる" do
     @board.get_piece(26).should == 'P'
+  end
+
+  it "返り値のHashにはdeltaの種のデータがはいっている" do
+    @res['board'].size >= 1
+    @res['prev'].size >= 1
+    @res['next'].size >= 0
   end
 end
 

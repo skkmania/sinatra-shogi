@@ -1,4 +1,4 @@
-require 'gpsclient.rb'
+require 'pseudo_wave.rb'
 
 $gps_config = { :initial_filename => "bin/csa.init",
              :opponent => "skkmania",
@@ -15,10 +15,11 @@ $gps_config = { :initial_filename => "bin/csa.init",
              :other_options => "",
              :base_command => 'bin/gpsshogi -v -c'
            }
+GpsLog = Logger.new('log/gpsclient_spec.log')
 
 describe GpsClient, "は初期化されたとき" do
   before(:all) do
-    @gpsclient = GpsClient.new($gps_config)
+    @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
   end
 
   after(:all) do
@@ -31,10 +32,6 @@ describe GpsClient, "は初期化されたとき" do
     @gpsclient.status.should be_nil
   end
 
-  it "のstore プロパティをもつ" do
-    @gpsclient.store.should_not be_nil
-  end
-
   it "のboard プロパティをもつ" do
     @gpsclient.board.should_not be_nil
   end
@@ -42,9 +39,10 @@ end
 
 describe GpsClient, "は#make_deltaしたあと" do
 end
-describe GpsClient, "は#sendしたあと" do
+
+describe GpsClient, "はバイナリに対して#sendしたあと" do
   before(:all) do
-    @gpsclient = GpsClient.new($gps_config)
+    @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
     sleep 1
     @gpsclient.send "+7776FU\n"
     sleep 1
@@ -56,13 +54,22 @@ describe GpsClient, "は#sendしたあと" do
     puts 'toryo done.'
   end
 
-  it "のstatus はsentである" do
-    @gpsclient.status.should == 'sent'
+  it "のstatus はsent_to_binaryである" do
+    @gpsclient.status.should == 'sent_to_binary'
   end
 
-  it "gpsclientからのレスポンスを読むことができる" do
-    res = @gpsclient.read
-    puts res
-    res.should_not be_nil
+  it "gpsclientからのレスポンスを読んでいる" do
+    @gpsclient.status.should == 'delta_sent'
+  end
+
+  it "再度バイナリに対して#sendしたあと" do
+    @gpsclient.send "+7675FU\n"
+    sleep 1
+    @gpsclient.status.should == 'sent_to_binary'
+    sleep 3
+  end
+
+  it "gpsclientからのレスポンスを読んでいる" do
+    @gpsclient.status.should == 'delta_sent'
   end
 end

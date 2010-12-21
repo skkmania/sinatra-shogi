@@ -11,7 +11,8 @@ class Board
     Board::Initial_board_string
   end
 
-  def initialize
+  def initialize(logger=Logger.new('log/board.log'))
+    @blogger = logger
     @store  = Store.new
     @bid   = 1
     @board = Board::Initial_board_string.clone
@@ -28,6 +29,7 @@ class Board
   #  入力: line 文字列 CSA形式の指し手文字列 例：+7776FU
   #  出力: delta Wave::StateにsubmitできるHash
   def apply(line)
+    @blogger.debug("entered in apply with #{line}")
     ret = {}
     @turn = !@turn
     ret['turn'] = (@turn ? 't' : 'f')
@@ -37,6 +39,7 @@ class Board
     _apply(move)
     @bid = (@store.complement(self, move))[0].bid
     ret.merge! @store.get_section @bid
+    @blogger.debug("leaving from apply with #{ret.inspect}")
     ret
   end
 
