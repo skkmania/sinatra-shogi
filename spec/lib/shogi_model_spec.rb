@@ -44,14 +44,14 @@ describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyした�
     @board.store.update_store
     @board.apply "+7776FU\n"
     @board.apply "-3334FU\n"
-    @board.apply "+8822UM\n"
+    @board.apply "+2726FU\n"
   end
 
   after(:all) do
   end
 
-  it "のturn はtrueになる" do
-    @board.turn.should == true
+  it "のturn はfalseになる" do
+    @board.turn.should == false
   end
   it "の76のpieceは'P'になる" do
     @board.get_piece(76).should == 'P'
@@ -65,14 +65,11 @@ describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyした�
   it "の33のpieceは'x'になる" do
     @board.get_piece(33).should == 'x'
   end
-  it "の88のpieceは'x'になる" do
-    @board.get_piece(88).should == 'x'
+  it "の27のpieceは'x'になる" do
+    @board.get_piece(27).should == 'x'
   end
-  it "の22のpieceは'H'になる" do
-    @board.get_piece(22).should == 'H'
-  end
-  it "の先手の持駒はは'B'になる" do
-    @board.black.should == 'B'
+  it "の26のpieceは'P'になる" do
+    @board.get_piece(26).should == 'P'
   end
 end
 
@@ -94,22 +91,22 @@ describe Move, "は初期盤面とcsa形式文字列を与えられると" do
   end
   it "'+7776FU'に対して" do
     @move.parse_csa(@board, '+7776FU')
-    @move.should == {:turn => true,
+    @move.should == {:bid => 1, :turn => true,
        :m_from => 77, :m_to => 76, :piece => 'P', :promote => false }
   end
   it "'-3334FU'に対して" do
     @move.parse_csa(@board, '-3334FU')
-    @move.should == {:turn => false,
+    @move.should == {:bid => 1, :turn => false,
        :m_from => 33, :m_to => 34, :piece => 'p', :promote => false }
   end
   it "'+2822RY'に対して" do
     @move.parse_csa(@board, '+2822RY')
-    @move.should == {:turn => true,
+    @move.should == {:bid => 1, :turn => true,
        :m_from => 28, :m_to => 22, :piece => 'R', :promote => true }
   end
   it "'+9993KY'に対して" do
     @move.parse_csa(@board, '+9993KY')
-    @move.should == {:turn => true,
+    @move.should == {:bid => 1, :turn => true,
        :m_from => 99, :m_to => 93, :piece => 'L', :promote => false }
   end
 end

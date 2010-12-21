@@ -33,8 +33,9 @@ class Board
     ret['turn'] = (@turn ? 't' : 'f')
     move = Move.new
     move.parse_csa(self, line)
+    move[:bid] = @bid
     _apply(move)
-    @bid = @store.complement(self, move)[0].bid
+    @bid = (@store.complement(self, move))[0].bid
     ret.merge! @store.get_section @bid
     ret
   end
@@ -94,12 +95,12 @@ end
 
 
   #  Moveオブジェクト DB上のmoveの形式
-  #          例： +7776FU  ->  [:bid => 適用する前のbid,
+  #          例： +7776FU  ->  [:bid => 適用対象のBoardのbid,
   #                             :m_from => 77,
   #                             :m_to   => 76,
   #                             :piece  => 'P',
   #                             :promote => false,
-  #                             :nxt_bid =>  適用した後のbid]
+  #                             :nxt_bid =>  適用後のBoardのbid]
 class Move < Hash
   @@pieces = {'FU' => 'p', 'KY' => 'l', 'KE' => 'n', 'GI' => 's',
               'KI' => 'g', 'OU' => 'k', 'HI' => 'r', 'KA' => 'b',
