@@ -46,16 +46,17 @@ class Store < Hash
   def complement(board, move)
     @logger.debug("into complement with #{board.inspect}, #{move.inspect}")
     if move = find_move(move)
-      board['bid']   = move[:nxt_bid]
+      board.bid = move[:nxt_bid]
     else
       @dba.read_params(board) # regist_boardのためのパラメータ渡し
         # ただし、これで本当によいか確認が必要 2010.12.21
       result = @dba.regist_board
-      board['bid']   = result['board'][0][:bid]
-      move           = result['prevMoves'][0]
+      board.bid  = result['board'][0][:bid]
+      move       = result['prevMoves'][0]
       self.merge! result # ここは怪しい！！
         # regist_boardの返り値とStoreの構造って同じだっけ？？
     end
+    @logger.debug("leaving complement with #{board.inspect}, #{move.inspect}")
     return [board, move]
   end
   #
@@ -77,9 +78,10 @@ class Store < Hash
   #  find_move
   #    Storeの中から指し手を探す
   #    入力: move : 探したい指し手のMove オブジェクト
-  #    出力: bid 数値 指し手が見つかったとき、その指し手のnxt_bidを返す
-  #          nil      指し手が見つからなかったとき、nilを返す
+  #    出力: Move オブジェクト 見つかったとき、その指し手
+  #          nil  指し手が見つからなかったとき、nilを返す
   def find_move(move)
+    @logger.debug("into find_move with #{move.inspect}")
     res = self['nextMoves'].select{|h| h[:bid] == move[:bid] }.find{|e|
             (e[:m_from]  == move[:m_from]) &&
             (e[:m_to]    == move[:m_to]) &&
@@ -87,8 +89,10 @@ class Store < Hash
             (e[:promote] == move[:promote])
       }
     if res
-      return res[:nxt_bid]
+      @logger.debug("leaving complement with #{res.inspect}")
+      return res
     else
+      @logger.debug("leaving complement with nil")
       return nil
     end
   end
