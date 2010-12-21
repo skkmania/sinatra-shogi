@@ -57,12 +57,26 @@ describe Store, "は#read_from_db を実行したとき" do
   end
 end
 
+describe Store, "は#complement を実行したとき" do
+  before do
+    @store = Store.new(SpecLog)
+    @store.update_store
+    @board = Board.new
+    @move = Move.new [77,76,'P',false]
+    @board, @move = @store.complement @board, @move
+  end
+  it "返り値@moveはmid,nxt_bid 各キーの値を持つ" do
+    @move['mid'].size.should >= 1
+    @move['nxt_bid'].size.should >= 1
+  end
+end
+
 describe Store, "は#get_section を実行したとき" do
   before do
     @store = Store.new(SpecLog)
     @store.update_store
     @move = Move.new [77,76,'P',false]
-    @result = @store.get_section @store.current_bid, @move
+    @result = @store.get_section @store.current_bid
   end
   it "返り値resultはbid,board,next,prev 各キーの値を持つ" do
     @result['bid'].size.should >= 1

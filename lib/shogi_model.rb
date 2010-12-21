@@ -19,7 +19,7 @@ class Board
     @white = ''
     @turn  = true
   end
-  attr_accessor :store, :board, :black, :white, :turn
+  attr_accessor :store, :bid, :board, :black, :white, :turn
 
   #
   #  apply(line)
@@ -34,7 +34,8 @@ class Board
     move = Move.new
     move.parse_csa(self, line)
     _apply(move)
-    ret.merge! @store.get_section @bid, move
+    @bid = @store.complement(self, move)[0].bid
+    ret.merge! @store.get_section @bid
     ret
   end
 
@@ -135,6 +136,7 @@ class Move < Hash
   #
   def parse_csa(board, line)
     line.chomp!
+    self[:bid]    = board.bid
     self[:turn]   = (line[0] == '+'[0])
     self[:m_from] = line[1,2].to_i
     self[:m_to]   = line[3,4].to_i

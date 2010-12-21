@@ -37,34 +37,50 @@ class Store < Hash
     self.merge! data
   end
   #
-  #  get_section
-  #    入力: bid 数値 targetとなるsectionのキーになるbid
-  #    出力: Hash stateの元となるデータ
-  def get_section(bid, move)
-    @logger.debug("into get_section with #{bid}, #{move.inspect}")
-    ret = {}
-    if target_bid = find_move(bid, move)
-      ret['bid']   = target_bid
-      ret['board'] = self['board'].select{|h| h[:bid] == target_bid }
-      ret['next']  = self['nextMoves'].select{|h| h[:bid] == target_bid }
-      ret['prev']  = self['prevMoves'].select{|h| h[:bid] == target_bid }
+  #  complement(board, move)
+  #    機能：情報の足りないBoard,Moveオブジェクトを受け取り補完して返す
+  #          副作用としてStoreをupdateする
+  #    入力: board Boardオブジェクト bidが足りない
+  #        : move  Moveオブジェクト  mid, nxt_bidが足りない
+  #    出力: 上記オブジェクト
+  def complement(board, move)
+    @logger.debug("into complement with #{board.inspect}, #{move.inspect}")
+    if move = find_move(move)
+      board['bid']   = move[:nxt_bid]
     else
-      result = @dba.regist_board(board)
-      ret['bid']   = result['board'][0][:bid]
-      ret = result
+      @dba.read_params(board) # regist_boardのためのパラメータ渡し
+        # ただし、これで本当によいか確認が必要 2010.12.21
+      result = @dba.regist_board
+      board['bid']   = result['board'][0][:bid]
+      move           = result['prevMoves'][0]
       self.merge! result # ここは怪しい！！
+        # regist_boardの返り値とStoreの構造って同じだっけ？？
     end
-    ret
+    return [board, move]
   end
+  #
+  #  get_section(bid)
+  #    機能: 指定されたbidのsectionを返す
+  #    入力: bid 数値
+  #    出力: sectionを表すHash
+  def get_section(bid)
+    ret = {}
+    ret['bid']   = bid
+    ret['board'] = self['board'].select{|h| h[:bid] == bid }
+    ret['next']  = self['nextMoves'].select{|h| h[:bid] == bid }
+    ret['prev']  = self['prevMoves'].select{|h| h[:bid] == bid }
+        # これでよい？nxt_bid?
+    return ret
+  end
+  
   #
   #  find_move
   #    Storeの中から指し手を探す
-  #    入力: bid : 捜索対象のセクションのbid
-  #        : move : 探したい指し手のMove オブジェクト
+  #    入力: move : 探したい指し手のMove オブジェクト
   #    出力: bid 数値 指し手が見つかったとき、その指し手のnxt_bidを返す
   #          nil      指し手が見つからなかったとき、nilを返す
-  def find_move(bid, move)
-    res = self['nextMoves'].select{|h| h[:bid] == bid }.find{|e|
+  def find_move(move)
+    res = self['nextMoves'].select{|h| h[:bid] == move[:bid] }.find{|e|
             (e[:m_from]  == move[:m_from]) &&
             (e[:m_to]    == move[:m_to]) &&
             (e[:piece]   == move[:piece]) &&
