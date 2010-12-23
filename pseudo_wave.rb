@@ -140,9 +140,13 @@ class Wave::State < Hash
     self.clear
   end
   def submitDelta(delta)
+    Log.debug("into submitDelta with #{delta.inspect}")
+    STDERR.puts "into submitDelta with #{delta.inspect}"
     self.merge! delta
     Log.debug "submitDelta : State changed. >> #{self.inspect}"
     publish
+    Log.debug("leaving submitDelta.")
+    STDERR.puts("leaving submitDelta.")
   end
   def submitValue(key, value)
     self[key] = value;

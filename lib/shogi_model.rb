@@ -39,7 +39,8 @@ class Board
     _apply(move)
     @bid = (@store.complement(self, move))[0].bid
     ret.merge! @store.get_section @bid
-    @blogger.debug("leaving from apply with #{ret.inspect}")
+    buf = ''
+    @blogger.debug("leaving from apply with #{PP::pp(ret,buf);buf}")
     ret
   end
 

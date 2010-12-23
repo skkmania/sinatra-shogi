@@ -62,6 +62,7 @@ class GpsShogi
   end
 
   def respawn
+    STDERR.puts  "into respawn"
     STDERR.puts  "SYSTEM:try respawn %s" % [@num_respawned]
     @logger.puts "SYSTEM:try respawn %s" % [@num_respawned] if @logger
     @num_respawned += 1
@@ -95,7 +96,9 @@ class GpsShogi
     STDERR.puts  "TGPS:%s%s" % [message, now]  # &ctime(time)
     @logger.puts "TGPS:%s%s" % [message, now] if @logger
     begin
+      STDERR.puts "in GpsShogi#send before write: io.writable? : #{@io.stat.writable?}" 
       @io.write message
+      STDERR.puts "written : #{message} to binary program" 
     rescue
       STDERR.puts "write failed: #$!"
       respawn()
@@ -103,14 +106,18 @@ class GpsShogi
   end
 
   def respawn_and_read
+    STDERR.puts "into respawn_and_read and going to call respawn"
     return nil unless respawn()
+    STDERR.puts "leaving respawn_and_read with calling read"
     return read()
   end
 
   def read
     line = ""
     begin
+      STDERR.puts "waiting prog_read : #{@io.stat.readable?}" 
       line = @io.gets
+      STDERR.puts "got line : size -> #{line.size}, line ->  #{line}" if line
     rescue
       STDERR.puts "prog_read failed: #$!" 
       return respawn_and_read()
@@ -121,7 +128,7 @@ class GpsShogi
       @logger.puts "FGPS:%s%s" % [line, now] if @logger
     else
       # nil means end of line
-      STDERR.puts "prog_read failed" 
+      STDERR.puts "prog_read failed : nil(EOL). going to respawn_and_read" 
       return respawn_and_read()
     end
     return line

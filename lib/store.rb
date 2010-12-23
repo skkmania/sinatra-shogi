@@ -44,20 +44,43 @@ class Store < Hash
   #        : move  Moveオブジェクト  mid, nxt_bidが足りない
   #    出力: 上記オブジェクト
   def complement(board, move)
-    @logger.debug("into complement with #{board.inspect}, #{move.inspect}")
-    if move = find_move(move)
-      board.bid = move[:nxt_bid]
+    buf = ''
+    @logger.debug("into complement with board : #{PP::pp board, buf}")
+    @logger.debug("into complement with move : #{move.inspect}")
+    if complemented_move = find_move(move)
+      board.bid = complemented_move[:nxt_bid]
     else
-      @dba.read_params(board) # regist_boardのためのパラメータ渡し
-        # ただし、これで本当によいか確認が必要 2010.12.21
-      result = @dba.regist_board
-      board.bid  = result['board'][0][:bid]
-      move       = result['prevMoves'][0]
-      self.merge! result # ここは怪しい！！
-        # regist_boardの返り値とStoreの構造って同じだっけ？？
+      #    みつからないときは、一度Storeをupdateしてから探し、それでも
+      #    みつからないときに、nilを返す
+      @current_bid = move[:bid]
+      update_store
+      if complemented_move = find_move(move)
+        board.bid = complemented_move[:nxt_bid]
+      else
+        params =
+         {'board'	=> board.board,
+  	'black' => board.black,
+  	'white' => board.white,
+  	'turn'  => board.turn,
+  	'from'  => move[:m_from],
+  	'to'    => move[:m_to],
+  	'piece' => move[:piece],
+  	'promote' => move[:promote],
+  	'oldbid' => move[:bid],
+  	'mask'	=> 7,
+  	'level'	=> 3,
+  	'range' => 'full'}
+        @dba.read_params(params) # regist_boardのためのパラメータ渡し
+          # ただし、これで本当によいか確認が必要 2010.12.21
+        result = @dba.regist_board
+        board.bid         = result['board'][0][:bid]
+        complemented_move = result['prevMoves'][0]
+        self.merge! result # ここは怪しい！！
+          # regist_boardの返り値とStoreの構造って同じだっけ？？
+      end
     end
     @logger.debug("leaving complement with #{board.inspect}, #{move.inspect}")
-    return [board, move]
+    return [board, complemented_move]
   end
   #
   #  get_section(bid)

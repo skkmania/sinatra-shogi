@@ -1,5 +1,13 @@
 require 'pseudo_wave.rb'
 
+  host = '0.0.0.0'
+  port = 8081
+  $wave = Wave.new
+  
+  $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
+  $server.attach(Rev::Loop.default)
+  Log.debug "start on #{host}:#{port}"
+  
 $gps_config = { :initial_filename => "bin/csa.init",
              :opponent => "skkmania",
              :sente => false,
@@ -13,18 +21,19 @@ $gps_config = { :initial_filename => "bin/csa.init",
              :byoyomi => 60,
              :logfile_basename => "bin/logs/x1_",
              :other_options => "",
-             :base_command => 'bin/gpsshogi -v -c'
+             :base_command => 'bin/gpsshogi -v -r -c' # random play for test
            }
 GpsLog = Logger.new('log/gpsclient_spec.log')
-
 describe GpsClient, "は初期化されたとき" do
   before(:all) do
     @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
+    @gpsclient.set_master_record "bin/csa.init"
+    sleep 2 # wait for program setup
   end
 
   after(:all) do
     @gpsclient.toryo
-    sleep 1
+    sleep 5 # wait for gpsshogi cooldown
     puts 'toryo done.'
   end
 
@@ -35,41 +44,47 @@ describe GpsClient, "は初期化されたとき" do
   it "のboard プロパティをもつ" do
     @gpsclient.board.should_not be_nil
   end
+  it "のboard.storeはupdateされている" do
+    @gpsclient.board.store.should_not be_nil
+  end
 end
 
-describe GpsClient, "は#make_deltaしたあと" do
-end
 
-describe GpsClient, "はバイナリに対して#sendしたあと" do
+describe GpsClient, "のacceptをテストする" do
   before(:all) do
     @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
-    sleep 1
-    @gpsclient.send "+7776FU\n"
-    sleep 1
+    @gpsclient.set_master_record "bin/csa.init"
+    sleep 2 # wait for program setup
+    @state = Hash.new
   end
 
   after(:all) do
     @gpsclient.toryo
-    sleep 1
+    sleep 5 # wait for gpsshogi cooldown
     puts 'toryo done.'
   end
 
-  it "のstatus はsent_to_binaryである" do
-    @gpsclient.status.should == 'sent_to_binary'
+  it "#accept {'move' => '+7776FU' }したあと,自身のboardにその手が反映されている" do
+    @state['move'] = "+7776FU"
+    @gpsclient.accept @state 
+    sleep 2
+    @gpsclient.board.get_piece(77).should == 'x'
+    @gpsclient.board.get_piece(76).should == 'P'
   end
 
-  it "gpsclientからのレスポンスを読んでいる" do
-    @gpsclient.status.should == 'delta_sent'
+  it "#accept {'move' => '+2726FU' }したあと,自身のboardにその手が反映されている" do
+    @gpsclient.send "+2726FU\n"
+    sleep 2
+    @gpsclient.board.get_piece(27).should == 'x'
+    @gpsclient.board.get_piece(26).should == 'P'
   end
 
-  it "再度バイナリに対して#sendしたあと" do
-    @gpsclient.send "+7675FU\n"
-    sleep 1
-    @gpsclient.status.should == 'sent_to_binary'
-    sleep 3
+
+  it "#accept {'move' => '+2625FU' }したあと,自身のboardにその手が反映されている" do
+    @gpsclient.send "+2625FU\n"
+    sleep 2
+    @gpsclient.board.get_piece(26).should == 'x'
+    @gpsclient.board.get_piece(25).should == 'P'
   end
 
-  it "gpsclientからのレスポンスを読んでいる" do
-    @gpsclient.status.should == 'delta_sent'
-  end
 end
