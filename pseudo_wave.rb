@@ -218,7 +218,22 @@ if $0 == __FILE__
   host = '0.0.0.0'
   port = 8081
   $wave = Wave.new
-  $gpsclient = GpsClient.new($wave)
+  $gps_config = { :initial_filename => "bin/csa.init",
+             :opponent => "skkmania",
+             :sente => false,
+             :black => "skkmania", 
+             :white => "gps",
+             :limit => 1600, 
+             :table_size => 30000,
+             :table_record_limit => 50,
+             :node_limit => 16000000,
+             :timeleft => 100, 
+             :byoyomi => 60,
+             :logfile_basename => "bin/logs/x1_",
+             :other_options => "",
+             :base_command => 'bin/gpsshogi -v -r -c' # random play for test
+           }
+  $gpsclient = GpsClient.new($wave, $gps_config)
   
   $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
   $server.attach(Rev::Loop.default)
