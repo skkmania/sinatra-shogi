@@ -36,9 +36,15 @@ class Board
     move = Move.new
     move.parse_csa(self, line)
     move[:bid] = @bid
+    @blogger.debug("#{line} is converted to Move object : #{move.inspect}")
     _apply(move)
     @bid = (@store.complement(self, move))[0].bid
-    ret.merge! @store.get_section @bid
+    buf = ''
+    @blogger.debug("@store became #{PP::pp(@store, buf);buf}")
+    @blogger.debug("@bid became : #@bid")
+    tmp = @store.get_section @bid
+    @blogger.debug("tmp : #{tmp.inspect}")
+    ret.merge! tmp
     buf = ''
     @blogger.debug("leaving from apply with #{PP::pp(ret,buf);buf}")
     ret
@@ -59,6 +65,10 @@ class Board
   #  _apply(move)
   #
   def _apply(move)
+    @blogger.debug("entered in _apply with #{move.inspect}")
+    @blogger.debug("@board : #{@board}")
+    @blogger.debug("@black : #{@black}")
+    @blogger.debug("@white : #{@white}")
     players_stand  = (move[:piece].upcase == move[:piece] ? @black : @white)
     destination_piece = @board[pairdec2index(move[:m_to])].chr
     case
@@ -76,6 +86,10 @@ class Board
         end
         @board[pairdec2index(move[:m_from])] = 'x'
     end
+    @blogger.debug("relieving from _apply with :")
+    @blogger.debug("@board : #{@board}")
+    @blogger.debug("@black : #{@black}")
+    @blogger.debug("@white : #{@white}")
   end
 
   # pairdec とは7六 -> 76のように盤の符号を10進の数字にしたもの

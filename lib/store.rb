@@ -20,6 +20,8 @@ class Store < Hash
   end
 
   def update_store(params=nil)
+    @logger.debug("into update_store")
+    @logger.debug("@current_bid is : #@current_bid")
     params = params ||
 	{'bid'	=> @current_bid,
 	'mask'	=> 7,
@@ -29,12 +31,14 @@ class Store < Hash
     @dba.set_masked_data_name
     @dba.determine_bid_range
     @dba.get_msg
-    @logger.debug(@dba.log_format @dba.gotten)
+    @logger.debug("after update : #{@dba.log_format @dba.gotten}")
     read_from_db @dba.gotten
   end
 
   def read_from_db(data)
     self.merge! data
+    buf = ''
+    @logger.debug("read_from_db : #{PP::pp self, buf}")
   end
   #
   #  complement(board, move)
@@ -48,10 +52,21 @@ class Store < Hash
     @logger.debug("into complement with board : #{PP::pp board, buf}")
     @logger.debug("into complement with move : #{move.inspect}")
     if complemented_move = find_move(move)
+      @logger.debug("move found : #{complemented_move.inspect}")
       board.bid = complemented_move[:nxt_bid]
+      @logger.debug("board.bid became  : #{board.bid}")
+      # nextMovesの中にみつかっても、sectionを持っているとは限らないので
+      # チェックして
+      if self['board'].select{|h| h[:bid] == board.bid }.empty?
+        # なければupdate_storeする
+        @current_bid = board.bid
+        update_store
+        # このときはregist_boardは必要ない。nextMovesにあるということは
+        # 新しい盤面は既にDBにあるということなので。
+      end
     else
       #    みつからないときは、一度Storeをupdateしてから探し、それでも
-      #    みつからないときに、nilを返す
+      #    みつからないときに、regist_boardしてsectionを得る
       @current_bid = move[:bid]
       update_store
       if complemented_move = find_move(move)
@@ -88,12 +103,16 @@ class Store < Hash
   #    入力: bid 数値
   #    出力: sectionを表すHash
   def get_section(bid)
+    @logger.debug("into get_section with #{bid}")
+    buf = ''
+    @logger.debug("self : #{PP::pp(self,buf);buf}")
     ret = {}
     ret['bid']   = bid
     ret['board'] = self['board'].select{|h| h[:bid] == bid }
     ret['next']  = self['nextMoves'].select{|h| h[:bid] == bid }
     ret['prev']  = self['prevMoves'].select{|h| h[:bid] == bid }
         # これでよい？nxt_bid?
+    @logger.debug("leaving get_section with #{ret.inspect}")
     return ret
   end
   
@@ -112,10 +131,10 @@ class Store < Hash
             (e[:promote] == move[:promote])
       }
     if res
-      @logger.debug("leaving complement with #{res.inspect}")
+      @logger.debug("leaving find_move with #{res.inspect}")
       return res
     else
-      @logger.debug("leaving complement with nil")
+      @logger.debug("leaving find_move with nil")
       return nil
     end
   end
