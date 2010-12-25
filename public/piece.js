@@ -1,4 +1,4 @@
-HOST = 'http://ubu-pg84:4567/';
+HOST = 'http://sq-gps:4567/';
 var Type2chr = { 'Pawn' : 'p', 'Lance' : 'l', 'kNight' : 'n', 'Silver' : 's',
                  'Gold' : 'g', 'Bishop': 'b', 'Rook'   : 'r', 'King'   : 'k',
                  'Qpawn': 'q', 'Mlance': 'm', 'Oknight': 'o', 'Tsilver': 't',

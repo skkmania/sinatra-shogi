@@ -1,6 +1,5 @@
 // vim: set expandtab ts=2 :
- WS_URL = "ws://ubu-pg84:8081";
-        //WS_URL = "ws://localhost:8081";
+WS_URL = "ws://sq-gps:8081";
 
           function debug(message) {
                   html = "<p><span class='time'>"+new Date()+"</span>"+message+"</p>"
