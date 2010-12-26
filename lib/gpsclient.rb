@@ -76,7 +76,7 @@ class GpsClient < GpsShogi
   # 出力：なし
   def send_delta(data)
     @gclogger.debug("entered send_delta with #{data.inspect}")
-    STDERR.puts ("entered send_delta with #{data.inspect}")
+    STDERR.puts "entered send_delta with #{data.inspect}"
     @wave.state.submitDelta(data)
     STDERR.puts "delta submitted."
     @status = 'delta_sent'

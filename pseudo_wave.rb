@@ -11,6 +11,23 @@ require 'logger'
 
 Log = Logger.new("log/pseudo_wave.log")
 
+$gps_config = {
+  :initial_filename	=> "bin/csa.init",
+  :opponent		=> "skkmania",
+  :sente 		=> false,
+  :black 		=> "skkmania", 
+  :white 		=> "gps",
+  :limit 		=> 1600, 
+  :table_size 		=> 30000,
+  :table_record_limit 	=> 50,
+  :node_limit 		=> 16000000,
+  :timeleft 		=> 100, 
+  :byoyomi 		=> 60,
+  :logfile_basename 	=> "bin/logs/x1_",
+  :other_options 	=> "",
+  :base_command 	=> 'bin/gpsshogi -v -r -c' # random play for test
+}
+
 class PubSub
 	def initialize
 		@subscriber = {}
@@ -165,6 +182,7 @@ class Wave::State < Hash
     Log.debug "fromString : State changed. >> #{self.inspect}"
   end
   def publish
+    $pubsub.publish(toString)
   end
 end
 
@@ -194,11 +212,14 @@ class PseudoWaveConnection < Rev::WebSocket
         Log.debug "reset request arrived : #{data}"
         $wave.state.clear
         $pubsub.publish('reset state')
+      when /^gpss/
+        # gps対局を申し込む
+        $gpsclient = GpsClient.new($wave, $gps_config)
       when /^gpsc/
         # gpsclientとして参加しているクライアントはstateの先頭は必ず
         # gpsc|_!!として送ること
         $wave.state.fromString(data)
-        $gpsclient.accept(self, $wave.state)
+        $gpsclient.accept($wave.state)
       else
         $wave.state.fromString(data)
         Log.debug "read state done : #{$wave.state.inspect}"
@@ -218,21 +239,6 @@ if $0 == __FILE__
   host = '0.0.0.0'
   port = 8081
   $wave = Wave.new
-  $gps_config = { :initial_filename => "bin/csa.init",
-             :opponent => "skkmania",
-             :sente => false,
-             :black => "skkmania", 
-             :white => "gps",
-             :limit => 1600, 
-             :table_size => 30000,
-             :table_record_limit => 50,
-             :node_limit => 16000000,
-             :timeleft => 100, 
-             :byoyomi => 60,
-             :logfile_basename => "bin/logs/x1_",
-             :other_options => "",
-             :base_command => 'bin/gpsshogi -v -r -c' # random play for test
-           }
   $gpsclient = GpsClient.new($wave, $gps_config)
   
   $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)

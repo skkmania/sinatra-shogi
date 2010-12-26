@@ -17,27 +17,69 @@ describe Board, "は初期化されたとき" do
 
 end
 
-describe Board, "は初期盤面に'+7776FU\n'を#applyしたあと" do
+# applyのテスト
+#  返り値の正しさのテスト
+describe Board, "のapplyをテストする" do
   before(:all) do
     @board = Board.new
     @board.store.update_store
-    @board.apply "+7776FU\n"
+    @result = @board.apply "+7776FU\n"
+  end
+  it "その返り値 はHashである" do
+    @result.class.should == Hash
+  end
+  it "その返り値はkeyとしてbid, board, next, prev, turnをもつ" do
+    @result.keys.should include('bid')
+    @result.keys.should include('board')
+    @result.keys.should include('next')
+    @result.keys.should include('prev')
+    @result.keys.should include('turn')
+  end
+  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のbidの値は2" do
+    @result['bid'].should == 2
+  end
+  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のturnの値はf" do
+    @result['turn'].should == 'f'
+  end
+  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のboardの値は" do
+    @result['board'].should == [{:bid=>2, :black=>"", :white=>"",
+                                :turn=>false,
+      :board=>"lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL"}]
+  end
+  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のnextの値は" do
+    @result['next'].should ==  [{:bid=>2, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false, :mid=>0}, {:bid=>2, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false, :mid=>1}, {:bid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false, :mid=>2}, {:bid=>2, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false, :mid=>3}]
+  end
+  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のprevの値は" do
+    @result['prev'].should == [{:bid=>2, :mid=>0, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false}, {:bid=>2, :mid=>1, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false}, {:bid=>2, :mid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false}, {:bid=>2, :mid=>3, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false}] 
+  end
+end
+
+# applyのテスト
+#   Boardオブジェクトのプロパティの正当性のテスト
+describe Board, "の#applyしたあとの@turnプロパティのテストをする" do
+  before(:all) do
+    @board = Board.new
+    @board.store.update_store
   end
 
   after(:all) do
   end
 
-  it "のturn はfalseになる" do
+  it "先手の指し手の後の@turn はfalseになる" do
+    @board.apply "+7776FU\n"
     @board.turn.should == false
   end
-  it "の76のpieceは'P'になる" do
-    @board.get_piece(76).should == 'P'
+  it "@bidは更新された盤面のbidになる" do
+    @board.bid.should == 2
   end
-  it "の77のpieceは'x'になる" do
-    @board.get_piece(77).should == 'x'
+  it "後手の指し手の後の@turn はtrueになる" do
+    @board.apply "-3334FU\n"
+    @board.turn.should == true
   end
 end
 
+# applyのテスト
+#   駒の動きが盤面に反映されることのテスト
 describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyしたあと" do
   before(:all) do
     @board = Board.new
