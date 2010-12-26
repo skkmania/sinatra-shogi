@@ -70,6 +70,12 @@ describe Store, "は#complement を実行したとき" do
     @move[:mid].size.should >= 1
     @move[:nxt_bid].size.should >= 1
   end
+  it "Storeには渡したmoveのnxt_bidのsectionが存在する" do
+    @store.get_section(@move[:nxt_bid])['bid'].should == @move[:nxt_bid]
+    @store.get_section(@move[:nxt_bid])['board'].size.should == 1
+    @store.get_section(@move[:nxt_bid])['next'].size.should >= 0
+    @store.get_section(@move[:nxt_bid])['prev'].size.should >= 1
+  end
 end
 
 describe Store, "は#get_section 1 を実行したとき" do
