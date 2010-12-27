@@ -1,3 +1,4 @@
+// -*- coding: utf-8 -*-
 // vim: set expandtab ts=2 :
 WS_URL = "ws://sq-gps:8081";
 
@@ -67,7 +68,7 @@ Wave.prototype = {
   getViewer: function() {
     return this.viewer;
   },
-  // �����nowave�ʤ�ǤϤν�����
+  // ¤³¤ì¤Ïnowave¤Ê¤é¤Ç¤Ï¤Î½èÍý¡£
   setViewer: function(name) {
     LOG.getInto('wave.setViewer');
     this.viewer = new wave.Participant(name);
@@ -97,7 +98,7 @@ wave.ws.onopen = function() {
   if(LOG) LOG.getInto('wave.ws.onopen');
   if(LOG) LOG.debug("ws onopen : connected.");
 
-  wave.ws.send("sync");
+  wave.ws.send("status|sync");
   if(LOG) LOG.debug("ws onopen : sent sync request.");
   if(LOG) LOG.goOut();
 }
@@ -113,25 +114,30 @@ wave.ws.onerror = function(msg) {
 wave.ws.onmessage = function(event) {
   LOG.getInto("wave.ws.onmessage");
   LOG.debug("message received: "+event.data);
+  wave.getState().fromString(event.data);
   if (wave.stateCallback) {
-    switch(event.data.slice(0,4)){
+    //switch(event.data.slice(0,4)){
+    var status = wave.getState().get('status');
+    // stateのstatusによる処理が終わったらstatusはnormalに戻す
+    wave.getState().put('status','normal');
+    switch(status){
       case "sync" :
         LOG.debug("sync reply arrived : " + event.data);
-        wave.getState().fromString(event.data.slice(4));
+        //wave.getState().fromString(event.data.slice(4));
         switch(wave.getState().get('mode')){
           case 'playing':
-            // ���Ǥ�player����ޤäƤ���'playing'�ʤ顢
-            // ���Υ��饤����Ȥϴ���ԤʤΤ�ID�ϼ�ư�ˤդäƤ��ޤ���
+            // ¤¹¤Ç¤Ëplayer¤¬·è¤Þ¤Ã¤Æ¤¤¤ë'playing'¤Ê¤é¡¢
+            // ¤³¤Î¥¯¥é¥¤¥¢¥ó¥È¤Ï´ÑÀï¼Ô¤Ê¤Î¤ÇID¤Ï¼«Æ°¤Ë¤Õ¤Ã¤Æ¤·¤Þ¤¦¡£
             wave.setViewer();
-            // �����ƴ���Ԥʤ��join Button��ɬ�פʤ�
+            // ¤½¤·¤Æ´ÑÀï¼Ô¤Ê¤é¤Ðjoin Button¤ÏÉ¬Í×¤Ê¤¯
             $('join-button').hide();
-            // ���̤ν����������Ǥ褤��
+            // ²èÌÌ¤Î½é´ü²½¤ØÈô¤ó¤Ç¤è¤¤¡£
             window.gameController.acceptState();
             break;
           case "onePlayer":
-            // �ҤȤ��player����ޤäƤ���'onePlayer'�ʤ顢
-            // join Button��ɽ�������ޤޡ�ControlPanel�Υ��åץǡ��Ȥ�
-            // ����ˡ�State�Υ�����Хå���Ƥ֡�
+            // ¤Ò¤È¤ê¤Îplayer¤¬·è¤Þ¤Ã¤Æ¤¤¤ë'onePlayer'¤Ê¤é¡¢
+            // join Button¤òÉ½¼¨¤·¤¿¤Þ¤Þ¡¢ControlPanel¤Î¥¢¥Ã¥×¥Ç¡¼¥È¤Î
+            // ¤¿¤á¤Ë¡¢State¤Î¥³¡¼¥ë¥Ð¥Ã¥¯¤ò¸Æ¤Ö¡£
             window.gameController.acceptState();
             break;
           default:
@@ -145,7 +151,7 @@ wave.ws.onmessage = function(event) {
       case "msg:" :
         break;
       default :
-        wave.getState().fromString(event.data);
+  //      wave.getState().fromString(event.data);
         wave.stateCallback(wave.getState());
         break;
     }
@@ -207,7 +213,7 @@ wave.State.prototype = {
   },
   reset: function() {
     this.state = {};
-    wave.ws.send('reset');
+    wave.ws.send('mode|reset');
   },
   clear: function() {
     this.state = {};
@@ -253,7 +259,7 @@ wave.State.prototype = {
         LOG.debug("undefined value for key: " + key);
       }
     }
-    // �Ǹ��!!��;�פʤΤǼ��������֤�
+    // ºÇ¸å¤Î!!¤ÏÍ¾·×¤Ê¤Î¤Ç¼è¤ê½ü¤¤¤ÆÊÖ¤¹
     ret = ret.slice(0,-2);
     LOG.debug("returning : " + ret);
     LOG.goOut();
@@ -299,7 +305,7 @@ wave.State.prototype = {
     try{
       if (wave.stateCallback) {
         if (wave.ws) {
-          wave.ws.send("sync");
+          wave.ws.send("status|sync");
         } else {
           throw("wave.ws seems not defined.");
         }

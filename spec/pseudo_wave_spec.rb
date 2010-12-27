@@ -36,6 +36,6 @@ describe Wave::State, '文字列受け入れテスト' do
     Wave::State.new.fromString('key|value').should == {'key' => 'value'}
   end  
   it "!!が要素を区切るので'key1|value1!!key2|value2'は要素がふたつのStateをつくる" do
-    Wave::State.new.fromString('key|value').should == {'key' => 'value'}
+    Wave::State.new.fromString('key1|value1!!key2|value2').should == {'key1' => 'value1', 'key2' => 'value2'}
   end  
 end

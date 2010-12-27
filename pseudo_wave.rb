@@ -213,25 +213,26 @@ class PseudoWaveConnection < Rev::WebSocket
   #    出力: なし
   def on_message(data)
     Log.debug "state received: '#{data}'"
-    case data
-      when /^sync/
+    status = $wave.state.fromString(data).get('status')
+    case status
+      when 'sync'
         Log.debug "sync request arrived : #{data}"
-        send_message 'sync' + $wave.state.toString
-        Log.debug "sent sync reply : #{'sync' + $wave.state.toString}"
-      when /^reset/
+        send_message $wave.state.toString
+        Log.debug "sent sync reply : #{$wave.state.toString}"
+      when 'reset'
         Log.debug "reset request arrived : #{data}"
         $wave.state.clear
         $pubsub.publish('reset state')
-      when /^gpss/
+      when 'gpss'
         # gps対局を申し込む
         $gpsclient = GpsClient.new($wave, $gps_config)
-      when /^gpsc/
-        # gpsclientとして参加しているクライアントはstateの先頭は必ず
-        # gpsc|_!!として送ること
-        $wave.state.fromString(data)
+      when 'gpsc'
+        # gpsclientとして参加しているクライアントはstateのstatusは必ず
+        # gpscとして送ること
+        # $wave.state.fromString(data)
         $gpsclient.accept($wave.state)
       else
-        $wave.state.fromString(data)
+        # $wave.state.fromString(data)
         Log.debug "read state done : #{$wave.state.inspect}"
         $pubsub.publish($wave.state.toString)
     end
