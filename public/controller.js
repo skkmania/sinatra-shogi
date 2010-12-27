@@ -746,6 +746,24 @@ GameController = Class.create({
     LOG.goOut();
   },
 	/**
+	 * gpsPlayButtonPressed(name)
+	 */
+        // 機能：　gpsPlayボタン押下に対し反応しGPSとの対局を開始する
+        //         受け取ったnameをthis.playersに格納する
+        // 入力： name 文字列 playerの名前 (waveの@以下を含むIDなど。)
+        // 出力： なし
+  gpsPlayButtonPressed: function gpsPlayButtonPressed(name) { // GameController
+    LOG.getInto('GameController#gpsPlayButtonPressed');
+    // 先後の希望を処理
+      // 
+    // playerの名前を設定
+    // gps対局を希望するDeltaを作成してsendDelta
+     // gpssで始める
+     // 手番の希望を載せる
+    LOG.debug('arguments : ' + name);
+    LOG.goOut();
+  },
+	/**
 	 * joinButtonPressed(name)
 	 */
         // 機能：　joinボタン押下に対し反応し再びjoinボタン押下待ち状態に戻る

@@ -71,6 +71,9 @@ describe Store, "は#complement を実行したとき" do
     @move[:nxt_bid].size.should >= 1
   end
   it "Storeには渡したmoveのnxt_bidのsectionが存在する" do
+    # complementしたあとは必ず新しい盤面のsectionが存在することをテストしたい。
+    # しかしここでは+7776FUに対してのみのテストになってしまっている。
+    # 本当はStoreに情報が足りずにupdateしにいくケースのテストをしなければならないのだが。
     @store.get_section(@move[:nxt_bid])['bid'].should == @move[:nxt_bid]
     @store.get_section(@move[:nxt_bid])['board'].size.should == 1
     @store.get_section(@move[:nxt_bid])['next'].size.should >= 0

@@ -142,6 +142,7 @@ class Wave::State < Hash
   def initialize(opt = {})
     Log.debug "State initialized."
     self.merge! opt
+    self
   end
   def get(key, optDefault=nil)
     self[key] || optDefault
@@ -149,6 +150,7 @@ class Wave::State < Hash
   def put(key, value)
     self[key] = value
     Log.debug "put : State changed. >> #{self.inspect}"
+    self
   end
   def getKeys
     self.keys
@@ -164,11 +166,13 @@ class Wave::State < Hash
     publish
     Log.debug("leaving submitDelta.")
     STDERR.puts("leaving submitDelta.")
+    self
   end
   def submitValue(key, value)
     self[key] = value;
     Log.debug "submitValue : State changed. >> #{self.inspect}"
     publish
+    self
   end
   def toString
     self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
@@ -180,6 +184,7 @@ class Wave::State < Hash
       # valueが空文字列の場合、a[1]にはnilがくるので、空文字列で置き換える
     }
     Log.debug "fromString : State changed. >> #{self.inspect}"
+    self
   end
   def publish
     $pubsub.publish(toString)
@@ -201,6 +206,11 @@ class PseudoWaveConnection < Rev::WebSocket
     #send_message open_msg
   end
 
+  #
+  #  on_message(data)
+  #    WebSocketクライアントから送られてくる文字列を受け取り処理する関数
+  #    入力: 文字列
+  #    出力: なし
   def on_message(data)
     Log.debug "state received: '#{data}'"
     case data

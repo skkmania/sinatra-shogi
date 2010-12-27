@@ -11,7 +11,7 @@ describe PseudoWaveConnection, 'は初期化でon_openが呼ばれたとき' do
     host = '0.0.0.0'
     port = 8081
     $wave = Wave.new
-    $gpsclient = GpsClient.new
+    $gpsclient = GpsClient.new($wave, $gps_config)
     
     $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
     $server.attach(Rev::Loop.default)
@@ -24,6 +24,18 @@ describe PseudoWaveConnection, 'は初期化でon_openが呼ばれたとき' do
   end
 
   it "current_bid が1である" do
-    $gpsclient.store.current_bid.should == 1
+    $gpsclient.board.store.current_bid.should == 1
   end
+end
+
+describe Wave::State, '文字列受け入れテスト' do
+  it "空文字列を渡されると空のStateになる" do
+    Wave::State.new.fromString('').should == {}
+  end
+  it "|がkeyとvalueを区切るので'key|value'は要素がひとつのStateをつくる" do
+    Wave::State.new.fromString('key|value').should == {'key' => 'value'}
+  end  
+  it "!!が要素を区切るので'key1|value1!!key2|value2'は要素がふたつのStateをつくる" do
+    Wave::State.new.fromString('key|value').should == {'key' => 'value'}
+  end  
 end
