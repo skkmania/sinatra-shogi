@@ -1,6 +1,11 @@
 //  move.js
 //   2010/05/08
 
+var CSApiece = { m : "NY", b : "KA", r : "HI", h : "UM", s : "GI",
+                 t : "NG", l : "KY", n : "KE", p : "FU", q : "TO",
+                 k : "OU", d : "RY", o : "NK", g : "KI" }
+var CSApiecePromoted = { l : "NY", b : "UM", s : "NG", p : "TO", r : "RY", n : "NK" }
+
 var Move = Class.create({
 //  move  : ssddpb の6文字からなる。ssとddは数字2字。動きの前後の位置
 //          pは動く前の駒の種類。アルファベット1文字。先後の区別を大文字、小文字でつける。bは成り不成を表すアルファベット1文字。tは成り、fは不成り。
@@ -140,6 +145,33 @@ var Move = Class.create({
     ret += ',' + (this.promote ? 't' : 'f');
     ret += ',' + this.nxt_bid;
     return ret;
+  },
+	/*
+	 * toCSA()
+	 */
+	// 自身のCSA形式の文字列を返す
+	// 入力 : なし
+	// 出力 : 文字列 
+  toCSA : function toCSA(){ // Move
+    var ret = '';
+    ret = (this.piece.toUpperCase() == this.piece) ? '+' : '-';
+    ret += this.from;
+    ret += this.to;
+    ret += this.csaPiece();
+    return ret;
+  },
+	/*
+	 * csaPiece()
+	 */
+	// 自身のpieceのCSA形式の文字列を返す
+	// 入力 : なし
+	// 出力 : 2文字の文字列 : FU, KI, など
+  csaPiece : function csaPiece(){ // Move
+    if (this.promote){
+      return CSApiecePromoted[this.piece];
+    } else {
+      return CSApiece[this.piece];
+    }
   },
 	/*
 	 * toDelta()

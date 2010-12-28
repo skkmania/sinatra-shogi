@@ -116,14 +116,12 @@ wave.ws.onmessage = function(event) {
   LOG.debug("message received: "+event.data);
   wave.getState().fromString(event.data);
   if (wave.stateCallback) {
-    //switch(event.data.slice(0,4)){
     var status = wave.getState().get('status');
-    // stateのstatusによる処理が終わったらstatusはnormalに戻す
-    wave.getState().put('status','normal');
+    // stateのstatusによる処理が終わったらstatusはnormalに戻す?
+    // wave.getState().put('status','normal');
     switch(status){
       case "sync" :
         LOG.debug("sync reply arrived : " + event.data);
-        //wave.getState().fromString(event.data.slice(4));
         switch(wave.getState().get('mode')){
           case 'playing':
             // ¤¹¤Ç¤Ëplayer¤¬·è¤Þ¤Ã¤Æ¤¤¤ë'playing'¤Ê¤é¡¢
@@ -143,15 +141,24 @@ wave.ws.onmessage = function(event) {
           default:
             break;
         }
+        wave.getState().put('status','normal');
         break;
-      case "rese" :
+      case "reset" :
         LOG.debug("reset state message : " + event.data);
         wave.getState().clear();
+        break;
+      case "gpss" :
+        // 初期盤面を用意(NextMovesも表示する)
+        wave.stateCallback(wave.getState());
+        wave.getState().put('status','gpsc');
+        // そしてユーザからの入力待ち
+        break;
+      case "gpsc" :
+        wave.stateCallback(wave.getState());
         break;
       case "msg:" :
         break;
       default :
-  //      wave.getState().fromString(event.data);
         wave.stateCallback(wave.getState());
         break;
     }
@@ -213,7 +220,7 @@ wave.State.prototype = {
   },
   reset: function() {
     this.state = {};
-    wave.ws.send('mode|reset');
+    wave.ws.send('status|reset');
   },
   clear: function() {
     this.state = {};

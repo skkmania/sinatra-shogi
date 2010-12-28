@@ -68,7 +68,7 @@
 <input id="inputViewerId" type="text" name="viewerId" maxlength="10" />
 <button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed($F('inputViewerId')); this.hide();">join</button>
 <form>
-<button id="gpsPlay-button" class="gpsPlay t" onclick="window.gameController.gpsPlayButtonPressed($F('inputViewerId'));">gpsPlay</button>
+<button id="gpsPlay-button" class="gpsPlay t" onclick="window.gameController.gpsPlayButtonPressed($F('inputViewerId'));return false;">gpsPlay</button>
 <input type="radio" name="turnRequestBlack" class="reqBlack t" label="reqBlack t" />
 <input type="radio" name="turnRequestWhite" class="reqWhite t" label="reqWhite t" />
 </form>

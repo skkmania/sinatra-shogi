@@ -177,6 +177,7 @@ class Wave::State < Hash
   def toString
     self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
   end
+
   def fromString(str)
     str.split("!!").each{|e|
       a = e.split("|")
@@ -222,10 +223,15 @@ class PseudoWaveConnection < Rev::WebSocket
       when 'reset'
         Log.debug "reset request arrived : #{data}"
         $wave.state.clear
-        $pubsub.publish('reset state')
+        $pubsub.publish('status|reset')
       when 'gpss'
-        # gps対局を申し込む
+        # gps対局を申し込まれた
+        $gps_config[:sente] = ($wave.state.get('blacks') == 'gps')
         $gpsclient = GpsClient.new($wave, $gps_config)
+        $wave.state.put('status', 'gpsc')
+        $wave.state.put('mode', 'playing')
+        $wave.state.submitDelta($gpsclient.board.store.get_section(1))
+        #$pubsub.publish($wave.state.toString)
       when 'gpsc'
         # gpsclientとして参加しているクライアントはstateのstatusは必ず
         # gpscとして送ること
@@ -250,7 +256,7 @@ if $0 == __FILE__
   host = '0.0.0.0'
   port = 8081
   $wave = Wave.new
-  $gpsclient = GpsClient.new($wave, $gps_config)
+#  $gpsclient = GpsClient.new($wave, $gps_config)
   
   $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
   $server.attach(Rev::Loop.default)

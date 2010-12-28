@@ -753,15 +753,45 @@ GameController = Class.create({
         // 入力： name 文字列 playerの名前 (waveの@以下を含むIDなど。)
         // 出力： なし
   gpsPlayButtonPressed: function gpsPlayButtonPressed(name) { // GameController
+    var delta = {};
     LOG.getInto('GameController#gpsPlayButtonPressed');
+
+    // nameをwave.viewerにセットする。これはnowaveならではの処理。
+    // waveで使用するときはコメントアウトすること。
+    wave.setViewer(name);
+    LOG.debug('wave.getViewer().getId() : ' + wave.getViewer().getId());
+    LOG.debug('wave.getViewer().getDisplayName() : ' + wave.getViewer().getDisplayName());
+    // ここまで。
+
     // 先後の希望を処理
-      // 
-    // playerの名前を設定
+/*
+    if(sente_kibou){
+      wave.getState().put('blacks', name);
+      wave.getState().put('whites', 'gps');
+    } else {
+      wave.getState().put('whites', name);
+      wave.getState().put('blacks', 'gps');
+    }
+*/
+    // playerの名前を設定 とりあえず暫定として
+      wave.getState().put('blacks', name);
+      wave.getState().put('whites', 'gps');
+      wave.getState().put('players', name + ',gps');
+     // これで手番の希望を載せたことになる
     // gps対局を希望するDeltaを作成してsendDelta
-     // gpssで始める
-     // 手番の希望を載せる
+     // このとき、ブラウザクライアントではbid = 1に対応するsectionを持つべき
+    //delta = makeReviewDelta(1);
+     // statusをgpss
+      wave.getState().put('status', 'gpss');
+      this.mode = 'playing';
+      delta['status'] = 'gpss';
+      delta['mode'] = this.mode;
+      delta['bid'] = 1;
     LOG.debug('arguments : ' + name);
+    LOG.debug('sending delta : ' + Log.dumpObject(delta));
     LOG.goOut();
+    // 以下を呼べば、acceptStateに飛んでしまう
+    wave.getState().submitDelta(delta);
   },
 	/**
 	 * joinButtonPressed(name)

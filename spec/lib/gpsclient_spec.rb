@@ -88,3 +88,22 @@ describe GpsClient, "のacceptをテストする" do
   end
 
 end
+
+describe GpsClient, "#to_deltaをテストする" do
+  before(:all) do
+    @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
+    @gpsclient.set_master_record "bin/csa.init"
+    sleep 2 # wait for program setup
+    @state = Hash.new
+    @section = @gpsclient.board.store.get_section 2
+  end
+
+  it "返り値はHashであり、'board','next','prev'をkeyに持つ" do
+    result = @gpsclient.to_delta @section
+    result.class.should == Hash
+    result['board'].should_not be_nil
+    result['next'].should_not be_nil
+    result['prev'].should_not be_nil
+    puts result.inspect
+  end
+end

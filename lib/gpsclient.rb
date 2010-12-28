@@ -71,13 +71,34 @@ class GpsClient < GpsShogi
   end
 
   #
+  #  to_delta(hash)
+  #    board, next, prevの各値を
+  #    stateに載せる文字列に加工してからHashを組立て返す
+  #    入力: Hash DBから取得したhash
+  #    出力: Hash  
+  #    例 
+  def to_delta(hash)
+    ret = {}
+    if (b = hash['board'])
+      b = b[0]
+      ret['board'] = [b[:bid], (b[:turn]?'t':'f'), b[:board], b[:black], b[:white]].join(',')
+    end
+    if (n = hash['next'])
+      ret['next'] = n.map{|m| [m[:bid],m[:mid],m[:m_from],m[:m_to],m[:piece],(m[:promote]?'t':'f'),m[:nxt_bid]].join(',') }.join(':')
+    end
+    if (n = hash['prev'])
+      ret['prev'] = n.map{|m| [m[:bid],m[:mid],m[:m_from],m[:m_to],m[:piece],(m[:promote]?'t':'f'),m[:nxt_bid]].join(',') }.join(':')
+    end
+    ret
+  end
+  #
   # send_delta
   # 入力：Hash Stateに上書きしたいデータ
   # 出力：なし
   def send_delta(data)
     @gclogger.debug("entered send_delta with #{data.inspect}")
     STDERR.puts "entered send_delta with #{data.inspect}"
-    @wave.state.submitDelta(data)
+    @wave.state.submitDelta(to_delta(data))
     STDERR.puts "delta submitted."
     @status = 'delta_sent'
     @gclogger.debug("leaving send_delta.")

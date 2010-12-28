@@ -39,3 +39,16 @@ describe Wave::State, '文字列受け入れテスト' do
     Wave::State.new.fromString('key1|value1!!key2|value2').should == {'key1' => 'value1', 'key2' => 'value2'}
   end  
 end
+
+describe Wave::State, 'toStateのテスト' do
+  before(:all) do
+    $wave = Wave.new
+    @state = $wave.state
+    $gpsclient = GpsClient.new($wave, $gps_config)
+  end  
+  it "bid = 10 のsectionをStateに載せると" do
+    @section = $gpsclient.board.store.get_section 10
+    @state.merge! @section
+    puts @state.inspect
+  end
+end
