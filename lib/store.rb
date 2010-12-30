@@ -105,13 +105,14 @@ class Store < Hash
   #    出力: sectionを表すHash
   def get_section(bid)
     @logger.debug("into get_section with #{bid}")
+    bid = bid.to_i
     buf = ''
     @logger.debug("self : #{PP::pp(self,buf);buf}")
     ret = {}
     ret['bid']   = bid
-    ret['board'] = self['board'].select{|h| h[:bid] == bid }
-    ret['next']  = self['nextMoves'].select{|h| h[:bid] == bid }
-    ret['prev']  = self['prevMoves'].select{|h| h[:bid] == bid }
+    ret['board'] = self['board'].select{|h| (h['bid'] || h[:bid]).to_i == bid }
+    ret['next']  = self['nextMoves'].select{|h| (h['bid'] || h[:bid]).to_i == bid }
+    ret['prev']  = self['prevMoves'].select{|h| (h['nxt_bid'] || h[:nxt_bid]).to_i == bid }
         # これでよい？nxt_bid?
     @logger.debug("leaving get_section with #{ret.inspect}")
     return ret

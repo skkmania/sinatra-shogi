@@ -43,11 +43,10 @@ class Board
     @blogger.debug("@store became #{PP::pp(@store, buf);buf}")
     @blogger.debug("@bid became : #@bid")
     tmp = @store.get_section @bid
-    @blogger.debug("tmp : #{tmp.inspect}")
+    @blogger.debug("get_section @bid : #{tmp.inspect}")
     ret['bid'] = @bid
     ret.merge! tmp
-    buf = ''
-    @blogger.debug("leaving from apply with #{PP::pp(ret,buf);buf}")
+    @blogger.debug("leaving from apply with #{ret.inspect}")
     ret
   end
 
@@ -87,7 +86,7 @@ class Board
         end
         @board[pairdec2index(move[:m_from])] = 'x'
     end
-    @blogger.debug("relieving from _apply with :")
+    @blogger.debug("leaving from _apply with :")
     @blogger.debug("@board : #{@board}")
     @blogger.debug("@black : #{@black}")
     @blogger.debug("@white : #{@white}")
