@@ -143,7 +143,7 @@ var IframeShim = Class.create({
             src: 'javascript:void(0);',
             frameborder: 0 
         });
-        $(document.body).insert(this.element);
+        if($(document.body)) $(document.body).insert(this.element);
     },
     hide: function() {
         this.element.hide();

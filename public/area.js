@@ -36,9 +36,13 @@ var Area = Class.create({
 
   openWindow: function openWindow(){ // Area
     LOG.getInto('Area#openWindow');
+    var links_pool = $('links_pool');
+    if (!links_pool) {
+      links_pool = new Element('div',{'id':'links_pool'});
+    }
     if (!this.window || !this.window.document) {
       this.anchor = new Element('a',{'id':this.title+'anchor', 'href':'#' + this.title, 'title': this.title });
-      $('links_pool').appendChild(this.anchor);
+      links_pool.appendChild(this.anchor);
       this.anchor.insert(this.title);
       this.window = new Control.Window(this.anchor, this.default_options); 
       // window_headerにwindow_titleとwindow_closeを挿入してから

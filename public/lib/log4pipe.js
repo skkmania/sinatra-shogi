@@ -134,12 +134,16 @@ Log = Class.create({
 
   popupInitialize: function(title, options){
     // setDivが有効なのはpopupのときだけ。
+    var links_pool = $('links_pool');
+    if (!links_pool) {
+      links_pool = new Element('div',{'id':'links_pool'});
+    }
     this.setDiv = true;
     this.window = null;
     this.title = title;
     this.anchor = new Element('a',{'id':this.title+'anchor', 'href':'#' + this.title, 'title': this.title });
     this.anchor.insert(this.title);
-    $('links_pool').appendChild(this.anchor);
+    links_pool.appendChild(this.anchor);
     if(!this.title)  this.title = options['title'] || '';
     this.logger = this.entry;
     this.divStack = [];

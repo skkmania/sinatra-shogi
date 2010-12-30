@@ -9,9 +9,31 @@
 #   - lib/source1.js
 #   - lib/source2.js
 #   - dist/**/*.js
+#   - public/javascripts/**/*.js
 #
 src_files:
-    - public/javascripts/**/*.js
+    - public/lib/prototype-1.6.0.3.js
+    - public/lib/scriptaculous/effects.js
+    - public/lib/scriptaculous/dragdrop.js
+    - public/lib/scriptaculous/resizable.js
+    - public/lib/livepipe/livepipe.js
+    - public/lib/livepipe/window.js
+    - public/lib/m17n.js
+    - public/lib/log4pipe.js
+    - public/lib/common-utils.js
+    - public/area.js
+    - public/lib/pseudo-wave.js
+    - public/lib/msgpack.js
+    - public/maintainer.js
+    - public/move.js
+    - public/piece.js
+    - public/cell.js
+    - public/board.js
+    - public/store.js
+    - public/book.js
+    - public/controller.js
+    - public/stand.js
+    - public/shogi.js
 
 # stylesheets
 #
@@ -25,6 +47,9 @@ src_files:
 #   - stylesheets/*.css
 #
 stylesheets:
+    - css/log4pipe.css
+    - css/shogi.css
+    - css/shogi_old.css
 
 # helpers
 #

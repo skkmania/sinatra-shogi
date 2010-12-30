@@ -542,7 +542,7 @@ Control.Window = Class.create({
             this.container = new Element('div',{
                 id: 'control_window_' + this.numberInSequence
             });
-            $(document.body).insert(this.container);
+            if($(document.body)) $(document.body).insert(this.container);
             if(typeof(container) == "string" && $(container) == null && !container.match(/^#(.+)$/) && !container.match(Control.Window.uriRegex))
                 this.container.update(container);
         }
