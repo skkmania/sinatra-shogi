@@ -743,7 +743,7 @@ GameController = Class.create({
       this.top = 0;  // by default
       if (this.player2 && this.player2.isViewer){
         this.top = 1;
-        LOG.debug('top is set to 1 because ' + this.player2.name + 'is viewer');
+        LOG.debug('top is set to 1 because ' + this.player2.name + ' is viewer');
       }
     }
     LOG.debug('leaving determineTop with gameController.top : ' + this.top);
@@ -940,15 +940,18 @@ GameController = Class.create({
         //        this.blackplayers, this.whiteplayersをセットする
         // 返値 : stateに載せる情報としてdeltaを作成し返す
   createPlayer: function createPlayer(bs, ws) { // GameController
+    LOG.getInto('GameController#createPlayer');
     var delta = {};
     var viewer = wave.getViewer().getId();
     var viewerDisplayName = wave.getViewer().getDisplayName();
     var b = bs.split(',')[0];
     var w = ws.split(',')[0];
-    LOG.getInto('GameController#createPlayer');
+    LOG.debug('viewer : ' + viewer);
+    LOG.debug('viewerDisplayName : ' + viewerDisplayName);
+    LOG.debug('b : ' + b + ',  w : ' + w);
     // Player オブジェクトを生成
     this.player1 = new Player('player1', b, b==viewer || b==viewerDisplayName);
-    this.player2 = new Player('player2', w, w==viewer || b==viewerDisplayName);
+    this.player2 = new Player('player2', w, w==viewer || w==viewerDisplayName);
     LOG.debug('player1 : ' + this.player1.toString());
     LOG.debug('player2 : ' + this.player2.toString());
     // blackplayers, whiteplayersの各配列におく

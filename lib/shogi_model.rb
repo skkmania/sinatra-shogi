@@ -44,6 +44,7 @@ class Board
     @blogger.debug("@bid became : #@bid")
     tmp = @store.get_section @bid
     @blogger.debug("tmp : #{tmp.inspect}")
+    ret['bid'] = @bid
     ret.merge! tmp
     buf = ''
     @blogger.debug("leaving from apply with #{PP::pp(ret,buf);buf}")

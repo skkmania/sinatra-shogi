@@ -85,10 +85,11 @@ class Store < Hash
   	'mask'	=> 7,
   	'level'	=> 3,
   	'range' => 'full'}
+        @logger.debug("going to regist_board with params : #{params.inspect}")
         @dba.read_params(params) # regist_boardのためのパラメータ渡し
           # ただし、これで本当によいか確認が必要 2010.12.21
         result = @dba.regist_board
-        board.bid         = result['board'][0][:bid]
+        board.bid         = result['board'][0]['bid']
         complemented_move = result['prevMoves'][0]
         self.merge! result # ここは怪しい！！
           # regist_boardの返り値とStoreの構造って同じだっけ？？

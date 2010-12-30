@@ -71,6 +71,7 @@ Wave.prototype = {
   // ¤³¤ì¤Ïnowave¤Ê¤é¤Ç¤Ï¤Î½èÍý¡£
   setViewer: function(name) {
     LOG.getInto('wave.setViewer');
+    LOG.debug('name : ' + name);
     this.viewer = new wave.Participant(name);
     LOG.goOut();
     return this.viewer;
