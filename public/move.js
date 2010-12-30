@@ -168,9 +168,9 @@ var Move = Class.create({
 	// 出力 : 2文字の文字列 : FU, KI, など
   csaPiece : function csaPiece(){ // Move
     if (this.promote){
-      return CSApiecePromoted[this.piece];
+      return CSApiecePromoted[this.piece.toLowerCase()];
     } else {
-      return CSApiece[this.piece];
+      return CSApiece[this.piece.toLowerCase()];
     }
   },
 	/*
@@ -340,9 +340,9 @@ var Moves = Class.create(Hash, {
     switch(this.name) {
       case 'nextMoves' :
 	// この場合、targetによりクリックされた要素のmidが渡されてくる
-        var bid = dataStore.currentSlice().get('nextMoves').get(target).nxt_bid;
-        LOG.debug('bid found : ' + bid);
-        window.gameController.makeAndSendReviewDelta(bid);
+        var move = dataStore.currentSlice().get('nextMoves').get(target);
+        LOG.debug('bid found : ' + move.nxt_bid);
+        window.gameController.makeAndSendReviewDelta(move.nxt_bid, move.toCSA());
         break;
       case 'prevMoves' :
         // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
