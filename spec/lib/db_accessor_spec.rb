@@ -45,3 +45,49 @@ describe DbAccessor, 'は初期化したとき' do
     @db_accessor.masked_data_name.should == ['board','nextMoves','prevMoves']
   end
 end
+
+describe DbAccessor, 'log_formatのテスト' do
+  before(:all) do
+    @db_accessor = DbAccessor.new(SpecParam, SpecLog)
+    @db_accessor.determine_bid_range
+    @db_accessor.get_msg
+  end
+
+  it "gotten をプロパティとして持つ" do
+    @db_accessor.gotten.should_not be_nil
+    SpecLog.debug(@db_accessor.log_format @db_accessor.gotten)
+  end
+
+  it "SpecParamのmask = 7なのでgottenのkeysは、[board, nextMoves, prevMoves]である" do
+    @db_accessor.gotten.keys.sort.should == ['board','nextMoves','prevMoves'].sort
+  end
+
+  it "gottenには、nxt_bidに1を持つmoveは存在しない" do
+    @db_accessor.gotten['nextMoves'].select{|h| h[:nxt_bid] == 1 }.should be_empty
+    @db_accessor.gotten['prevMoves'].select{|h| h[:nxt_bid] == 1 }.should be_empty
+  end
+end
+
+describe DbAccessor, "bidを起点にして取得した値なら、gotten['board']にはそのbidのBoardオブジェクトをあらわす要素をひとつだけ持つ" do
+  [1,10,20].each{|bid|
+    it "bid = #{bid}のとき" do
+      SpecParam['bid'] = bid
+      @db_accessor = DbAccessor.new(SpecParam, SpecLog)
+      @db_accessor.determine_bid_range
+      @db_accessor.get_msg
+      @db_accessor.gotten['board'].select{|h| h[:bid] == bid }.size.should == 1
+    end
+  }
+end
+
+describe DbAccessor, "1以外のbidを起点にして取得した値なら、gotten['prevMoves']にはそのbidをnxt_bidにもつMoveオブジェクトをあらわす要素をすくなくともひとつ持つ" do
+  [3,10,20].each{|bid|
+    it "bid = #{bid}のとき" do
+      SpecParam['bid'] = bid
+      @db_accessor = DbAccessor.new(SpecParam, SpecLog)
+      @db_accessor.determine_bid_range
+      @db_accessor.get_msg
+      @db_accessor.gotten['prevMoves'].select{|h| h[:nxt_bid] == bid }.size.should >= 1
+    end
+  }
+end

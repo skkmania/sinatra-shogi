@@ -147,8 +147,9 @@ Cell.prototype = {
         } else {
           // nextMovesのなかにあったらそれを実行
           // ここでmakeReviewDeltaを呼ぶのはreviewのみがDASだった時代の旧弊
-          var delta = window.gameController.makeReviewDelta(foundMove['nxt_bid']);
-          window.gameController.sendDelta(delta);
+          window.gameController.makeAndSendReviewDelta(foundMove['nxt_bid'],foundMove.toCSA());
+          //var delta = window.gameController.makeReviewDelta(foundMove['nxt_bid']);
+          //window.gameController.sendDelta(delta);
         }
       }.bind(this)
     });

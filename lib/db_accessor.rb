@@ -155,9 +155,13 @@ class DbAccessor
   # 入力 obj @gottenを受け取ることを想定. @gottenは hash である
   # 出力 ret @gottenの値を整形した文字列
   def log_format(obj)
-    moves_tos = lambda{|obj, ret, name|
-      nmgrp = obj[name].group_by{|m| m[:bid] }.sort
-        # group_byの結果はHash. bidをkeyとする。
+    moves_tos = lambda{|obj, name, key|
+      ret = ''
+      nmgrp = obj[name].group_by{|m| m[key] }.sort
+        # group_byの結果はHash. 与えられたkeyでgroupに分ける。
+        # nextMovesならbidで分類すべきで、
+        # prevMovesならnxt_bidで分類すべき.
+
       nmgrp.each{|bid, moves|
         ret += "\n"
         moves.each_with_index{|m, i|
@@ -168,15 +172,16 @@ class DbAccessor
       }
       return ret
     }
-    ret = "board :\n"
+    total = "board :\n"
       # obj['board'] は array. その要素はhash
-    ret += obj['board'].map(&:board_hash_to_s).join("\n")
+    total += obj['board'].map(&:board_hash_to_s).join("\n")
 
-    ret += "\nnextMoves :\n"
-    ret += moves_tos.call(obj, ret, 'nextMoves')
+    total += "\nnextMoves :\n"
+    total += moves_tos.call(obj, 'nextMoves', :bid)
 
-    ret += "\nprevMoves :\n"
-    ret += moves_tos.call(obj, ret, 'prevMoves')
+    total += "\nprevMoves :\n"
+    total += moves_tos.call(obj, 'prevMoves', :nxt_bid)
+    return total
   end
   
   #

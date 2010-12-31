@@ -154,6 +154,8 @@ class Move < Hash
   #    DBではその手だけでわかることを要求している
   #
   def parse_csa(board, line)
+    @blogger.debug("into parse_csa with\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
+    @blogger.debug("and line: #{line}")
     line.chomp!
     self[:bid]    = board.bid
     self[:turn]   = (line[0] == '+'[0])
@@ -166,6 +168,7 @@ class Move < Hash
                                     # 動かす前が成り駒でないとき
       self[:promote] = true  
     end
+    @blogger.debug("leaving parse_csa with board : #{@board}")
   end
 
   def from_hand
