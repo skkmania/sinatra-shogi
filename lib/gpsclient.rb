@@ -55,6 +55,7 @@ class GpsClient < GpsShogi
 
   # WebSocketServerからstateを受け取る    
   def accept(state)
+    @board.store.from_state state
     send(to_csa(state))
   end
 
