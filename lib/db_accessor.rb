@@ -157,6 +157,7 @@ class DbAccessor
   #          (これは将来、keyの名を統一することで解消すべき)
   # 出力 ret @gottenの値を整形した文字列
   def log_format(obj)
+    return "obj has no board info" unless obj.has_key? 'board'
     # この処理は暫定
     if obj.has_key? 'next'
       next_key = 'next'; prev_key = 'prev'

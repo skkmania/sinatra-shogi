@@ -39,8 +39,7 @@ class Board
     @blogger.debug("#{line} is converted to Move object : #{move.inspect}")
     _apply(move)
     @bid = (@store.complement(self, move))[0].bid
-    buf = ''
-    @blogger.debug("@store became #{PP::pp(@store, buf);buf}")
+    @blogger.debug("@store became #{@store.dba.log_format @store}")
     @blogger.debug("@bid became : #@bid")
     tmp = @store.get_section @bid
     @blogger.debug("get_section @bid : #{tmp.inspect}")

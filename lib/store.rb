@@ -104,8 +104,7 @@ class Store < Hash
   def get_section(bid)
     @logger.debug("into get_section with #{bid}")
     bid = bid.to_i
-    buf = ''
-    @logger.debug("self : #{PP::pp(self,buf);buf}")
+    @logger.debug("self : #{@dba.log_format self}")
     ret = {}
     ret['bid']   = bid
     ret['board'] = self['board'].select{|h| (h['bid'] || h[:bid]).to_i == bid }

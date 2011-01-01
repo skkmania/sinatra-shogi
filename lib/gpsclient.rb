@@ -35,8 +35,7 @@ class GpsClient < GpsShogi
             @gclogger.debug("response from binary : #{line}")
             delta = @board.apply(line.dup)
             STDERR.puts "#{line} applied."
-            buf = ''
-            @gclogger.debug("applied to board : #{PP::pp(delta,buf);buf}")
+            @gclogger.debug("applied to board : #{@board.store.dba.log_format delta}")
             send_delta(delta)
           else
             @gclogger.debug "other response from gps : size -> #{line.size}, response -> #{line}"
