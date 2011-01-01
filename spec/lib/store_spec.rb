@@ -95,3 +95,30 @@ describe Store, "は#get_section 1 を実行したとき" do
     @result['prev'].size.should == 0
   end
 end
+
+describe Store, "find_moveのテスト" do
+  before(:all) do
+    @store = Store.new(SpecLog)
+    @store.update_store
+  end
+
+  it "storeにある指し手を探したときは、その指し手の全情報を返す" do
+    @move = Move.new [77,76,'P',false]
+    @move[:bid] = 1
+    result = @store.find_move @move
+    result[:bid].should == 1
+    result[:mid].should == 0
+    result[:m_from].should == 77
+    result[:m_to].should == 76
+    result[:piece].should == 'P'
+    result[:promote].should == false
+    result[:nxt_bid].should == 2
+  end
+
+  it "storeにない指し手を探したときは、ないということを返す" do
+    @move = Move.new [77,76,'P',false]
+    @move[:bid] = 2
+    result = @store.find_move @move
+    result.should be_nil
+  end
+end
