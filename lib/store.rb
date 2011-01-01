@@ -15,8 +15,65 @@ class Store < Hash
   end
   attr_accessor :current_bid, :dba
 
-  def fromState(state)
-    self[@current_bid] = state.get(@current_bid, 'dummy')
+  #
+  #  from_state(state)
+  #    機能：
+  #        
+  #    入力: state Wave::Stateオブジェクト
+  #    出力: なし
+  #
+  def from_state(state)
+    if(state.get('board'))
+      self['board'] = [] unless self['board']
+      state_str_to_hash(state, 'board').each{|h|
+        self['board'].push h unless self['board'].include? h
+      }
+    end
+    if(state.get('next'))
+      self['nextMoves'] = [] unless self['nextMoves']
+      state_str_to_hash(state, 'next').each{|h|
+        self['nextMoves'].push h unless self['nextMoves'].include? h
+      }
+    end
+    if(state.get('prev'))
+      self['prevMoves'] = [] unless self['prevMoves']
+      state_str_to_hash(state, 'prev').each{|h|
+        self['prevMoves'].push h unless self['prevMoves'].include? h
+      }
+    end
+  end
+
+  #
+  #  state_str_to_hash(state, name)
+  #    機能：
+  #        
+  #    入力: state Wave::Stateオブジェクト
+  #          name  文字列 stateのkey
+  #    出力: Array 要素はstoreに格納する形のHashオブジェクト
+  #          name='board'のときは1要素、'next','prev'のときは要素数は不定
+  #          0もありうる
+  #
+  def state_str_to_hash(state, name)
+    return [] if state.get(name).size == 0
+    case name
+      when 'board'
+        ret = Hash[ [%w|bid turn board black white|.map(&:to_sym),
+                        state.get('board').split(',',-1)].transpose ]
+        ret[:bid] = ret[:bid].to_i
+        ret[:turn] = (ret[:turn] == 't')
+        return [ret]
+      when 'next','prev'
+        return state.get(name).split(':').map{|mstr|
+          mhsh = Hash[
+            [%w|bid mid m_from m_to piece promote nxt_bid|.map(&:to_sym),
+             mstr.split(',') ].transpose ]
+          %w|bid mid m_from m_to nxt_bid|.map(&:to_sym).each{|s|
+            mhsh[s] = mhsh[s].to_i
+          }
+          mhsh[:promote] = (mhsh[:promote] == 't')
+          mhsh
+        }
+    end
   end
 
   def update_store(params=nil)

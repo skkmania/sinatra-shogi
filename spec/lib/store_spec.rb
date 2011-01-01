@@ -21,15 +21,42 @@ describe Store, 'は初期化したとき' do
   end
 end
 
-describe Store, "は#fromState state を実行したとき" do
-  before do
+describe Store, "はfrom_state にboard,next,prevがそろったstate をわたされたとき" do
+  before(:all) do
     @store = Store.new(SpecLog)
     @state = Wave::State.new
+    @state['board'] = '1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL,,'
+    @state['next']='1,4,17,16,P,f,10394:1,5,97,96,P,t,10398:1,6,67,66,P,f,10454'
+    @state['prev']='235,0,57,56,P,f,232:1629,0,77,76,P,f,232'
   end
-  it "サイズがひとつ大きくなる" do
-    lambda {
-      @store.fromState @state
-    }.should change(@store, :size).by(1)
+  it "それぞれの要素を自身にとりこむ" do
+    @store.from_state @state
+    @store['board'].should include({:bid=>1,:turn=>true,:board=>'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL',:black=>'',:white=>''})
+    @store['nextMoves'].should include({:bid=>1,:mid=>5,:m_from=>97,:m_to=>96,:piece=>'P',:promote=>true,:nxt_bid=>10398})
+    @store['prevMoves'].should include({:bid=>235,:mid=>0,:m_from=>57,:m_to=>56,:piece=>'P',:promote=>false,:nxt_bid=>232})
+  end
+end
+
+describe Store, "は#state_str_to_hash state, name を実行したとき" do
+  before(:all) do
+    @store = Store.new(SpecLog)
+    @state = Wave::State.new
+    @state['board'] = '1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL,,'
+    @state['next']='1,4,17,16,P,f,10394:1,5,97,96,P,t,10398:1,6,67,66,P,f,10454'
+    @state['prev']='235,0,57,56,P,f,232:1629,0,77,76,P,f,232'
+  end
+  it "boardのとき" do
+    @store.state_str_to_hash(@state, 'board').should == [{:bid=>1,:turn=>true,:board=>'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL',:black=>'',:white=>''}]
+  end
+  it "nextのとき" do
+    result = @store.state_str_to_hash(@state, 'next')
+    result.should have(3).moves
+    result.should include({:bid=>1,:mid=>5,:m_from=>97,:m_to=>96,:piece=>'P',:promote=>true,:nxt_bid=>10398})
+  end
+  it "prevのとき" do
+    result = @store.state_str_to_hash(@state, 'prev')
+    result.should have(2).moves
+    result.should include({:bid=>235,:mid=>0,:m_from=>57,:m_to=>56,:piece=>'P',:promote=>false,:nxt_bid=>232})
   end
 end
 
