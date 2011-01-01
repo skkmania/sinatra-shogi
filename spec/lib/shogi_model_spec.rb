@@ -1,8 +1,9 @@
 require 'shogi_model.rb'
 
+SpecLog = Logger.new('log/shogi_model_spec.log')
 describe Board, "は初期化されたとき" do
   before(:all) do
-    @board = Board.new
+    @board = Board.new(SpecLog)
   end
 
   after(:all) do
@@ -15,6 +16,11 @@ describe Board, "は初期化されたとき" do
     @board.turn.should be_true
   end
 
+  it "to_logによりlog file出力用の文字列へ変換できる" do
+    result = @board.to_log
+    result.should match(/bid:\d+, turn:/)
+    SpecLog.debug(result)
+  end
 end
 
 # applyのテスト
@@ -23,7 +29,9 @@ describe Board, "のapplyをテストする" do
   before(:all) do
     @board = Board.new
     @board.store.update_store
+    SpecLog.debug(@board.to_log)
     @result = @board.apply "+7776FU\n"
+    SpecLog.debug(@board.to_log)
   end
   it "その返り値 はHashである" do
     @result.class.should == Hash
@@ -50,7 +58,7 @@ describe Board, "のapplyをテストする" do
     @result['next'].should ==  [{:bid=>2, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false, :mid=>0}, {:bid=>2, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false, :mid=>1}, {:bid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false, :mid=>2}, {:bid=>2, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false, :mid=>3}]
   end
   it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のprevの値は" do
-    @result['prev'].should == [{:bid=>2, :mid=>0, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false}, {:bid=>2, :mid=>1, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false}, {:bid=>2, :mid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false}, {:bid=>2, :mid=>3, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false}] 
+    @result['prev'].should == [{:bid=>1, :mid=>0, :m_from=>77, :m_to=>76, :piece=>"P", :nxt_bid=>2, :promote=>false}] 
   end
 end
 

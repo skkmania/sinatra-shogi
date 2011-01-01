@@ -60,6 +60,19 @@ class Board
     @board[pairdec2index(pairdec)].chr
   end
 
+  #
+  #  to_log
+  #    logに自身を記録するための文字列を返す
+  #    入力: なし
+  #    出力: 変換後の文字列
+  #
+  def to_log
+    " bid:#@bid, turn:#@turn,\n board:#@board,\n black:#@black, white:#@white,\n" +
+    " size of store : board -> #{(@store['board'] || []).size},\n" +
+    "               : nextMoves -> #{(@store['nextMoves'] || []).size},\n" +
+    "               : prevMoves -> #{(@store['prevMoves'] || []).size}"
+  end
+
   #private
   #
   #  _apply(move)
@@ -131,8 +144,9 @@ class Move < Hash
   @@promotes = {'p' => 'q', 'l' => 'm', 'n' => 'o', 's' => 't', 'r' => 'd', 'b' => 'h' }
   @@un_promotes = {'q' => 'p', 'm' => 'l', 'o' => 'n', 't' => 's', 'd' => 'r', 'h' => 'b' }
 
-  def initialize(ary = [])
-    super
+  def initialize(ary = [], logger=Logger.new('log/move.log'))
+    @mlogger = logger
+    super(ary)
     self[:m_from]  = ary[0]
     self[:m_to]    = ary[1]
     self[:piece]   = ary[2]
@@ -154,8 +168,8 @@ class Move < Hash
   #    DBではその手だけでわかることを要求している
   #
   def parse_csa(board, line)
-    @blogger.debug("into parse_csa with\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
-    @blogger.debug("and line: #{line}")
+    @mlogger.debug("into parse_csa with\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
+    @mlogger.debug("and line: #{line}")
     line.chomp!
     self[:bid]    = board.bid
     self[:turn]   = (line[0] == '+'[0])
@@ -168,7 +182,7 @@ class Move < Hash
                                     # 動かす前が成り駒でないとき
       self[:promote] = true  
     end
-    @blogger.debug("leaving parse_csa with board : #{@board}")
+    @mlogger.debug("leaving parse_csa with board : #{@board}")
   end
 
   def from_hand

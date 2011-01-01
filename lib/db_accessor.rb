@@ -153,8 +153,17 @@ class DbAccessor
 
   # @gottenの出力を読みやすく整形する
   # 入力 obj @gottenを受け取ることを想定. @gottenは hash である
+  #          sectionも受け取ることにする。keyの名が異なるので対応が必要
+  #          (これは将来、keyの名を統一することで解消すべき)
   # 出力 ret @gottenの値を整形した文字列
   def log_format(obj)
+    # この処理は暫定
+    if obj.has_key? 'next'
+      next_key = 'next'; prev_key = 'prev'
+    end
+    if obj.has_key? 'nextMoves'
+      next_key = 'nextMoves'; prev_key = 'prevMoves'
+    end
     moves_tos = lambda{|obj, name, key|
       ret = ''
       nmgrp = obj[name].group_by{|m| m[key] }.sort
@@ -176,11 +185,11 @@ class DbAccessor
       # obj['board'] は array. その要素はhash
     total += obj['board'].map(&:board_hash_to_s).join("\n")
 
-    total += "\nnextMoves :\n"
-    total += moves_tos.call(obj, 'nextMoves', :bid)
+    total += "\n" + next_key + " :\n"
+    total += moves_tos.call(obj, next_key, :bid)
 
-    total += "\nprevMoves :\n"
-    total += moves_tos.call(obj, 'prevMoves', :nxt_bid)
+    total += "\n" + prev_key + " :\n"
+    total += moves_tos.call(obj, prev_key, :nxt_bid)
     return total
   end
   

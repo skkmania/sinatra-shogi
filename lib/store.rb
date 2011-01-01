@@ -37,8 +37,7 @@ class Store < Hash
 
   def read_from_db(data)
     self.merge! data
-    buf = ''
-    @logger.debug("read_from_db : #{PP::pp self, buf}")
+    @logger.debug("read_from_db : #{@dba.log_format self}")
   end
   #
   #  complement(board, move)
@@ -48,8 +47,7 @@ class Store < Hash
   #        : move  Moveオブジェクト  mid, nxt_bidが足りない
   #    出力: 上記オブジェクト
   def complement(board, move)
-    buf = ''
-    @logger.debug("into complement with board : #{PP::pp board, buf}")
+    @logger.debug("into complement with board : #{board.to_log}")
     @logger.debug("into complement with move : #{move.inspect}")
     if complemented_move = find_move(move)
       @logger.debug("move found : #{complemented_move.inspect}")
@@ -114,7 +112,7 @@ class Store < Hash
     ret['next']  = self['nextMoves'].select{|h| (h['bid'] || h[:bid]).to_i == bid }
     ret['prev']  = self['prevMoves'].select{|h| (h['nxt_bid'] || h[:nxt_bid]).to_i == bid }
         # これでよい？nxt_bid?
-    @logger.debug("leaving get_section with #{ret.inspect}")
+    @logger.debug("leaving get_section with #{@dba.log_format ret}")
     return ret
   end
   
