@@ -100,9 +100,13 @@ class GpsClient < GpsShogi
     STDERR.puts "entered make_and_send_delta with #{@board.store.dba.log_format data}"
     delta = to_delta(data)
     # gpsの着手の結果をstateに反映させる
-    delta['bid']   = data['board'][0][:bid]
+    delta['bid']   = data['board'][0][:bid].to_s
     delta['turn']  = (data['board'][0][:turn]?'t':'f')
-    delta['count'] = (@wave.state.get('count').to_i + 1).to_s
+    if delta['bid'] == "1"
+      delta['count'] = "0"
+    else
+      delta['count'] = (@wave.state.get('count').to_i + 1).to_s
+    end
     delta['move']  = '' # browser userには必要ない値なので。
     @wave.state.submitDelta(delta)
     STDERR.puts "delta submitted."
