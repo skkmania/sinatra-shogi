@@ -36,18 +36,10 @@ describe Board, "のapplyをテストする" do
   it "その返り値 はHashである" do
     @result.class.should == Hash
   end
-  it "その返り値はkeyとしてbid, board, next, prev, turnをもつ" do
-    @result.keys.should include('bid')
+  it "その返り値はkeyとして board, next, prev をもつ" do
     @result.keys.should include('board')
     @result.keys.should include('next')
     @result.keys.should include('prev')
-    @result.keys.should include('turn')
-  end
-  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のbidの値は2" do
-    @result['bid'].should == 2
-  end
-  it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のturnの値はf" do
-    @result['turn'].should == 'f'
   end
   it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のboardの値は" do
     @result['board'].should == [{:bid=>2, :black=>"", :white=>"",

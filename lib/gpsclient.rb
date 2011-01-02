@@ -36,7 +36,7 @@ class GpsClient < GpsShogi
             delta = @board.apply(line.dup)
             STDERR.puts "#{line} applied."
             @gclogger.debug("applied to board : #{@board.store.dba.log_format delta}")
-            send_delta(delta)
+            make_and_send_delta(delta)
           else
             @gclogger.debug "other response from gps : size -> #{line.size}, response -> #{line}"
             STDERR.puts "other response from gps : size -> #{line.size}, response -> #{line}"
@@ -92,16 +92,22 @@ class GpsClient < GpsShogi
     ret
   end
   #
-  # send_delta
-  # 入力：Hash Stateに上書きしたいデータ
+  # make_and_send_delta(data)
+  # 入力：Hash Stateに上書きするdataの元になるsectionのHash
   # 出力：なし
-  def send_delta(data)
-    @gclogger.debug("entered send_delta with #{data.inspect}")
-    STDERR.puts "entered send_delta with #{data.inspect}"
-    @wave.state.submitDelta(to_delta(data))
+  def make_and_send_delta(data)
+    @gclogger.debug("entered make_and_send_delta with #{@board.store.dba.log_format data}")
+    STDERR.puts "entered make_and_send_delta with #{@board.store.dba.log_format data}"
+    delta = to_delta(data)
+    # gpsの着手の結果をstateに反映させる
+    delta['bid']   = data['board'][0][:bid]
+    delta['turn']  = (data['board'][0][:turn]?'t':'f')
+    delta['count'] = (@wave.state.get('count').to_i + 1).to_s
+    delta['move']  = '' # browser userには必要ない値なので。
+    @wave.state.submitDelta(delta)
     STDERR.puts "delta submitted."
     @status = 'delta_sent'
-    @gclogger.debug("leaving send_delta.")
+    @gclogger.debug("leaving make_and_send_delta.")
   end
 
   def read_state

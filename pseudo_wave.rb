@@ -230,7 +230,7 @@ class PseudoWaveConnection < Rev::WebSocket
         $gpsclient = GpsClient.new($wave, $gps_config)
         $wave.state.put('status', 'gpsc')
         $wave.state.put('mode', 'playing')
-        $gpsclient.send_delta($gpsclient.board.store.get_section(1))
+        $gpsclient.make_and_send_delta($gpsclient.board.store.get_section(1))
         #$pubsub.publish($wave.state.toString)
       when 'gpsc'
         # gpsclientとして参加しているクライアントはstateのstatusは必ず

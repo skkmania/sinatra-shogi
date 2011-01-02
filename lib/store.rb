@@ -23,19 +23,19 @@ class Store < Hash
   #    出力: なし
   #
   def from_state(state)
-    if(state.get('board'))
+    if(state['board'])
       self['board'] = [] unless self['board']
       state_str_to_hash(state, 'board').each{|h|
         self['board'].push h unless self['board'].include? h
       }
     end
-    if(state.get('next'))
+    if(state['next'])
       self['nextMoves'] = [] unless self['nextMoves']
       state_str_to_hash(state, 'next').each{|h|
         self['nextMoves'].push h unless self['nextMoves'].include? h
       }
     end
-    if(state.get('prev'))
+    if(state['prev'])
       self['prevMoves'] = [] unless self['prevMoves']
       state_str_to_hash(state, 'prev').each{|h|
         self['prevMoves'].push h unless self['prevMoves'].include? h

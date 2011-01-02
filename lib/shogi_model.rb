@@ -27,7 +27,7 @@ class Board
   #  lineで表現された指し手を現在のboardに適用する
   #  @storeからとれる情報をとり、自らの情報を追加しHashを組み立て返す
   #  入力: line 文字列 CSA形式の指し手文字列 例：+7776FU
-  #  出力: delta Wave::StateにsubmitできるHash
+  #  出力: Hash lineで表現された指し手を適用してできた局面のbidのsectionのHash
   def apply(line)
     @blogger.debug("entered in apply with #{line}")
     ret = {}
@@ -40,13 +40,17 @@ class Board
     _apply(move)
     @bid = (@store.complement(self, move))[0].bid
     @blogger.debug("@store became #{@store.dba.log_format @store}")
-    @blogger.debug("@bid became : #@bid")
+    @blogger.debug("@bid became : #@bid and going to get this bid's section")
     tmp = @store.get_section @bid
-    @blogger.debug("get_section @bid : #{tmp.inspect}")
+=begin
+    @blogger.debug("result of get_section #@bid is :\n #{@store.dba.log_format tmp}")
     ret['bid'] = @bid
     ret.merge! tmp
-    @blogger.debug("leaving from apply with #{ret.inspect}")
+    @blogger.debug("leaving from apply with delta as \n#{state_log_format ret}")
     ret
+=end
+    @blogger.debug("leaving from apply with the result of get_section #@bid :\n #{@store.dba.log_format tmp}")
+    tmp
   end
 
   #
