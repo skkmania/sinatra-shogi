@@ -74,12 +74,6 @@ window.gameController.game = this;
       LOG.goOut();
       return false;
     }
-/*
-    if(ret){
-      this.controller.sendDelta( this.controller.makeReviewDelta(ret.nxt_bid) );
-    } else
-      return false;
-*/
   },
 	/**
 	 * respondValidity(actionContents)
@@ -371,8 +365,17 @@ window.gameController.game = this;
 	/**
 	 * doAction(actionContents)
 	 */
+	// 機能：指定された動作を実行する
 	// 入力 : 配列 actionContents : [piece, fromObj, toCell]
 	// 成るというactionの場合、pieceは成った状態でここにくる
+	// 出力：なし
+	// 副作用：boardのturnを反転
+	//         とった駒を駒台へしまう
+	//         board上で駒を移動
+	//         動作内容をDBに登録
+	//         Storeを更新(動作内容が反映される. 新しいbid,mid.)
+	//         deltaの作成と発行
+	//         つまり、もうここへは戻らずサーバからのレスポンス待ちへ。
   doAction: function doAction(actionContents) { // ShogiGame
     var piece = actionContents[0];
     var fromObj = actionContents[1];
@@ -415,7 +418,7 @@ window.gameController.game = this;
     dataStore.registBoard(m);
     // 受け取ったsliceを元にdeltaを構成し、stateを発行する
     LOG.debug('doAction: game.new_bid : ' + this.new_bid);
-    var delta =  window.gameController.makeReviewDelta(this.new_bid);
+    var delta = window.gameController.makeReviewDelta(this.new_bid, m.toCSA());
     LOG.debug('delta : ' + Object.toJSON(delta));
     window.gameController.sendDelta(delta);
   },

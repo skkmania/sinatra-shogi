@@ -502,13 +502,15 @@ GameController = Class.create({
     return delta;
   },
 	/**
-	 * makeReviewDelta(bid)
+	 * makeReviewDelta(bid, move)
 	 */
 	// 入力されたbidのboard情報を取得し、sliceをdeltaに置き換える
 	// 入力 : bid 数値 表示したい局面のbid
 	//  ただし、これはnullでも可。そのときは画面上のbid入力エリアの値を使う
+	//        move CSA形式文字列 表示したい局面に至る指し手
+	//          つまり、ユーザが指した手をStateに載せてサーバに伝えたい
         // 出力 : 作成されたdelta オブジェクト
-  makeReviewDelta: function makeReviewDelta(bid){ // GameController
+  makeReviewDelta: function makeReviewDelta(bid, move){ // GameController
     var delta = {};
     LOG.getInto('GameController#makeReviewDelta');
     this.count++;
@@ -535,6 +537,7 @@ GameController = Class.create({
       delta['mode']  = wave.getState().get('mode') || 'review';
       delta['count'] = this.count.toString();
       delta['bid']   = value.toString();
+      if (move) { delta['move']   = move; }
       delta['turn']  = (slice.get('board').turn ? 't' : 'f');
       delta['board'] = slice.get('board').toDelta();
       delta['next']  = slice.get('nextMoves').toDelta();
