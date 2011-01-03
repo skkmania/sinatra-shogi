@@ -142,15 +142,27 @@ class Store < Hash
   	'range' => 'full'}
         @logger.debug("going to regist_board with params : #{params.inspect}")
         @dba.read_params(params) # regist_boardのためのパラメータ渡し
-          # ただし、これで本当によいか確認が必要 2010.12.21
         result = @dba.regist_board
-        board.bid         = result['board'][0]['bid']
+        @logger.debug("result of regist_board : #{@dba.log_format result}")
+        board.bid         = result['board'][0][:bid].to_i
+        @logger.debug("board.bid became : #{board.bid}")
         complemented_move = result['prevMoves'][0]
-        self.merge! result # ここは怪しい！！
-          # regist_boardの返り値とStoreの構造って同じだっけ？？
+        @logger.debug("complemented_move became : #{complemented_move.inspect}")
+        # resultには新局面のboardとprevMovesのHashの配列が返る
+        # ので、それをselfに追加する
+
+        @logger.debug("before board pushed :\n #{self['board'].inspect}")
+        self['board'].push result['board'][0]
+        @logger.debug("after board pushed :\n #{self['board'].inspect}")
+
+        @logger.debug("before prevMoves pushed :\n #{self['prevMoves'].inspect}")
+        self['prevMoves'].push result['prevMoves'][0]
+        @logger.debug("after prevMoves pushed :\n #{self['prevMoves'].inspect}")
+
       end
     end
-    @logger.debug("leaving complement with #{board.inspect}, #{move.inspect}")
+    @logger.debug("leaving complement with #{board.to_log}")
+    @logger.debug("leaving complement with complemented_move : #{complemented_move.inspect}")
     return [board, complemented_move]
   end
   #
@@ -168,7 +180,7 @@ class Store < Hash
     ret['next']  = self['nextMoves'].select{|h| (h['bid'] || h[:bid]).to_i == bid }
     ret['prev']  = self['prevMoves'].select{|h| (h['nxt_bid'] || h[:nxt_bid]).to_i == bid }
         # これでよい？nxt_bid?
-    @logger.debug("leaving get_section with #{@dba.log_format ret}")
+    @logger.debug("leaving get_section with\n #{@dba.log_format ret}")
     return ret
   end
   

@@ -269,6 +269,17 @@ class DbAccessor
   def to_html
   end
 
+  #
+  #  regist_board
+  #    機能 : 不明な指し手と局面をDBに問合せ,
+  #           それらのmid, bidを含む結果を得る。
+  #    入力 : なし。DbAccessorの各インスタンス変数により動作が決定される.
+  #    出力 : つぎの2通りにわかれる
+  #          新しい局面を登録した場合
+  #            その局面のsectionのもとになるデータのHash
+  #          既存の局面だった場合
+  #            その局面のbidを起点としたget_msgの結果
+  #
   def regist_board
     @logger.debug { 'into regist_board in DbAccessor' }
     query = "select regist_board('#{@turn}'::bool,'#{@board}'::char(81),\
@@ -283,23 +294,30 @@ class DbAccessor
     #    これは新しいボードの登録だったときで、 10411はnew_bid, 1はnew_mid
     # 内容例：　 [{:regist_board=>"(10411,,,,,,)"}]
     #    これは既存のの登録だったときで、 10411はnew_bid
+
+    # 新手と新局面に対してmid, bidを取得したことになる
     new_bid, new_mid = result[0][:regist_board].scan(/\d+/).map(&:to_i)
     @logger.debug { "new_bid : #{new_bid},  new_mid : #{new_mid}" } 
+
     if new_mid
       ret = {}
-      # 新しい局面を登録した場合
+      # new_midがあるということは、新しい局面を登録した場合
       @logger.debug { "this board not found, so new board was registered.: #{new_bid}" } 
-      ret['board'] = [{"turn"=> @turn, "board"=> @board, "black"=> @black, "bid"=> new_bid.to_s, "white"=> @white}]
+      ret['board'] = [{:turn=> @turn, :board=> @board, :black=> @black, :bid=> new_bid, :white=> @white}]
       ret['nextMoves'] = []
-      ret['prevMoves'] = [{"promote"=> @promote, "m_from"=> @from, "m_to"=> @to, "bid"=> @bid, "nxt_bid"=> new_bid.to_s, "mid"=> new_mid.to_s, "piece"=> @piece}]
-         # わざとすべて文字列の値としている
-      @logger.debug { "returning hash : #{ret.inspect}" } 
+      ret['prevMoves'] = [{:promote=> @promote, :m_from=> @from, :m_to=> @to, :bid=> @bid, :nxt_bid=> new_bid, :mid=> new_mid, :piece=> @piece}]
+         # わざとすべて文字列の値としている -> やめてみる
+         # rubyのなかで処理するときは数値のままがよい
+         # たしか、msgpackのbugのために文字列にした記憶があるのでjsのクライアント
+         # のbugのもとになるかもしれない
+         # もっとも、そのときとはmsgpackのライブラリが異なるはずなので問題ないかもしれない。それに期待。
+      @logger.debug { "leaving from regist_board with hash : #{ret.inspect}" } 
       return ret
       #packed_ret = ret.to_msgpack
       #@logger.debug { "ret.msgpack : #{packed_ret}" } 
       #return packed_ret
     else
-      # 既存の局面だった場合(midはregist_boardの答えには含まれない）
+      # new_midがないということは、既存の局面だった場合
       @bid = new_bid
       @logger.debug { "@bid is set to : #{@bid}" } 
       @logger.debug { "this board exists, so try to get full range." } 
