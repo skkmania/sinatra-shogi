@@ -36,12 +36,16 @@ window.gameController.game = this;
 	 */ 
         // 入力 : 配列 actionContents 駒の動きをあらわした配列
 	// 出力 : Moveオブジェクト
+	//        ただし、設定されるプロパティは
+	//        bid, from, to, piece, promote
+	//        だけである。つまりmid, nxt_bidは不明のまま
         // 機能 : 入力のactionを表すMoveオブジェクトを作成し返す
+	// 注意： 入力のactionが「成る」という動作ならば、pieceは       
+	//        すでに成った状態でここにくる
   makeMove: function makeMove(actionContents) { // ShogiGame
     LOG.getInto('ShogiGame#makeMove');
     var ret = new Move(LOG);
     ret.bid = this.board.bid;
-    ret.piece = actionContents[0].chr;
     ret.from = actionContents[1].type == 'stand' ? 0 :
                  actionContents[1].x * 10 + actionContents[1].y;
     ret.to = actionContents[2].x * 10 + actionContents[2].y;
@@ -49,6 +53,12 @@ window.gameController.game = this;
     if(actionContents[0].type == 'Gold' || 
        actionContents[0].type == 'King')
       ret.promote = false;  
+    if(ret.promote){
+      ret.piece = Type2chr[actionContents[0].unpromote_type];
+      if (actionContents[0].isBlack()) ret.piece = ret.piece.toUpperCase();
+    } else {
+      ret.piece = actionContents[0].chr;
+    }
     LOG.debug('move made as : ' + ret.toDebugString());
     LOG.goOut();
     return ret;
@@ -389,10 +399,16 @@ window.gameController.game = this;
     LOG.debug('toCell : ' + toCell.toDebugString());
 
     // この動きがすでにnextMovesのなかにあるならばその動作をすればよい。
+    // 駒が成るときなど、findMoveを経ずにここにくる処理があるので
+    // このようなチェックが必要である
     var m = this.makeMove(actionContents);
-  //?  this.findMove(m);
-  // ないからここに来たんじゃないの?
-    // nextMovesに無ければ、まず新手と新局面を作成して、
+    if (existed_m = this.findMove(m)){
+      LOG.goOut();
+      makeAndSendReviewDelta(existed_m.nxt_bid, existed_m.toCSA());
+    }
+
+    // nextMovesに無ければここから実行される。
+    // まず新手と新局面を作成して、
 
     if (toCell.piece){
       LOG.warn('piece moving and capturing. : ');
