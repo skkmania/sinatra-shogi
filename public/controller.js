@@ -694,34 +694,33 @@ GameController = Class.create({
         // ユーザに対し表示した確認用要素のクリックイベントはこの関数を呼び出す
   //getResponseToConfirmActionByUser: function getResponseToConfirmActionByUser(event,actionContents) {
   getResponseToConfirmActionByUser: function getResponseToConfirmActionByUser(event) {
-    var log = window.gameController.log;
-    log.getInto('GameController#getResponseToConfirmActionByUser');
+    LOG.getInto('GameController#getResponseToConfirmActionByUser');
       // この関数にはactionContentsがbindされているので、thisはこの中ではactionContentsを指す
     var actionContents = this;
-    log.debug('actionContents[0] : ' + actionContents[0].toDebugString());
+    LOG.debug('actionContents[0] : ' + actionContents[0].toDebugString());
 
-    log.debug('event.element : ' + event.element().id);
+    LOG.debug('event.element : ' + event.element().id);
 
     switch (event.element().id) {
       case 'yesElement':
-        log.debug('yesElement was clicked.');
+        LOG.debug('yesElement was clicked.');
         window.gameController.game.promotePiece(actionContents).call(actionContents[0]);
 /*
   ここは、以下の意味。
         var f = window.gameController.game.promotePiece(actionContents);
-        log.debug('got function? -- type is  ' + typeof f);
+        LOG.debug('got function? -- type is  ' + typeof f);
         f.call(actionContents[0]);
-        log.debug('function called.');
+        LOG.debug('function called.');
 */
       break;
       case 'noElement':
-        log.debug('noElement was clicked.');
+        LOG.debug('noElement was clicked.');
       break;
     }
     window.gameController.game.doAction(actionContents);
     $('promoteOrNot').stopObserving();
     $('promoteOrNot').hide();
-    log.goOut();
+    LOG.goOut();
   },
 	/**
 	 * noticeBadActionToUser()
