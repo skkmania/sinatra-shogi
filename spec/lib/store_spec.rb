@@ -108,6 +108,53 @@ describe Store, "は#complement を実行したとき" do
   end
 end
 
+describe Store, "complementのテスト：Storeに情報が足りずにfind_moveがnilを返すケース" do
+  before(:all) do
+    @move = Move.new
+    @board = Board.new
+    @store = Store.new
+    @store['board'] = []
+    @store['prevMoves'] = []
+  end
+
+
+  it "DBに触らないためにupdate_storeもregist_boardもstubで対応するテスト" do
+    @store.stub!(:find_move).with(@move).and_return(nil)
+    @store.stub!(:update_store).and_return(nil)
+    @store.dba.stub!(:regist_board).and_return({'board'=>[{:bid=>10,:board=>''}],'nextMoves'=>[],'prevMoves'=>[@move]})
+    @store.dba.stub!(:log_format).and_return('spec test mock')
+    res_board, res_move = @store.complement(@board,@move)
+    res_board.black.should == ''
+  end
+end
+
+=begin
+ # 本当はStoreに情報が足りずにupdateしにいくケースのテストをしなければならないのだが。DBのテストにもなってしまうので準備が必要
+ # このテストの実施案
+describe Store, "は#complement を実行したとき" do
+  before(:all) do
+    @store.current_bid = 10000 # なにか小さいStoreがとれるbidを指定
+    そのbidにて存在するmoveとboardをテストのために消す
+    @move = そのmoveをリテラルで生成しておく
+    @board = そのbidのboardをリテラルで生成しておく
+    @store = Store.new(SpecLog)
+    @store.update_store
+    @moveは@storeにはないはず
+    @result = complement @board, @move  #  テスト対象コード
+  end
+  # 結果について検証
+  it "complementをstoreに存在しないmoveとboardを指定されて実行すると返り値はそのmoveとboardの完全情報をそなえている" do
+    #@board, @moveのkey, valueが型まで完備することを確認するコード
+    @result[0][:bid].should == 
+    @result[0][:bid].class.should == Fixnum
+  end
+  it "complementをstoreに存在しないmoveとboardを指定されて実行するとDBに登録する" do
+    DBに@board, @moveが存在することを確認するコード
+  end
+  it "さらに、
+end
+=end
+
 describe Store, "は#get_section 1 を実行したとき" do
   before do
     @store = Store.new(SpecLog)

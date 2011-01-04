@@ -277,9 +277,23 @@ class DbAccessor
   #    出力 : つぎの2通りにわかれる
   #          新しい局面を登録した場合
   #            その局面のsectionのもとになるデータのHash
+  #            返り値はHashオブジェクトであり、そのkeyは
+  #            'board', 'nextMoves', 'prevMoves'という文字列
+  #            それぞれの値の型は
+  #            'board' : 要素数1の配列
+  #                      その要素は次のようなHash
+  #                      {:turn=> 論理値, :board=> 文字列, :black=> 文字列,
+  #                       :bid=> Fixnum, :white=> 文字列}
+  #            'nextMoves' : 要素数0の配列
+  #            'prevMoves' : 要素数1の配列
+  #                      その要素は次のようなHash
+  #                      {:bid=> Fixnum, :mid=> Fixnum,:m_from=> Fixnum,
+  #                       :m_from=> Fixnum, :m_to=> Fixnum,
+  #                       :piece=> 1文字, :promote=> 論理値,
+  #                       :nxt_bid=> Fixnum}
   #          既存の局面だった場合
   #            その局面のbidを起点としたget_msgの結果
-  #
+  #            その型はget_msgのコメント参照
   def regist_board
     @logger.debug { 'into regist_board in DbAccessor' }
     query = "select regist_board('#{@turn}'::bool,'#{@board}'::char(81),\
@@ -302,10 +316,14 @@ class DbAccessor
     if new_mid
       ret = {}
       # new_midがあるということは、新しい局面を登録した場合
-      @logger.debug { "this board not found, so new board was registered.: #{new_bid}" } 
-      ret['board'] = [{:turn=> @turn, :board=> @board, :black=> @black, :bid=> new_bid, :white=> @white}]
+      @logger.debug { "this board not found, so new board was registered and got new_bid : #{new_bid}" } 
+      ret['board']     = [{:bid=> new_bid,:turn=> @turn,
+                           :board=>@board, :black=>@black, :white=>@white}]
       ret['nextMoves'] = []
-      ret['prevMoves'] = [{:promote=> @promote, :m_from=> @from, :m_to=> @to, :bid=> @bid, :nxt_bid=> new_bid, :mid=> new_mid, :piece=> @piece}]
+      ret['prevMoves'] = [{:bid=> @bid, :mid=> new_mid,
+                           :m_from=> @from, :m_to=> @to,
+                           :piece=> @piece, :promote=> @promote,
+                           :nxt_bid=> new_bid}]
          # わざとすべて文字列の値としている -> やめてみる
          # rubyのなかで処理するときは数値のままがよい
          # たしか、msgpackのbugのために文字列にした記憶があるのでjsのクライアント
