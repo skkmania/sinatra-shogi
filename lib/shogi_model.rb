@@ -85,15 +85,24 @@ class Board
     @blogger.debug("@board : #{@board}")
     @blogger.debug("@black : #{@black}")
     @blogger.debug("@white : #{@white}")
-    players_stand  = (move[:piece].upcase == move[:piece] ? @black : @white)
     destination_piece = @board[pairdec2index(move[:m_to])].chr
+    @blogger.debug("destination_piece : #{destination_piece}")
     case
       when move.from_hand # 持ち駒を打つとき
-        players_stand.sub! move[:piece], ''
+        if (move[:piece].upcase == move[:piece])
+          @black.sub! move[:piece], ''
+        else
+          @white.sub! move[:piece], ''
+        end
         @board[pairdec2index(move[:m_to])] = move[:piece]
       when move.on_board  # 盤上の指し手
-        if destination_piece != 'x'  # 駒をとる
-           players_stand += destination_piece.swapcase
+        if destination_piece != 'x'[0]  # 駒をとる
+           if (move[:piece].upcase == move[:piece])
+             @black += destination_piece.swapcase
+           else
+             @white += destination_piece.swapcase
+           end
+           @blogger.debug("players_stand became : #{(move[:piece].upcase == move[:piece] ? @black : @white)}")
         end 
         if move[:promote]   # 成り
           @board[pairdec2index(move[:m_to])] = move.promoted_piece

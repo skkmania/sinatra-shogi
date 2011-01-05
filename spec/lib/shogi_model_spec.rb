@@ -121,6 +121,43 @@ describe Board, "は初期盤面に'+7776FU\n-3334FU\n+8822UM\n'を#applyした�
   end
 end
 
+# _applyのテスト
+describe Board, "駒をとる動きが盤面と持駒に反映されることのテスト" do
+  before(:all) do
+    @board = Board.new
+    @board.from_ary %w|100 f NNP lxxpxxxxLnxpxPxRxxxgxpxPxxbxxpxsPSxxrxxkpxxxxxgxpxGxxxxxxpxPxGxxxxLpxPSKxxHpxxPxL snpp|
+    @move = Move.new
+    @move.parse_csa @board, "-3966KA\n"
+    @res = @board._apply @move
+  end
+  it "後手が39の角で66の金をとると後手の駒台に金が増える" do
+    @board.white.should == 'snppg'
+  end
+  it "後手が39の角で66の金をとると39は空になる" do
+    @board.get_piece(39).should == 'x'
+  end
+  it "後手が39の角で66の金をとると66は角になる" do
+    @board.get_piece(66).should == 'b'
+  end
+end
+
+# _applyのテスト
+describe Board, "駒を打つ動きが盤面と持駒に反映されることのテスト" do
+  before(:all) do
+    @board = Board.new
+    @board.from_ary %w|100 f NNP lxxpxxxxLnxpxPxRxxxgxpxPxxbxxpxsPSxxrxxkpxxxxxgxpxGxxxxxxpxPxGxxxxLpxPSKxxHpxxPxL snpp|
+    @move = Move.new
+    @move.parse_csa @board, "-0015GI\n"
+    @res = @board._apply @move
+  end
+  it "後手が15に銀を打つと後手の駒台から銀が減る" do
+    @board.white.should == 'npp'
+  end
+  it "後手が15に銀を打つと15は銀になる" do
+    @board.get_piece(15).should == 's'
+  end
+end
+
 describe Move, "のpromoteをテストする" do
   it "pのpromoteは" do
     m = Move.new [77, 76, 'p', true]
