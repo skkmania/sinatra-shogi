@@ -404,39 +404,38 @@ window.gameController.game = this;
     var m = this.makeMove(actionContents);
     if (existed_m = this.findMove(m)){
       LOG.goOut();
-      makeAndSendReviewDelta(existed_m.nxt_bid, existed_m.toCSA());
-    }
-
-    // nextMovesに無ければここから実行される。
-    // まず新手と新局面を作成して、
-
-    if (toCell.piece){
-      LOG.warn('piece moving and capturing. : ');
-      LOG.debug('draggable.obj is : ' + piece.toDebugString());
-      LOG.debug('toCell.piece is : ' + toCell.piece.toDebugString());
-      capturedPieceType = toCell.piece.type;
-      toCell.piece.gotoOpponentsStand();
+      window.gameController.makeAndSendReviewDelta(existed_m.nxt_bid, existed_m.toCSA());
     } else {
-      LOG.warn('piece moving without capturing.');
-    }
-    if(fromObj.type == 'cell'){
-      fromObj.piece.sitOnto(toCell);
-      fromObj.piece = null;
-    } else if(fromObj.type == 'stand'){
-      fromObj.removeByObj(piece);
-      piece.sitOnto(toCell);
-    }
-    // 新局面なのでturnも反転しておく
-    this.board.turn = !this.board.turn;
+      // nextMovesに無ければここから実行される。
+      // まず新手と新局面を作成して、
+      if (toCell.piece){
+        LOG.warn('piece moving and capturing. : ');
+        LOG.debug('draggable.obj is : ' + piece.toDebugString());
+        LOG.debug('toCell.piece is : ' + toCell.piece.toDebugString());
+        capturedPieceType = toCell.piece.type;
+        toCell.piece.gotoOpponentsStand();
+      } else {
+        LOG.warn('piece moving without capturing.');
+      }
+      if(fromObj.type == 'cell'){
+        fromObj.piece.sitOnto(toCell);
+        fromObj.piece = null;
+      } else if(fromObj.type == 'stand'){
+        fromObj.removeByObj(piece);
+        piece.sitOnto(toCell);
+      }
+      // 新局面なのでturnも反転しておく
+      this.board.turn = !this.board.turn;
 
-    LOG.goOut();
-    // DBサーバに情報を投げ、そのbidとmidを含むsliceを受け取る
-    dataStore.registBoard(m);
-    // 受け取ったsliceを元にdeltaを構成し、stateを発行する
-    LOG.debug('doAction: game.new_bid : ' + this.new_bid);
-    var delta = window.gameController.makeReviewDelta(this.new_bid, m.toCSA());
-    LOG.debug('delta : ' + Object.toJSON(delta));
-    window.gameController.sendDelta(delta);
+      LOG.goOut();
+      // DBサーバに情報を投げ、そのbidとmidを含むsliceを受け取る
+      dataStore.registBoard(m);
+      // 受け取ったsliceを元にdeltaを構成し、stateを発行する
+      LOG.debug('doAction: game.new_bid : ' + this.new_bid);
+      var delta = window.gameController.makeReviewDelta(this.new_bid, m.toCSA());
+      LOG.debug('delta : ' + Object.toJSON(delta));
+      window.gameController.sendDelta(delta);
+    }
   },
 	/**
 	 * doActionWithPromote(actionContents)
