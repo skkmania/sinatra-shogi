@@ -132,6 +132,25 @@ describe Move, "のpromoteをテストする" do
   end
 end
 
+describe Move, "parse_csaのテスト" do
+  before(:all) do
+    @board = Board.new
+    @board.from_ary %w|100 f NNP lxxpxxxxLnxpxPxRxxxgxpxPxxbxxpxsPSxxrxxkpxxxxxgxpxGxxxxxxpxPxGxxxxLpxPSKxxHpxxPxL snpp|
+    @move  = Move.new
+  end
+  
+  it "'-0045FU'に対して" do
+    @move.parse_csa(@board, '-0045FU')
+    @move.should == {:bid => 100, :turn => false,
+       :m_from => 0, :m_to => 45, :piece => 'p', :promote => false }
+  end
+
+  it "'+0045FU'に対して,turnがあわないので例外が発生する" do
+    lambda{ @move.parse_csa(@board, '+0045FU')
+    }.should raise_error(ParseCSAException)
+  end
+end
+
 describe Move, "は初期盤面とcsa形式文字列を与えられると" do
   before do
     @board = Board.new
@@ -143,6 +162,7 @@ describe Move, "は初期盤面とcsa形式文字列を与えられると" do
        :m_from => 77, :m_to => 76, :piece => 'P', :promote => false }
   end
   it "'-3334FU'に対して" do
+    @board.turn = false
     @move.parse_csa(@board, '-3334FU')
     @move.should == {:bid => 1, :turn => false,
        :m_from => 33, :m_to => 34, :piece => 'p', :promote => false }
@@ -156,5 +176,16 @@ describe Move, "は初期盤面とcsa形式文字列を与えられると" do
     @move.parse_csa(@board, '+9993KY')
     @move.should == {:bid => 1, :turn => true,
        :m_from => 99, :m_to => 93, :piece => 'L', :promote => false }
+  end
+end
+
+describe Move, "to_logのテスト" do
+  before do
+    @board = Board.new
+    @move  = Move.new
+  end
+  it "'+7776FU'に対して" do
+    @move.parse_csa(@board, '+7776FU')
+    @move.to_log.should == 'move : 1, , true, 77, 76, P, false, , '
   end
 end

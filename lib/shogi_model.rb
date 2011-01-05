@@ -4,6 +4,12 @@
 #  shogi_model.rb
 #
 require 'lib/store.rb'
+
+class ShogiModelException < Exception; end
+class BoardException < ShogiModelException; end
+class ParseCSAException < BoardException; end
+class MoveException  < ShogiModelException; end
+
 class Board
   Board::Initial_board_string =
    'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL';
@@ -22,53 +28,47 @@ class Board
   end
   attr_accessor :store, :bid, :board, :black, :white, :turn
 
-  #
-  #  apply(line)
-  #  lineで表現された指し手を現在のboardに適用する
-  #  @storeからとれる情報をとり、自らの情報を追加しHashを組み立て返す
-  #  入力: line 文字列 CSA形式の指し手文字列 例：+7776FU
-  #  出力: Hash lineで表現された指し手を適用してできた局面のbidのsectionのHash
+#
+#  apply(line)
+#    機能: lineで表現された指し手を現在のboardに適用する
+#          @storeからとれる情報をとり、自らの情報を追加しHashを組み立て返す
+#    入力: line 文字列 CSA形式の指し手文字列 例：+7776FU
+#    出力: Hash lineで表現された指し手を適用してできた局面のbidのsectionのHash
+#  副作用: 自身の値を変える
+#
   def apply(line)
     @blogger.debug("entered in apply with #{line}")
-    ret = {}
-    @turn = !@turn
-    ret['turn'] = (@turn ? 't' : 'f')
     move = Move.new
     move.parse_csa(self, line)
-    move[:bid] = @bid
     @blogger.debug("#{line} is converted to Move object : #{move.inspect}")
     _apply(move)
+    @turn = !@turn
     @bid = (@store.complement(self, move))[0].bid
     @blogger.debug("@store became #{@store.dba.log_format @store}")
     @blogger.debug("@bid became : #@bid and going to get this bid's section")
     tmp = @store.get_section @bid
-=begin
-    @blogger.debug("result of get_section #@bid is :\n #{@store.dba.log_format tmp}")
-    ret['bid'] = @bid
-    ret.merge! tmp
-    @blogger.debug("leaving from apply with delta as \n#{state_log_format ret}")
-    ret
-=end
     @blogger.debug("leaving from apply with the result of get_section #@bid :\n #{@store.dba.log_format tmp}")
     tmp
   end
 
-  #
-  #  get_piece(pairdec)
-  #    盤上の駒の文字を取得する
-  #    入力: 2桁の数字 7六 -> 76
-  #    出力: 文字
-  #
+#
+#  get_piece(pairdec)
+#    盤上の駒の文字を取得する
+#    入力: 2桁の数字 7六 -> 76
+#    出力: 文字
+#  副作用: なし
+#
   def get_piece(pairdec)
     @board[pairdec2index(pairdec)].chr
   end
 
-  #
-  #  to_log
-  #    logに自身を記録するための文字列を返す
-  #    入力: なし
-  #    出力: 変換後の文字列
-  #
+#
+#  to_log
+#    logに自身を記録するための文字列を返す
+#    入力: なし
+#    出力: 変換後の文字列
+#  副作用: なし
+#
   def to_log
     " bid:#@bid, turn:#@turn,\n board:#@board,\n black:#@black, white:#@white,\n" +
     " size of store : board -> #{(@store['board'] || []).size},\n" +
@@ -125,6 +125,19 @@ class Board
   def pairdec2index(pairdec)
     pair2index(*pairdec2pair(pairdec))
   end
+
+  #
+  #  from_ary(ary)
+  #    配列を読み、自身の値とする
+  #    入力 : 配列 要素はすべて文字列 順序はbid,turn,black,board,white
+  #    出力 : なし
+  #    副作用 : 自身の値を変更する
+  #
+  def from_ary(ary)
+    @bid    = ary[0].to_i
+    @turn   = (ary[1] == 't')
+    @black, @board, @white = ary[2..4]
+  end
 end
 
 
@@ -156,13 +169,21 @@ class Move < Hash
     self[:promote] = ary[3]
   end
   #
-  #  parse_csa
+  #  parse_csa(board, line)
   #    CSA形式の指し手文字列を読み自身にとりこむ
-  #    入力: board Boardオブジェクト
-  #        : line 文字列 CSA形式の指し手文字列 例：+7776FU
-  #        この文字列に改行がついていたら取りさって評価する
-  #    出力: なし
-  #          例： +7776FU  ->  [77, 76, P, false]
+  #    入力  : board Boardオブジェクト
+  #          : line 文字列 CSA形式の指し手文字列 例：+7776FU
+  #            この文字列に改行がついていたら取りさって評価する
+  #    出力  : なし
+  #    副作用: 自身の値のほとんどを変更する.その方法は
+  #         {:bid=>board.bidへ, :mid=>変更せず,
+  #          :turn=>lineの1字目が+ならtrue, :m_from=>lineから,
+  #          :m_to=>lineから, :piece=>board,lineから組合せて算出,
+  #          :promote=>board,lineから組合せて算出,
+  #    例： 初期盤面、+7776FU  -> {:bid=>1, :mid=>変更せず,
+  #                   :turn=>true, :m_from=>77, :m_to=>76, :piece=>'P',
+  #                   :promote=>false }
+  #    例外条件: board.turnとlineの1字目が矛盾ならばParseCSAException
   #  注意：このメソッドにはこの手を指した盤面が必要
   #  その理由：DB上のmove形式とcsa形式の定義の違い
   #    成り駒の扱い：DBでは成る前の状態の駒の名前を保持
@@ -176,9 +197,15 @@ class Move < Hash
     line.chomp!
     self[:bid]    = board.bid
     self[:turn]   = (line[0] == '+'[0])
+    raise ParseCSAException if self[:turn] != board.turn
     self[:m_from] = line[1,2].to_i
     self[:m_to]   = line[3,4].to_i
-    self[:piece]  = board.get_piece(self[:m_from])
+    if (self[:m_from] == 0)
+      self[:piece] = @@pieces[ line[5,6] ]
+      self[:piece].upcase! if self[:turn]
+    else
+      self[:piece] = board.get_piece(self[:m_from])
+    end
     self[:promote] = false
     if  'qmothd'.index(@@pieces[ line[5,6] ]) and # 動かした駒が成り駒,かつ
         'plnsbr'.index(self[:piece].downcase) then
@@ -202,5 +229,16 @@ class Move < Hash
     else
       @@promotes[self[:piece].downcase].upcase
     end
+  end
+#
+#  to_log
+#    logに自身を記録するための文字列を返す
+#    入力: なし
+#    出力: 変換後の文字列
+#  副作用: なし
+#
+  def to_log
+    [:bid, :mid, :turn, :m_from, :m_to, :piece, :promote, :nxt_bid].inject(
+    "move : "){|r, e| r += "#{self[e]}, " }
   end
 end
