@@ -142,6 +142,26 @@ describe Board, "駒をとる動きが盤面と持駒に反映されることの
 end
 
 # _applyのテスト
+describe Board, "成り駒をとる動きが盤面と持駒に反映されることのテスト" do
+  before(:all) do
+    @board = Board.new
+    @board.from_ary "14848|f|B|lxpxxxPxLnHpxxPxRNsxxpxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrxpxxPxNlxpxxxPxL|".split('|',-1) 
+    @move = Move.new
+    @move.parse_csa @board, "-3122GI\n"
+    @res = @board._apply @move
+  end
+  it "後手が31の銀で22の馬をとると後手の駒台に角が増える" do
+    @board.white.should == 'b'
+  end
+  it "後手が31の銀で22の馬をとると31は空になる" do
+    @board.get_piece(31).should == 'x'
+  end
+  it "後手が31の銀で22の馬をとると22は銀になる" do
+    @board.get_piece(22).should == 's'
+  end
+end
+
+# _applyのテスト
 describe Board, "駒を打つ動きが盤面と持駒に反映されることのテスト" do
   before(:all) do
     @board = Board.new

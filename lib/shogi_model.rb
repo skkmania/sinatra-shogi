@@ -96,10 +96,16 @@ class Board
         end
         @board[pairdec2index(move[:m_to])] = move[:piece]
       when move.on_board  # 盤上の指し手
-        if destination_piece != 'x'[0]  # 駒をとる
+        if destination_piece != 'x'  # 駒をとる
            if (move[:piece].upcase == move[:piece])
+             if 'qmothd'.index destination_piece
+               destination_piece = un_promotes(destination_piece)
+             end
              @black += destination_piece.swapcase
            else
+             if 'QMOTHD'.index destination_piece
+               destination_piece = un_promotes(destination_piece)
+             end
              @white += destination_piece.swapcase
            end
            @blogger.debug("players_stand became : #{(move[:piece].upcase == move[:piece] ? @black : @white)}")
@@ -115,6 +121,15 @@ class Board
     @blogger.debug("@board : #{@board}")
     @blogger.debug("@black : #{@black}")
     @blogger.debug("@white : #{@white}")
+  end
+
+  def un_promotes(piece)
+    if 'qmothd'.index piece
+      return {'q' => 'p', 'm' => 'l', 'o' => 'n', 't' => 's', 'd' => 'r', 'h' => 'b' }[piece]
+    end
+    if 'qmothd'.index piece.downcase
+      return {'q' => 'p', 'm' => 'l', 'o' => 'n', 't' => 's', 'd' => 'r', 'h' => 'b' }[piece.downcase].upcase
+    end
   end
 
   # pairdec とは7六 -> 76のように盤の符号を10進の数字にしたもの
