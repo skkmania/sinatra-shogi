@@ -85,30 +85,20 @@ class Board
     @blogger.debug("@board : #{@board}")
     @blogger.debug("@black : #{@black}")
     @blogger.debug("@white : #{@white}")
+    players_stand = (move.is_black?) ? @black : @white
     destination_piece = @board[pairdec2index(move[:m_to])].chr
     @blogger.debug("destination_piece : #{destination_piece}")
     case
       when move.from_hand # 持ち駒を打つとき
-        if (move[:piece].upcase == move[:piece])
-          @black.sub! move[:piece], ''
-        else
-          @white.sub! move[:piece], ''
-        end
+        players_stand.sub! move[:piece], ''
         @board[pairdec2index(move[:m_to])] = move[:piece]
       when move.on_board  # 盤上の指し手
         if destination_piece != 'x'  # 駒をとる
-           if (move[:piece].upcase == move[:piece])
-             if 'qmothd'.index destination_piece
-               destination_piece = un_promotes(destination_piece)
-             end
-             @black += destination_piece.swapcase
-           else
-             if 'QMOTHD'.index destination_piece
-               destination_piece = un_promotes(destination_piece)
-             end
-             @white += destination_piece.swapcase
+           if 'qmothd'.index destination_piece.downcase
+             destination_piece = un_promotes(destination_piece)
            end
-           @blogger.debug("players_stand became : #{(move[:piece].upcase == move[:piece] ? @black : @white)}")
+           players_stand << destination_piece.swapcase
+           @blogger.debug("players_stand became : #{players_stand}")
         end 
         if move[:promote]   # 成り
           @board[pairdec2index(move[:m_to])] = move.promoted_piece
@@ -247,11 +237,23 @@ class Move < Hash
     self[:m_from] != 0
   end
 
+  def is_black?
+    self[:piece].upcase == self[:piece]
+  end
+
   def promoted_piece
     if self[:piece].downcase == self[:piece]
       @@promotes[self[:piece].downcase]
     else
       @@promotes[self[:piece].downcase].upcase
+    end
+  end
+
+  def unpromoted_piece
+    if self[:piece].downcase == self[:piece]
+      @@un_promotes[self[:piece].downcase]
+    else
+      @@un_promotes[self[:piece].downcase].upcase
     end
   end
 #
