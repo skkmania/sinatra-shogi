@@ -23,6 +23,56 @@ describe Board, "は初期化されたとき" do
   end
 end
 
+# to_csa_fileのテスト
+describe Board, "のto_csa_fileをテストする" do
+  before(:all) do
+    @board = Board.new
+    @board.store.update_store
+    SpecLog.debug(@board.to_log)
+    @result = @board.apply "+7776FU\n"
+    SpecLog.debug(@board.to_log)
+@wanted=<<END
+N+abc
+N-gps
+P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+P2 * -HI *  *  *  *  * -KA * 
+P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+P4 *  *  *  *  *  *  *  *  * 
+P5 *  *  *  *  *  *  *  *  * 
+P6 *  * +FU *  *  *  *  *  * 
+P7+FU+FU * +FU+FU+FU+FU+FU+FU
+P8 * +KA *  *  *  *  * +HI * 
+P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
+-
+END
+  end
+  
+  it "'+7776FU'のあとの局面のとき、その返り値は#{@wanted}である" do
+    @board.to_csa_file(['abc','gps']).should == @wanted
+  end
+
+  it "持駒の処理のテスト" do
+    @board.from_ary %w|100 f NNP lxxpxxxxLnxpxPxRxxxgxpxPxxbxxpxsPSxxrxxkpxxxxxgxpxGxxxxxxpxPxGxxxxLpxPSKxxHpxxPxL snpp|
+@wanted2=<<END2
+N+abc
+N-gps
+P1 *  *  *  * -HI *  * -KE-KY
+P2 *  *  * -KI *  * -KI *  * 
+P3+UM *  *  *  * -FU * -FU * 
+P4-FU+KY-FU-FU-OU * -FU * -FU
+P5 * -FU *  * -FU-GI * +FU * 
+P6 *  * +FU+KI * +FU+FU *  * 
+P7+FU+FU *  *  * +GI * +HI * 
+P8 * +GI+KI *  *  *  *  *  * 
+P9+KY+OU *  *  *  * -KA * +KY
+P+00KE00KE00FU
+P-00GI00KE00FU00FU
+-
+END2
+    @board.to_csa_file(['abc','gps']).should == @wanted2
+  end
+end
+
 # applyのテスト
 #  返り値の正しさのテスト
 describe Board, "のapplyをテストする" do

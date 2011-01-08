@@ -16,6 +16,10 @@ class Board
   def self.initial_board_string
     Board::Initial_board_string
   end
+  @@p2csa =  {'p' => 'FU', 'l' => 'KY', 'n' => 'KE', 's' => 'GI',
+              'g' => 'KI', 'k' => 'OU', 'r' => 'HI', 'b' => 'KA',
+              'q' => 'TO', 'm' => 'NY', 'o' => 'NK', 't' => 'NG',
+              'h' => 'UM', 'd' => 'RY'}
 
   def initialize(logger=Logger.new('log/board.log'))
     @blogger = logger
@@ -28,6 +32,47 @@ class Board
   end
   attr_accessor :store, :bid, :board, :black, :white, :turn
 
+#
+#  to_csa_file(players)
+#    機能: 現在のboardをgpsのバイナリに初期局面として渡すファイルの内容となる文字列にして返す
+#    入力: 配列 [black player's name, white player's name]
+#    出力: 文字列 
+#      例:
+#         N+skkmania
+#         N-testgps
+#         P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+#         P2 * -HI *  *  *  *  * -KA *
+#         P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+#         P4 *  *  *  *  *  *  *  *  *
+#         P5 *  *  *  *  *  *  *  *  *
+#         P6 *  * +FU *  *  *  *  *  *
+#         P7+FU+FU * +FU+FU+FU+FU+FU+FU
+#         P8 * +KA *  *  *  *  * +HI *
+#         P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
+#         -
+#  副作用: なし
+#
+  def to_csa_file(players)
+    @blogger.debug("entered in to_csa_file with #{players.join(',')}")
+    ret  = 'N+' + players[0] + "\n"
+    ret += 'N-' + players[1] + "\n"
+    1.upto(9).each{|row|
+       ret += "P#{row}"
+       9.downto(1){|col|
+         piece = get_piece(row + col*10)
+         if piece == 'x'
+           ret += ' * '
+         else
+           ret += ((piece.upcase == piece) ? '+':'-') + @@p2csa[piece.downcase]
+         end
+       }
+       ret += "\n"
+    }
+    ret += 'P+' + @black.split(//).map{|c| '00' + @@p2csa[c.downcase] }.join('') + "\n" if @black.size > 0
+    ret += 'P-' + @white.split(//).map{|c| '00' + @@p2csa[c         ] }.join('') + "\n" if @white.size > 0
+    ret += (@turn ? '+' : '-') + "\n"
+    ret
+  end
 #
 #  apply(line)
 #    機能: lineで表現された指し手を現在のboardに適用する
