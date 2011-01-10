@@ -63,10 +63,17 @@ var Area = Class.create({
 });
 
 areaSettings = {
+  'menu' : {
+              'container': 'menu',
+              'title'    : 'Menu',
+              'position' : [10,600],
+              'width'    : 200,
+              'height'   : 300 
+            },
   'controlPanel' : {
               'container': 'controlPanel',
               'title'    : 'ControlPanel',
-              'position' : [10,0],
+              'position' : [110,0],
               'width'    : 500,
               'height'   : 90 
             },
@@ -80,21 +87,21 @@ areaSettings = {
   'board' : {
               'container': 'boardArea',
               'title'    : 'Board',
-              'position' : [160,100],
+              'position' : [160,120],
               'width'    : 520,
               'height'   : 440
             },
   'prevMoves' : {
               'container': 'pres',
               'title'    : 'prevMoves',
-              'position' : [10,100],
+              'position' : [10,120],
               'width'    : 120,
               'height'   : 300
             },
   'nextMoves' : {
               'container': 'nxts',
               'title'    : 'nextMoves',
-              'position' : [690,100],
+              'position' : [690,120],
               'width'    : 120,
               'height'   : 400
             },
@@ -146,7 +153,7 @@ function Areas(opt) {
   this.initialize(opt);
 };
 
-Areas.data_name = $w('data controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook');
+Areas.data_name = $w('data menu controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook');
 Areas.prototype = {
   initialize: function(opt) {
     Areas.data_name.each(function(name){

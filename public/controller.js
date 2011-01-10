@@ -59,6 +59,44 @@ Player = Class.create({
 });
 
 /**
+ * Menu
+ */
+Menu = Class.create({
+	/**
+	 * initialize(game)
+	 */
+  initialize: function initialize(controller) { // Menu
+    LOG.getInto('Menu#initialize');
+    this.controller = controller;
+    this.name = 'menu';
+    this.initArea();
+    LOG.goOut();
+  },
+	/**
+	 * initArea()
+	 */
+  initArea: function initArea() { // Menu              
+    this.area = areas[this.name];
+    LOG.getInto('Menu#initArea');
+    var contents = '<input id="inputViewerId" type="text" name="viewerId" maxlength="10" />\
+<button id="review-button" class="review t" onclick="window.gameController.reviewButtonPressed($F(\'inputViewerId\')); this.hide();">review</button>\
+<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed($F(\'inputViewerId\')); this.hide();">join</button>\
+<div id="play-list">Play List</div>\
+<button id="play-button" class="play t" onclick="window.gameController.playButtonPressed($F(\'inputViewerId\')); this.hide();">play</button>\
+<div id="watch-list">Watch List</div>\
+<button id="watch-button" class="watch t" onclick="window.gameController.watchButtonPressed($F(\'inputViewerId\')); this.hide();">watch</button>\
+<form>\
+<button id="gpsPlay-button" class="gpsPlay t" onclick="window.gameController.gpsPlayButtonPressed($F(\'inputViewerId\'));return false;">gpsPlay</button>\
+<input type="radio" name="turnRequestBlack" class="reqBlack t" label="reqBlack t" />\
+<input type="radio" name="turnRequestWhite" class="reqWhite t" label="reqWhite t" />\
+</form>'
+    this.area.window_contents.update(contents);
+    this.area.window.open();
+    LOG.goOut();
+  }
+});
+
+/**
  * ControlPanel
  */
 ControlPanel = Class.create({
@@ -201,6 +239,7 @@ GameController = Class.create({
     this.playerObjects = $A([]); // playerオブジェクトの配列
     this.blackplayers = $A([]);  // 先手playerのPlayerオブジェクトの配列
     this.whiteplayers = $A([]);  // 後手playerのPlayerオブジェクトの配列
+    this.menu = new Menu(this);
     this.controlPanel = new ControlPanel(this);
     this.count = 0;
        // 手数。このgameではcount手目を指した局面がthis.gameの
@@ -261,7 +300,7 @@ GameController = Class.create({
     this.player1 = new Player('player1', 'b_' + name, true);
     this.player2 = new Player('player2', 'w_' + name, true);
     var delta = this.addPlayersToDelta();
-    $('join-button').hide();
+    if($('join-button')){ $('join-button').hide(); }
     this.game = new ShogiGame(this.settings, this);
     this.count = 0;
     this.top_by_viewer = 0;
@@ -360,7 +399,7 @@ GameController = Class.create({
     this.determineTop();
     // topが決まったので持ち駒の位置も決められる。
     this.game.setStandPosition();
-    $('join-button').hide();
+    if($('join-button')){ $('join-button').hide();}
     // 最初だけは将棋盤の向きが逆になっているかもしれないので調整。
     if(this.count === 0) this.adjustDirection();
     //if (!this.game.board.shown) this.game.board.show();
@@ -409,7 +448,7 @@ GameController = Class.create({
     LOG.getInto('GameController#over');
     this.count = state.get('count') || 0;
     if(!this.player1) this.getPlayersFromState(state);
-    $('join-button').hide();
+    if($('join-button')){ $('join-button').hide(); }
     if (!this.game.board.shown) this.game.board.show();
 //  ここの処理は他のコールバックを参考に書き直すこと
 //    this.game.boardReadFromState(state);  // 盤面の読み込み
@@ -752,6 +791,55 @@ GameController = Class.create({
     LOG.goOut();
   },
 	/**
+	 * reviewButtonPressed(name)
+	 */
+        // 機能：　reviewボタン押下に対し反応しreviewモードでの対局を開始する
+        //         受け取ったnameから先手、後手の名前を生成して
+	//         this.playersに格納する(どちらも同じ名前になる)
+        // 入力： name 文字列 playerの名前 (waveの@以下を含むIDなど。)
+        // 出力： なし
+  reviewButtonPressed: function reviewButtonPressed(name) { // GameController
+    var delta = {};
+    LOG.getInto('GameController#reviewButtonPressed');
+    LOG.debug('arguments : ' + name);
+
+    // nameをwave.viewerにセットする。これはnowaveならではの処理。
+    // waveで使用するときはコメントアウトすること。
+    wave.setViewer(name);
+    LOG.debug('wave.getViewer().getId() : ' + wave.getViewer().getId());
+    LOG.debug('wave.getViewer().getDisplayName() : ' + wave.getViewer().getDisplayName());
+    // ここまで。
+
+    // playerの名前を設定
+    wave.getState().put('blacks', name);
+    wave.getState().put('whites', name);
+    wave.getState().put('players', name + ',' + name);
+    // このとき、ブラウザクライアントではbid = 1に対応するsectionを持つべき
+    wave.getState().put('status', 'review');
+    this.mode = 'playing';
+    // 2人ぶんをpush
+    this.players.push(wave.getViewer().getId());
+    this.players.push(wave.getViewer().getId());
+    LOG.debug('players: ' + this.players.join(','));
+    this.player1 = new Player('player1', name, true);
+    this.player2 = new Player('player2', name, true);
+    // reviewモードにおいてはtopは強制的に0にする
+    this.top_by_viewer = 0;
+    var delta = this.addPlayersToDelta();
+    delta['status'] = 'review';
+    delta['mode'] = this.mode;
+    delta['count']   = 0;
+    delta['bid']   = 1;
+    delta['turn'] = 't';
+    delta['board'] = '1,t,' + this.game.board.initialString + ',,';
+    delta['next']  = dataStore.slices.get(1).get('nextMoves').toDelta();
+    delta['prev']  = dataStore.slices.get(1).get('prevMoves').toDelta();
+    LOG.debug('sending delta : ' + Log.dumpObject(delta));
+    LOG.goOut();
+    // 以下を呼べば、acceptStateに飛んでしまう
+    wave.getState().submitDelta(delta);
+  },
+	/**
 	 * gpsPlayButtonPressed(name)
 	 */
         // 機能：　gpsPlayボタン押下に対し反応しGPSとの対局を開始する
@@ -810,7 +898,6 @@ GameController = Class.create({
   joinButtonPressed: function joinButtonPressed(name) { // GameController
     LOG.getInto('GameController#joinButtonPressed');
     LOG.debug('arguments : ' + name);
-
     // nameをwave.viewerにセットする。これはnowaveならではの処理。
     // waveで使用するときはコメントアウトすること。
     wave.setViewer(name);
@@ -841,7 +928,7 @@ GameController = Class.create({
           LOG.debug('players: ' + this.players.join(','));
           delta = this.setPlayersOrder();
           LOG.debug('returned delta : ' + Log.dumpObject(delta));
-          $('join-button').hide();
+          if($('join-button')){ $('join-button').hide(); }
           // 先後が決まったので、画面の将棋盤の向きをそれに合わせる。
           //this.adjustDirection();          
           this.mode = 'playing';

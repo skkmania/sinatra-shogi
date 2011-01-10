@@ -129,7 +129,7 @@ wave.ws.onmessage = function(event) {
             // ¤³¤Î¥¯¥é¥¤¥¢¥ó¥È¤Ï´ÑÀï¼Ô¤Ê¤Î¤ÇID¤Ï¼«Æ°¤Ë¤Õ¤Ã¤Æ¤·¤Þ¤¦¡£
             wave.setViewer();
             // ¤½¤·¤Æ´ÑÀï¼Ô¤Ê¤é¤Ðjoin Button¤ÏÉ¬Í×¤Ê¤¯
-            $('join-button').hide();
+            if($('join-button')){ $('join-button').hide(); }
             // ²èÌÌ¤Î½é´ü²½¤ØÈô¤ó¤Ç¤è¤¤¡£
             window.gameController.acceptState();
             break;
