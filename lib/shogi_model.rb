@@ -56,6 +56,7 @@ class Board
     @blogger.debug("entered in to_csa_file with #{players.join(',')}")
     ret  = 'N+' + players[0] + "\n"
     ret += 'N-' + players[1] + "\n"
+    @blogger.debug("process: #{ret}")
     1.upto(9).each{|row|
        ret += "P#{row}"
        9.downto(1){|col|
@@ -68,9 +69,16 @@ class Board
        }
        ret += "\n"
     }
+    @blogger.debug("process: #{ret}")
+    @blogger.debug("now @black is : #@black,  @white is #@white")
+    @blogger.debug("class of @black is : #{@black.class},  @white is #{@white.class}")
+    @blogger.debug("size of @black is : #{@black.size},  @white is #{@white.size}")
     ret += 'P+' + @black.split(//).map{|c| '00' + @@p2csa[c.downcase] }.join('') + "\n" if @black.size > 0
     ret += 'P-' + @white.split(//).map{|c| '00' + @@p2csa[c         ] }.join('') + "\n" if @white.size > 0
+    @blogger.debug("process: #{ret}")
+    @blogger.debug("now @turn is : #{@turn.to_s}")
     ret += (@turn ? '+' : '-') + "\n"
+    @blogger.debug("leaving from to_csa_file with #{ret}")
     ret
   end
 #
@@ -196,6 +204,22 @@ class Board
     @bid    = ary[0].to_i
     @turn   = (ary[1] == 't')
     @black, @board, @white = ary[2..4]
+  end
+
+  #
+  #  from_state(state)
+  #    stateを読み、自身の値とする
+  #    入力 : stateのHash valueはすべて文字列 keyはbid,turn,black,board,white
+  #    出力 : なし
+  #    副作用 : 自身の値を変更する
+  #
+  def from_state(state)
+    @blogger.debug("entered in from_state with #{state.inspect}")
+    @blogger.debug("board now is \n#{to_log}")
+    @bid    = state['bid'].to_i
+    @turn   = (state['turn'][0] == 't'[0])
+    @board, @black, @white = state['board'].split(',',-1)[2..4]
+    @blogger.debug("leaving from from_state. board became \n#{to_log}")
   end
 end
 

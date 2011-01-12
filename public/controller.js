@@ -93,6 +93,17 @@ Menu = Class.create({
     this.area.window_contents.update(contents);
     this.area.window.open();
     LOG.goOut();
+  },
+	/**
+	 * addGpsPlayButton()
+	 */
+	// 機能: 局面指定GPS対局ボタンを用意する
+	// 入力:
+	// 出力:
+	// 副作用:
+  addGpsPlayButton: function addGpsPlayButton() { // Menu
+    var contents = '<button id="askGps-button" class="askGps t" onclick="window.gameController.askGpsButtonPressed(); this.hide();">askGps</button>';
+    this.area.window_contents.insert(contents, { after: $('inputViewerId')});
   }
 });
 
@@ -834,6 +845,39 @@ GameController = Class.create({
     delta['board'] = '1,t,' + this.game.board.initialString + ',,';
     delta['next']  = dataStore.slices.get(1).get('nextMoves').toDelta();
     delta['prev']  = dataStore.slices.get(1).get('prevMoves').toDelta();
+    LOG.debug('sending delta : ' + Log.dumpObject(delta));
+
+    // 局面指定GPS対局ボタンを用意する
+    this.menu.addGpsPlayButton();
+    LOG.goOut();
+    // 以下を呼べば、acceptStateに飛んでしまう
+    wave.getState().submitDelta(delta);
+  },
+	/**
+	 * askGpsButtonPressed()
+	 */
+        // 機能：　askGpsボタン押下に対し反応しGPSとの対局を開始する
+	//         
+        // 入力： 
+        // 出力： なし
+  askGpsButtonPressed: function askGpsButtonPressed(name) { // GameController
+    var delta = {};
+    LOG.getInto('GameController#askGpsButtonPressed');
+
+    // playerの名前を設定
+    // 現在の手番をGPSに担当させたいのだから
+    if(this.game.board.turn) {
+      wave.getState().put('blacks', 'gps');
+    } else {
+      wave.getState().put('whites', 'gps');
+    }
+    // これで手番の希望を載せたことになる
+    // gps対局を希望するDeltaを作成してsendDelta
+    // statusをgpstとする。tは局面指定を意味するものとする
+    delta['status'] = 'gpst';
+    // その他の情報は現在の画面を構成している情報なのだから、現在のstate
+    // に載っているままでよい
+    LOG.debug('arguments : ' + name);
     LOG.debug('sending delta : ' + Log.dumpObject(delta));
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう

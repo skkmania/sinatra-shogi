@@ -13,6 +13,11 @@ class GpsClient < GpsShogi
     @wave   = wave
     @status = nil
     @board  = Board.new
+    @board.from_state @wave.state
+    unless config[:initial_filename]
+      config[:initial_filename] = make_initial_file
+    end
+    @board.store.current_bid = @wave.state['bid']
     @board.store.update_store
     super config
     @board_m     = Mutex.new
@@ -24,6 +29,21 @@ class GpsClient < GpsShogi
   end
   attr_accessor :status, :board
   attr_reader :gps_th
+
+#
+#  make_initial_file
+#    機能: gpsのバイナリに初期局面として渡すファイルを作成する
+#    入力: なし. @wave.state, @boardの内容を元にする
+#    出力: 文字列 作成したファイルの名前 
+#  副作用: gpsのバイナリに初期局面として渡すファイルが作成される
+#
+  def make_initial_file
+    file_name = 'bin/csa_'+ Time.now.strftime("%Y%m%d_%H%M%S.init")
+    open(file_name, "w") do |f|
+      f.write(@board.to_csa_file([@wave.state['blacks'], @wave.state['whites']]))
+    end
+    file_name
+  end
 
   def gps_thread
     Thread.start do

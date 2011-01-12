@@ -49,6 +49,29 @@ describe GpsClient, "は初期化されたとき" do
   end
 end
 
+describe GpsClient, "のmake_initial_fileをテストする" do
+  before(:all) do
+    $gps_config[:initial_filename] = nil
+    $wave.state['blacks'] = 'abc'
+    $wave.state['whites'] = 'gps'
+    @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
+    sleep 2 # wait for program setup
+  end
+
+  after(:all) do
+    @gpsclient.toryo
+    sleep 5 # wait for gpsshogi cooldown
+    puts 'toryo done.'
+  end
+
+  it "fileがつくられる" do
+    lambda {
+    open($gps_config[:initial_filename]) do |f|
+      f.should_not be_nil
+    end
+    }.should_not raise_error
+  end
+end
 
 describe GpsClient, "のacceptをテストする" do
   before(:all) do
@@ -91,11 +114,15 @@ end
 
 describe GpsClient, "#to_deltaをテストする" do
   before(:all) do
+    $gps_config[:initial_filename] = "bin/csa.init"
     @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
     @gpsclient.set_master_record "bin/csa.init"
     sleep 2 # wait for program setup
     @state = Hash.new
+    @gpsclient.board.store.current_bid = 1
+    @gpsclient.board.store.update_store
     @section = @gpsclient.board.store.get_section 2
+    puts @section.inspect
   end
 
   it "返り値はHashであり、'board','next','prev'をkeyに持つ" do

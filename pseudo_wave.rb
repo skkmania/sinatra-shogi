@@ -232,6 +232,15 @@ class PseudoWaveConnection < Rev::WebSocket
         $wave.state.put('mode', 'playing')
         $gpsclient.make_and_send_delta($gpsclient.board.store.get_section(1))
         #$pubsub.publish($wave.state.toString)
+      when 'gpst'
+        # 局面指定gps対局を申し込まれた
+        $gps_config[:sente] = ($wave.state.get('blacks') == 'gps')
+        $gps_config[:black] =  $wave.state.get('blacks')
+        $gps_config[:white] =  $wave.state.get('whites')
+        $gps_config[:initial_filename] = nil
+        $wave.state.put('status', 'gpsc')
+        $wave.state.put('mode', 'playing')
+        $gpsclient = GpsClient.new($wave, $gps_config)
       when 'gpsc'
         # gpsclientとして参加しているクライアントはstateのstatusは必ず
         # gpscとして送ること
