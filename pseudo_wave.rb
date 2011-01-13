@@ -25,6 +25,7 @@ $gps_config = {
   :byoyomi 		=> 60,
   :logfile_basename 	=> "bin/logs/x1_",
   :other_options 	=> "",
+  #:base_command 	=> 'bin/gpsshogi -v -c'
   :base_command 	=> 'bin/gpsshogi -v -r -c' # random play for test
 }
 
@@ -241,6 +242,11 @@ class PseudoWaveConnection < Rev::WebSocket
         $wave.state.put('status', 'gpsc')
         $wave.state.put('mode', 'playing')
         $gpsclient = GpsClient.new($wave, $gps_config)
+      when 'toryo'
+        # gps対局中にユーザから投了された
+        $gpsclient.toryo
+        $wave.state.put('status', 'normal')
+        $pubsub.publish($wave.state.toString)
       when 'gpsc'
         # gpsclientとして参加しているクライアントはstateのstatusは必ず
         # gpscとして送ること

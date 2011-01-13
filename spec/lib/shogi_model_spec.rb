@@ -23,6 +23,50 @@ describe Board, "は初期化されたとき" do
   end
 end
 
+# from_stateのテスト
+describe Board, "のfrom_stateをテストする" do
+  before(:all) do
+    @board = Board.new
+    SpecLog.debug(@board.to_log)
+  end
+  it "持駒がないとき、各プロパティの値が定まる" do
+    state = {'bid'=>1, 'turn'=>'true', 'board'=>'1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL,,'}
+    @board.from_state state
+    @board.bid.should == 1
+    @board.turn.should == true
+    @board.board.should == 'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL'
+    @board.black.should == ''
+    @board.white.should == ''
+  end
+  it "先手だけ持駒があるとき、各プロパティの値が定まる" do
+    state = {'bid'=>101, 'turn'=>'true', 'board'=>'101,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL,pp,'}
+    @board.from_state state
+    @board.bid.should == 101
+    @board.turn.should == true
+    @board.board.should == 'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL'
+    @board.black.should == 'pp'
+    @board.white.should == ''
+  end
+  it "後手だけ持駒があるとき、各プロパティの値が定まる" do
+    state = {'bid'=>100, 'turn'=>'false', 'board'=>'100,f,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL,,pp'}
+    @board.from_state state
+    @board.bid.should == 100
+    @board.turn.should == false
+    @board.board.should == 'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL'
+    @board.black.should == ''
+    @board.white.should == 'pp'
+  end
+  it "両方に持駒があるとき、各プロパティの値が定まる" do
+    state = {'bid'=>100, 'turn'=>'false', 'board'=>'100,f,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL,PP,pp'}
+    @board.from_state state
+    @board.bid.should == 100
+    @board.turn.should == false
+    @board.board.should == 'lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL'
+    @board.black.should == 'PP'
+    @board.white.should == 'pp'
+  end
+end
+
 # to_csa_fileのテスト
 describe Board, "のto_csa_fileをテストする" do
   before(:all) do
@@ -97,7 +141,7 @@ describe Board, "のapplyをテストする" do
       :board=>"lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL"}]
   end
   it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のnextの値は" do
-    @result['next'].should ==  [{:bid=>2, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false, :mid=>0}, {:bid=>2, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false, :mid=>1}, {:bid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false, :mid=>2}, {:bid=>2, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false, :mid=>3}]
+    @result['next'].should ==  [{:bid=>2, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false, :mid=>0}, {:bid=>2, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false, :mid=>1}, {:bid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false, :mid=>2}, {:bid=>2, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false, :mid=>3}, {:mid=>4, :m_from=>11, :m_to=>12, :piece=>"l", :nxt_bid=>15077, :promote=>false, :bid=>2}]
   end
   it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のprevの値は" do
     @result['prev'].should == [{:bid=>1, :mid=>0, :m_from=>77, :m_to=>76, :piece=>"P", :nxt_bid=>2, :promote=>false}] 

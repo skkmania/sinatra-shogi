@@ -104,6 +104,17 @@ Menu = Class.create({
   addGpsPlayButton: function addGpsPlayButton() { // Menu
     var contents = '<button id="askGps-button" class="askGps t" onclick="window.gameController.askGpsButtonPressed(); this.hide();">askGps</button>';
     this.area.window_contents.insert(contents, { after: $('inputViewerId')});
+  },
+	/**
+	 * addToryoButton()
+	 */
+	// 機能: 投了ボタンを用意する
+	// 入力:
+	// 出力:
+	// 副作用:
+  addToryoButton: function addToryoButton() { // Menu
+    var contents = '<button id="toryo-button" class="toryo t" onclick="window.gameController.toryoButtonPressed(); this.hide();">toryo</button>';
+    this.area.window_contents.insert(contents, { after: $('inputViewerId')});
   }
 });
 
@@ -879,6 +890,35 @@ GameController = Class.create({
     // に載っているままでよい
     LOG.debug('arguments : ' + name);
     LOG.debug('sending delta : ' + Log.dumpObject(delta));
+    this.menu.addToryoButton();
+    LOG.goOut();
+    // 以下を呼べば、acceptStateに飛んでしまう
+    wave.getState().submitDelta(delta);
+  },
+	/**
+	 * toryoButtonPressed()
+	 */
+        // 機能：　toryoボタン押下に対し反応しGPSとの対局を開始する
+	//         
+        // 入力： 
+        // 出力： なし
+  toryoButtonPressed: function toryoButtonPressed() { // GameController
+    var delta = {};
+    LOG.getInto('GameController#toryoButtonPressed');
+
+    // playerの名前を設定
+    // 投了後は検討モードに移行させるので先後のplayerの名前を同じにする
+    if(wave.getState().get('blacks') == 'gps') {
+      wave.getState().put('blacks', wave.getState().get('whites'));
+    } else {
+      wave.getState().put('whites', wave.getState().get('blacks'));
+    }
+    delta['status'] = 'toryo';
+    // その他の情報は現在の画面を構成している情報なのだから、現在のstate
+    // に載っているままでよい
+    LOG.debug('arguments : ' + name);
+    LOG.debug('sending delta : ' + Log.dumpObject(delta));
+    this.menu.addGpsPlayButton();
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
     wave.getState().submitDelta(delta);
