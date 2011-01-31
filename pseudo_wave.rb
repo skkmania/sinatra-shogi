@@ -22,11 +22,13 @@ $gps_config = {
   :table_record_limit 	=> 50,
   :node_limit 		=> 16000000,
   :timeleft 		=> 100, 
-  :byoyomi 		=> 60,
+  :byoyomi 		=> 10, # 10 seconds for each move
+  #:byoyomi 		=> 60,
   :logfile_basename 	=> "bin/logs/x1_",
   :other_options 	=> "",
+  :base_command 	=> 'bin/gpsshogi -c'
   #:base_command 	=> 'bin/gpsshogi -v -c'
-  :base_command 	=> 'bin/gpsshogi -v -r -c' # random play for test
+  #:base_command 	=> 'bin/gpsshogi -v -r -c' # random play for test
 }
 
 class PubSub

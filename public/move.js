@@ -155,7 +155,11 @@ var Move = Class.create({
   toCSA : function toCSA(){ // Move
     var ret = '';
     ret = (this.piece.toUpperCase() == this.piece) ? '+' : '-';
-    ret += this.from;
+    if (this.from == 0) {
+      ret += '00';
+    } else {
+      ret += this.from;
+    }
     ret += this.to;
     ret += this.csaPiece();
     return ret;

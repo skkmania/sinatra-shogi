@@ -275,17 +275,25 @@ class Move < Hash
   #    DBではその手だけでわかることを要求している
   #
   def parse_csa(board, line)
-    @mlogger.debug("into parse_csa with\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
+    @mlogger.debug("into parse_csa with\n turn : #{board.turn.to_s},\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
     @mlogger.debug("and line: #{line}")
     line.chomp!
     self[:bid]    = board.bid
     self[:turn]   = (line[0] == '+'[0])
-    raise ParseCSAException if self[:turn] != board.turn
+    @mlogger.debug("self[:turn] became : #{self[:turn].to_s}")
+    if self[:turn] != board.turn
+      @mlogger.debug("ParseCSAException occured!!")
+      raise ParseCSAException
+    end
     self[:m_from] = line[1,2].to_i
     self[:m_to]   = line[3,4].to_i
-    if (self[:m_from] == 0)
+    if (self[:m_from] == 0) then
       self[:piece] = @@pieces[ line[5,6] ]
-      self[:piece].upcase! if self[:turn]
+      @mlogger.debug("self[:piece] became : #{self[:piece]}")
+      if self[:turn] then
+        self[:piece] = self[:piece].upcase
+        # ここでupcase!とすると@@piecesが書き換わってしまうのでコピーにしてる
+      end
     else
       self[:piece] = board.get_piece(self[:m_from])
     end
@@ -295,7 +303,8 @@ class Move < Hash
                                     # 動かす前が成り駒でないとき
       self[:promote] = true  
     end
-    @mlogger.debug("leaving parse_csa with board : #{@board}")
+    @mlogger.debug("parsed move is : #{self.inspect}")
+    @mlogger.debug("leaving parse_csa with\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
   end
 
   def from_hand
