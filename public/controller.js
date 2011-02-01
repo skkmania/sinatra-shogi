@@ -873,6 +873,7 @@ GameController = Class.create({
         // 出力： なし
   askGpsButtonPressed: function askGpsButtonPressed(name) { // GameController
     var delta = {};
+    var currentPlayer = wave.getState().get('players').split(',')[0];
     LOG.getInto('GameController#askGpsButtonPressed');
 
     // playerの名前を設定
@@ -883,7 +884,15 @@ GameController = Class.create({
       wave.getState().put('whites', 'gps');
     }
     // これで手番の希望を載せたことになる
-    // gps対局を希望するDeltaを作成してsendDelta
+    // stateのplayersの値も合わせて変更する
+    if(this.game.board.turn) {
+      wave.getState().put('players', 'gps@googlewave.com,'+currentPlayer);
+    } else {
+      wave.getState().put('players', currentPlayer+',gps@googlewave.com');
+    }
+    // player objectはここでクリアしておけば、stateが降ってきたあとに改めて作成される
+    this.player1 = null;
+    this.player2 = null;
     // statusをgpstとする。tは局面指定を意味するものとする
     delta['status'] = 'gpst';
     // その他の情報は現在の画面を構成している情報なのだから、現在のstate
