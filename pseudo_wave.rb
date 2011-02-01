@@ -252,10 +252,11 @@ class PseudoWaveConnection < Rev::WebSocket
       when 'gpsc'
         # gpsclientとして参加しているクライアントはstateのstatusは必ず
         # gpscとして送ること
-        # $wave.state.fromString(data)
+        # まずユーザからの指し手を配布
+        $pubsub.publish($wave.state.toString)
+        # それからgpsclientに指し手を渡す
         $gpsclient.accept($wave.state)
       else
-        # $wave.state.fromString(data)
         Log.debug "read state done : #{$wave.state.inspect}"
         $pubsub.publish($wave.state.toString)
     end
