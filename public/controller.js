@@ -150,7 +150,7 @@ ControlPanel = Class.create({
         contents +=  '<div id="Title">\
                        <p id="kid">局面ID: </p>\
                        <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
-                       <button onclick="javascript:window.gameController.refreshBoard();" id="submitButton">jump</button>\
+                       <button onclick="javascript:window.gameController.jumpButtonPressed();" id="submitButton">jump</button>\
                     </div>';
         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span> : <span class="t">waiting</span></div>';
@@ -495,28 +495,24 @@ GameController = Class.create({
 	 */
 	// 入力されたbidのboard情報を取得し、盤面を書き換える。
 	// 入力 : bid 数値 表示したい局面のbid
-	//  ただし、これはnullでも可。そのときは画面のテキスト入力画面の値を使う
   refreshBoard: function refreshBoard(bid){ // GameController
     LOG.getInto('GameController#refreshBoard');
     LOG.debug('bid : ' + bid);
     var boardObj, nextMoves, prevMoves;
 
     if(bid) $('inputText').value = bid;
-    var value = $('inputText').value;
-    LOG.debug('value : ' + value);
-    LOG.debug('typeof value : ' + typeof value);
-    var slice = dataStore.slices.get(value);
-    LOG.debug('slice['+value+'] : ' + Object.toJSON(slice));
+    var slice = dataStore.slices.get(bid);
+    LOG.debug('slice['+bid+'] : ' + Object.toJSON(slice));
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
-      dataStore.getMsg(value, 1, 3, 7, 'full', false);
-      slice = dataStore.slices.get(value);
+      dataStore.getMsg(bid, 1, 3, 7, 'full', false);
+      slice = dataStore.slices.get(bid);
     }
     if(slice){
       this.game.boardReadFromDB();
       this.game.board.show();
-      areas['prevMoves'].show();
-      areas['nextMoves'].show();
+      dataStore.currentSlice().get('prevMoves').show();
+      dataStore.currentSlice().get('nextMoves').show();
     } else {
       LOG.fatal('cannot get slice');
     }
@@ -903,6 +899,23 @@ GameController = Class.create({
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
     wave.getState().submitDelta(delta);
+  },
+	/**
+	 * jumpButtonPressed()
+	 */
+        // 機能：　jumpボタン押下に対し反応し指定bidの局面へ移動する
+	//         
+        // 入力： なし。ただし画面のinputTextの値を入力のように扱う
+        // 出力： なし
+	// 副作用: dataStore.currentBidを画面のinputTextの値にする
+  jumpButtonPressed: function jumpButtonPressed() { // GameController
+    LOG.getInto('GameController#jumpButtonPressed');
+    var delta = {};
+    var bid = parseInt($('inputText').value);
+    dataStore.currentBid = bid;
+    this.refreshBoard(bid);
+    this.game.toggleDraggable();
+    LOG.goOut();
   },
 	/**
 	 * toryoButtonPressed()
