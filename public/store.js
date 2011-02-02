@@ -26,8 +26,19 @@ var Slice = Class.create(Hash, {
   fromState : function fromState(state){ // Slice
     LOG.getInto('Slice#fromState');
     this.set('board',     (new BoardData()).fromDelta(state.get('board',window.gameController.game.board.initialString)));
-    this.set('nextMoves', (new Moves('nextMoves')).fromDelta(state.get('next', '')));
-    this.set('prevMoves', (new Moves('prevMoves')).fromDelta(state.get('prev', '')));
+    var nextMoves = state.get('next','');
+    if (nextMoves.length > 0) {
+      this.set('nextMoves', (new Moves('nextMoves')).fromDelta(nextMoves));
+    } else {
+      this.set('nextMoves', (new Moves('nextMoves')));
+    }
+
+    var prevMoves = state.get('prev','');
+    if (prevMoves.length > 0) {
+      this.set('prevMoves', (new Moves('prevMoves')).fromDelta(prevMoves));
+    } else {
+      this.set('prevMoves', (new Moves('prevMoves')));
+    }
     LOG.goOut();
     return this;
   },
@@ -229,16 +240,21 @@ var Store = Class.create(Hash, {
       // なので、currentBidという名をつけてアクセスを容易にする
       // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
     var slice = (new Slice()).fromState(state);
-/*
-    slice.set('board',     (new BoardData(LOG)).fromDelta(state.get('board')));
-    slice.set('nextMoves', (new Moves('nextMoves')).fromDelta(state.get('next')));
-    slice.set('prevMoves', (new Moves('prevMoves')).fromDelta(state.get('prev')));
-*/
+      // gps対局の場合、ここで読んだprevMovesは、
+      // その指し手のbidにおけるnextMovesである。それはここで初めて取得する
+      // 情報なので、Storeに格納しておく必要がある
+    var prevMoves = slice.get('prevMoves');
+    prevMoves.each(function(pair){
+      var m = pair.value;  // このMoveを
+      this.slices.get(m.bid).get('nextMoves').set(m.mid, m);
+        // そのbidのsliceのnextMovesに追加してやればよい
+    }.bind(this));
+ 
     if (typeof this.currentBid != 'number'){
       LOG.fatal('Something wrong : storeData.currentBid became not number!');
     }
     this.slices.set(this.currentBid, slice);
-    LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid));
+    LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
     LOG.goOut();
   },
 	/**
@@ -487,16 +503,16 @@ var Store = Class.create(Hash, {
 	 */
 	// 自身のエリアにHtml形式で自身の情報を表示する
   dump: function dump() { // Store
-    LOG.getInto('Store#dump'); 
+    LOG.getInto('Store#dump',Log.DEBUG2); 
     this.area.window_contents.update(this.toDebugHtml());
     this.area.window.open();
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * toDebugHtml()
 	 */
   toDebugHtml: function toDebugHtml() { // Store
-    LOG.getInto('Store#toDebugHtml'); 
+    LOG.getInto('Store#toDebugHtml',Log.DEBUG2); 
     LOG.debug('keys.size : ' + this.keys().length);
     // 自身を表示
     var ret = '<table class="storeTable">';
@@ -520,7 +536,7 @@ var Store = Class.create(Hash, {
     ret_slice += '</table>';
     LOG.debug('returning with : ');
     //LOG.debug(JSON.stringify(this));
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret + ret_slice;
   }
 });

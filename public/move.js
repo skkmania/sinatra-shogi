@@ -422,10 +422,10 @@ var Moves = Class.create(Hash, {
         // : でつなげた文字列をかえす
         // 自身が空の場合、空文字列をかえす
   toDebugString : function toDebugString(){ // Moves
-    LOG.getInto('Moves#toDebugString');
+    LOG.getInto('Moves#toDebugString', Log.DEBUG2);
     var res = this.values().invoke('toDebugString').join(':');
     LOG.debug('returning : ' + res);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return res;
   },
 	/*

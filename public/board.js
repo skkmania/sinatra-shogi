@@ -75,11 +75,11 @@ Board = Class.create({
 	//  bid, turn, board, blackStand, whiteStand　を並べたもの
 	// 出力例 初期盤面ならば、'1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxxPxSnrpxxxPBNlxpxxxPxL,,'
   toDelta: function toDelta(){ // Board
-    LOG.getInto('Board#toDelta');
+    LOG.getInto('Board#toDelta',Log.DEBUG2);
     var ret = [this.bid, (this.turn?'t':'f'),this.toString(),
                this.game.blackStand.toString(), this.game.whiteStand.toString()].join(',');
     LOG.debug('returning : ' + ret);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   },
 	/**
@@ -550,14 +550,14 @@ var BoardData = Class.create(Hash, {
 	// 入力：なし。（自分自身が処理対象）
 	// 出力：文字列 str 形式はカンマ区切り文字列
   toDelta : function toDelta(){ // BoardData
-    LOG.getInto('BoardData#toDelta');
+    LOG.getInto('BoardData#toDelta', Log.DEBUG2);
     var ret;
     ret =  this.bid;
     ret += ',' + (this.turn ? 't' : 'f');
     ret += ',' + this.board;
     ret += ',' + this.black;
     ret += ',' + this.white;
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   },
 	/*
@@ -596,7 +596,7 @@ var BoardData = Class.create(Hash, {
 	 * toDebugString()
 	 */
   toDebugString : function toDebugString(){ // BoardData
-    LOG.getInto('BoardData#toDebugString');
+    LOG.getInto('BoardData#toDebugString', Log.DEBUG2);
     var ret;
     ret =  this.bid;
     ret += ',' + (this.turn ? 't' : 'f');
@@ -604,7 +604,7 @@ var BoardData = Class.create(Hash, {
     ret += ',' + this.black;
     ret += ',' + this.white;
     LOG.debug('returning : ' + ret);
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret;
   }
 });
