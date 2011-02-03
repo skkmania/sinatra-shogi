@@ -49,14 +49,17 @@ get %r{/msg/board/([\d]+)} do
 end
 
 get '/getMsg' do
-    logger2.debug { ' ----------  into getMsg' }
-    logger2.debug { 'params : ' + params.inspect }
+    logger2.debug { '-----  getMsg is called ----' }
+    logger2.debug { '  with params : ' + params.inspect }
+    logger2.debug { '  DbAccessor をまず初期化して取得' }
   ct = DbAccessor.new( params, logger2 )
-    logger2.debug { 'ct initialized' }
+    logger2.debug { '  DbAccessor の取得に成功' }
+    logger2.debug { '  data取得のためbid rangeを求める' }
   ct.determine_bid_range
-    logger2.debug { 'determined' }
+    logger2.debug { '  bid range が求まった。ので、get_msgを呼ぶ' }
   body = ct.get_msg.to_msgpack
-    logger2.debug { 'data gotten' }
+    logger2.debug { 'wanted data is successfully gotten' }
+    logger2.debug { "so, going to dispatch response\n" }
   r = Sinatra::Response.new(body,200,{"Content-Type" => "text/plain"})
   r.finish
 end

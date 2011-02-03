@@ -128,16 +128,16 @@ class DbAccessor
 			  # 未実装
         # query = "SELECT * from  getChildBidsOnlySQL(#{@bid}, #{@level}) AS bid;"
     end
-    @logger.debug { "query became : #{query}" } 
+    @logger.debug { "  query became : #{query}" } 
 
     begin
       kekka = DB[query]
-      @logger.debug { 'kekka : ' + kekka.inspect } 
+      @logger.debug { '  result of query : ' + kekka.inspect } 
       @bids = kekka.map(:bid)
 			@bids.push @bid
 			  # getChildは@bidの子孫しか返さないので@bidは含まない
 			  # しかしクライアントは@bidも@bidsに含めてほしいので追加しておく
-      @logger.debug { 'bid_range : ' + @bids.join(',') } 
+      @logger.debug { '  bid_range became : ' + @bids.join(',') } 
     rescue => error
       @logger.error { "determine_bid_range : error !" + error.message } 
       print 'error'
@@ -195,20 +195,26 @@ class DbAccessor
   end
   
   #
+  # result_format
+  #
+  def result_format(result)
+  end
+  #
   # get_msg
   #   @maskで指定したデータをDBから取得する
   #   入力 : なし 実質的には@masked_data_nameがその役割をはたす
   #   出力 : DBから取得したデータをまとめたHash @gottenというプロパティに格納される
   #
   def get_msg
-    @logger.debug { "into get_msg : masked_data_name : #{@masked_data_name.join(',')}" } 
+    @logger.debug { "DbAccessor#get_msg is called. 取得するdataの名は : #{@masked_data_name.join(',')}" } 
     @gotten = @masked_data_name.inject({}){|res_hash, name|
+      @logger.debug { "#{name} のdataを取得する" } 
+      @logger.debug { "そのqueryは, #{queries[name]}" }
       result = DB[queries[name]].all
-      @logger.debug { "#{name} : #{result.inspect}" } 
       res_hash[name] = result
       res_hash
     }
-#    @logger.debug { "gotten : #{log_format(@gotten)}" } 
+    @logger.debug { "その結果は,\n#{log_format @gotten}" } 
     return @gotten
   end
 
