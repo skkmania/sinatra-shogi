@@ -873,7 +873,7 @@ GameController = Class.create({
         // 入力： 
         // 出力： なし
   askGpsButtonPressed: function askGpsButtonPressed(name) { // GameController
-    var delta = {};
+    var delta = this.makeReviewDelta();
     var currentPlayer = wave.getState().get('players').split(',')[0];
     LOG.getInto('GameController#askGpsButtonPressed');
 
