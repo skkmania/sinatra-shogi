@@ -32,9 +32,10 @@ window.gameController.game = this;
     // this.debug_dump();
   },
 	/**
-	 * makeMove(actionContents)
+	 * makeMove(actionContents, promote_flag)
 	 */ 
         // 入力 : 配列 actionContents 駒の動きをあらわした配列
+	//        Bool promote_flag   : 成りかどうか示す trueなら成り。
 	// 出力 : Moveオブジェクト
 	//        ただし、設定されるプロパティは
 	//        bid, from, to, piece, promote
@@ -42,14 +43,15 @@ window.gameController.game = this;
         // 機能 : 入力のactionを表すMoveオブジェクトを作成し返す
 	// 注意： 入力のactionが「成る」という動作ならば、pieceは       
 	//        すでに成った状態でここにくる
-  makeMove: function makeMove(actionContents) { // ShogiGame
+  makeMove: function makeMove(actionContents, promote_flag) { // ShogiGame
     LOG.getInto('ShogiGame#makeMove');
     var ret = new Move(LOG);
     ret.bid = this.board.bid;
     ret.from = actionContents[1].type == 'stand' ? 0 :
                  actionContents[1].x * 10 + actionContents[1].y;
     ret.to = actionContents[2].x * 10 + actionContents[2].y;
-    ret.promote = actionContents[0].promote_type ? false : true;
+    ret.promote = promote_flag;
+    //ret.promote = actionContents[0].promote_type ? false : true;
     if(actionContents[0].type == 'Gold' || 
        actionContents[0].type == 'King')
       ret.promote = false;  
@@ -373,10 +375,11 @@ window.gameController.game = this;
     LOG.goOut();
   },
 	/**
-	 * doAction(actionContents)
+	 * doAction(actionContents, promote_flag)
 	 */
 	// 機能：指定された動作を実行する
 	// 入力 : 配列 actionContents : [piece, fromObj, toCell]
+	//        Bool promote_flag   : 成りかどうか示す trueなら成り。
 	// 成るというactionの場合、pieceは成った状態でここにくる
 	// 出力：なし
 	// 副作用：boardのturnを反転
@@ -386,7 +389,7 @@ window.gameController.game = this;
 	//         Storeを更新(動作内容が反映される. 新しいbid,mid.)
 	//         deltaの作成と発行
 	//         つまり、もうここへは戻らずサーバからのレスポンス待ちへ。
-  doAction: function doAction(actionContents) { // ShogiGame
+  doAction: function doAction(actionContents, promote_flag) { // ShogiGame
     var piece = actionContents[0];
     var fromObj = actionContents[1];
     var toCell = actionContents[2];
@@ -401,7 +404,7 @@ window.gameController.game = this;
     // この動きがすでにnextMovesのなかにあるならばその動作をすればよい。
     // 駒が成るときなど、findMoveを経ずにここにくる処理があるので
     // このようなチェックが必要である
-    var m = this.makeMove(actionContents);
+    var m = this.makeMove(actionContents, promote_flag);
     if (existed_m = this.findMove(m)){
       LOG.goOut();
       window.gameController.makeAndSendReviewDelta(existed_m.nxt_bid, existed_m.toCSA());

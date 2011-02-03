@@ -424,7 +424,7 @@ var Moves = Class.create(Hash, {
   toDebugString : function toDebugString(){ // Moves
     LOG.getInto('Moves#toDebugString', Log.DEBUG2);
     var res = this.values().invoke('toDebugString').join(':');
-    LOG.debug('returning : ' + res);
+    LOG.debug2('returning : ' + res);
     LOG.goOut(Log.DEBUG2);
     return res;
   },
@@ -437,7 +437,7 @@ var Moves = Class.create(Hash, {
   toDelta : function toDelta(){ // Moves
     LOG.getInto('Moves#toDelta', Log.DEBUG2);
     var res = this.values().invoke('toDelta').join(':');
-    LOG.debug('returning : ' + res);
+    LOG.debug2('returning : ' + res);
     LOG.goOut(Log.DEBUG2);
     return res;
   },

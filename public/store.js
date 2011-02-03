@@ -83,7 +83,7 @@ var Slice = Class.create(Hash, {
       } else {
          ret += obj.toDelta();
       }
-      this.LOG.debug('value: ' + ret);
+      this.LOG.debug2('value: ' + ret);
       this.LOG.goOut(Log.DEBUG2);
     }.bind(this));
     LOG.goOut(Log.DEBUG2);

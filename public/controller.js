@@ -571,10 +571,11 @@ GameController = Class.create({
     var delta = {};
     LOG.getInto('GameController#makeReviewDelta');
     this.count++;
-    LOG.debug('bid : ' + bid);
-    LOG.debug('typeof bid : ' + typeof bid);
+    LOG.debug('bid in arguments : ' + bid);
+    LOG.debug('move in arguments : ' + move);
+    LOG.debug2('typeof bid : ' + typeof bid);
     var value = bid || $('inputText').value;
-    LOG.debug('value : ' + value);
+    LOG.debug('value (determined bid): ' + value);
     var slice = dataStore.slices.get(value);
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
@@ -585,6 +586,7 @@ GameController = Class.create({
     LOG.debug('slice : ' + slice.toDebugString());
     LOG.debug('slice.keys : ' + (slice.keys().join(',')));
     if(slice){
+      LOG.debug('bidに対するsliceが確定できた');
       LOG.debug('slices[' + value + '] : ' + slice.toDebugString());
       LOG.debug('slice.keys : ' + (slice.keys().join(',')));
       slice.each(function(pair){
@@ -722,13 +724,13 @@ GameController = Class.create({
         break;
       case 'mustPromote':
         actionContents[0].promote();
-        this.game.doAction(actionContents);
+        this.game.doAction(actionContents, true);
         break;
       case 'badAction':
         this.noticeBadActionToUser();
         break;
       default:
-        this.game.doAction(actionContents);
+        this.game.doAction(actionContents, false);
         break;
     }
     LOG.goOut();
@@ -749,11 +751,12 @@ GameController = Class.create({
 	 * getResponseToConfirmActionByUser()
 	 */
         // ユーザに対し表示した確認用要素のクリックイベントはこの関数を呼び出す
-  //getResponseToConfirmActionByUser: function getResponseToConfirmActionByUser(event,actionContents) {
   getResponseToConfirmActionByUser: function getResponseToConfirmActionByUser(event) {
     LOG.getInto('GameController#getResponseToConfirmActionByUser');
-      // この関数にはactionContentsがbindされているので、thisはこの中ではactionContentsを指す
+      // この関数にはactionContentsがbindされているので、
+      // thisはこの中ではactionContentsを指す
     var actionContents = this;
+    var promote_flag = null;
     LOG.debug('actionContents[0] : ' + actionContents[0].toDebugString());
 
     LOG.debug('event.element : ' + event.element().id);
@@ -761,6 +764,7 @@ GameController = Class.create({
     switch (event.element().id) {
       case 'yesElement':
         LOG.debug('yesElement was clicked.');
+        promote_flag = true;
         window.gameController.game.promotePiece(actionContents).call(actionContents[0]);
 /*
   ここは、以下の意味。
@@ -771,10 +775,11 @@ GameController = Class.create({
 */
       break;
       case 'noElement':
+        promote_flag = false;
         LOG.debug('noElement was clicked.');
       break;
     }
-    window.gameController.game.doAction(actionContents);
+    window.gameController.game.doAction(actionContents, promote_flag);
     $('promoteOrNot').stopObserving();
     $('promoteOrNot').hide();
     LOG.goOut();

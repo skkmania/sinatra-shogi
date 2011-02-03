@@ -409,16 +409,16 @@ LOG.goOut();
 	 */
   toDebugString: function toDebugString() {  // Piece
     var ret = '<div style="color: #3F80FF">[';
-    ret += '<span style="color: #FF80FF">' + this.chr + '</span>,  ';
+    ret += '<span style="color: #FF8080">' + this.chr + '</span>,  ';
     ret += 'cN: ';
-    ret += '<span style="color: #FF80FF">' + this.elm.className + '</span>,  ';
+    ret += '<span style="color: #FF8080">' + this.elm.className + '</span>,  ';
     ret += 'p_type: ';
-    ret += '<span style="color: #FF80FF">' + (this.promote_type || 'undefined') + '</span>,  ';
+    ret += '<span style="color: #FF8080">' + (this.promote_type || 'undefined') + '</span>,  ';
     ret += 'unp_type: ';
-    ret += '<span style="color: #FF80FF">' + (this.unpromote_type || 'undefined') + '</span>,  ';
+    ret += '<span style="color: #FF8080">' + (this.unpromote_type || 'undefined') + '</span>,  ';
     if (this.cell && this.cell.elm){
       ret += 'cell:';
-      ret += '<span style="color: #FF80FF">' + this.cell.elm.id + '</span>';
+      ret += '<span style="color: #FF8080">' + this.cell.elm.id + '</span>';
     } else ret += '[no cell]';
     ret += ' ]</div>';
     return ret;
