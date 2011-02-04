@@ -22,7 +22,16 @@ var Maintainer = Class.create({
 '<div id="rev-b">\
   <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>\
   <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>\
-  <button id="test-button" class="testbutton t" onclick="new Test.Unit.Runner( testcases, \'testlog\' );">run_test</button>\
+  <select id="log-level" class="logLevelSelect" onChange="LOG.fatal(\'Log Level Changed to Log.\' + $(\'log-level\').value);LOG.setLevel($(\'log-level\').value.toLowerCase());LOG.fatal(LOG.currentLevel);">\
+    <option>NONE</option>\
+    <option>FATAL</option>\
+    <option>ERROR</option>\
+    <option>WARN</option>\
+    <option>INFO</option>\
+    <option>DEBUG</option>\
+    <option>DEBUG2</option>\
+    <option>DEBUG3</option>\
+  </select>\
   <button id="dumpStore-button" class="dumpStorebutton t" onclick="window.dataStore.dump();">dump_store</button>\
   <button id="clearState-button" class="maintainer t" onclick="window.gameController.maintainer.clearState();">clear_state</button>\
   <button id="showState-button" class="maintainer t" onclick="window.gameController.maintainer.showState();">show_state</button>\
