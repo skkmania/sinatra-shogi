@@ -1247,8 +1247,11 @@ GameController = Class.create({
   getTurn: function getTurn() { // GameController
     // turnは論理値。countが偶数ならtrueで先手番、奇数ならfalseで後手番。
     LOG.getInto('GameController#getTurn',Log.DEBUG2);
-    var ret = (this.count % 2 == 0);
-    LOG.debug('count is ' + this.count + ', so returning with : ' + ret);
+    //var ret = (this.count % 2 == 0);
+    //var ret = this.game.board.turn;
+    var ret = (wave.state.get('turn') == 't');
+    //LOG.debug2('count is ' + this.count + ', so returning with : ' + ret);
+    LOG.debug('現在のturn : ' + ret);
     LOG.goOut(Log.DEBUG2);
     return ret;
   },
@@ -1258,7 +1261,7 @@ GameController = Class.create({
   thisTurnPlayer: function thisTurnPlayer() { // GameController
     LOG.getInto('GameController#thisTurnPlayer',Log.DEBUG2);
     var ret = this.getTurn() ? this.player1 : this.player2;
-    LOG.debug('returning with : ' + ret);
+    LOG.debug('現在の手番のplayer : ' + ret);
     LOG.goOut(Log.DEBUG2);
     return ret;
   },
@@ -1269,7 +1272,7 @@ GameController = Class.create({
   isViewersTurn: function isViewersTurn() { // GameController
     LOG.getInto('GameController#isViewersTurn',Log.DEBUG2);
     var ret = this.thisTurnPlayer().isViewer;
-    LOG.debug('returning with : ' + ret);
+    LOG.debug('現在はviewerのturnか？: ' + ret);
     LOG.goOut(Log.DEBUG2);
     return ret;
   },

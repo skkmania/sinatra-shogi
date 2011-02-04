@@ -48,9 +48,9 @@ Piece = Class.create({
 	 * isBlack()
 	 */
   isBlack: function isBlack() {  // Piece
-//LOG.debug('Piece#isBlack entered : ');
+    LOG.debug2('Piece#isBlack entered : ');
     var ret = (this.chr.toUpperCase() == this.chr);
-//LOG.debug('leaving Piece#isBlack with : ' + ret);
+    LOG.debug2('leaving Piece#isBlack with : ' + ret);
     return ret;
   },
 	/**
@@ -150,17 +150,26 @@ Piece = Class.create({
     LOG.debug('isViewersP : '+ thisPieceIsViewers);
     var thisTurnIsViewers = this.game.controller.isViewersTurn();
     LOG.debug('isViewersTurn : '+thisTurnIsViewers);
+    var thisPieceIsInTurn = (this.isBlack() == this.game.controller.getTurn());
+    LOG.debug('isInTurn : '+ thisPieceIsInTurn);
     if (!this.drag){
-        if(thisPieceIsViewers && thisTurnIsViewers){
+        if(thisPieceIsInTurn && thisPieceIsViewers && thisTurnIsViewers){
           this.addDraggable('toggled');
         }
     } else {
         if(thisPieceIsViewers){
-          if(!thisTurnIsViewers){
-            LOG.debug('to destroy drag because this is not Vieweres turn. : '+ Draggables.drags.length);
+          if(!thisPieceIsInTurn){
+            LOG.debug('to destroy drag because this piece is not at turn. : '+ Draggables.drags.length);
             this.drag.destroy();
             LOG.debug('length of drags became : '+ Draggables.drags.length);
             this.drag = null;
+          } else {
+            if(!thisTurnIsViewers){
+              LOG.debug('to destroy drag because this is not Vieweres turn. : '+ Draggables.drags.length);
+              this.drag.destroy();
+              LOG.debug('length of drags became : '+ Draggables.drags.length);
+              this.drag = null;
+            }
           }
         } else {
           LOG.debug('to destroy drag because this is not Vieweres piece. : '+ Draggables.drags.length);
@@ -342,13 +351,13 @@ LOG.goOut();
     LOG.getInto('Piece#isViewersP',Log.DEBUG2);
     var ret;
     if (this.isBlack()){
-      LOG.debug('owner name : ' + this.game.controller.player1.name);
+      LOG.debug2('owner name : ' + this.game.controller.player1.name);
       ret = this.game.controller.player1.isViewer;
     } else {
-      LOG.debug('owner name : ' + this.game.controller.player2.name);
+      LOG.debug2('owner name : ' + this.game.controller.player2.name);
       ret = this.game.controller.player2.isViewer;
     }
-    LOG.debug('returning with : ' + ret);
+    LOG.debug2('returning with : ' + ret);
     LOG.goOut(Log.DEBUG2);
     return ret;
   },
@@ -409,16 +418,16 @@ LOG.goOut();
 	 */
   toDebugString: function toDebugString() {  // Piece
     var ret = '<div style="color: #3F80FF">[';
-    ret += '<span style="color: #FF8080">' + this.chr + '</span>,  ';
+    ret += '<span style="color: #000000">' + this.chr + '</span>,  ';
     ret += 'cN: ';
-    ret += '<span style="color: #FF8080">' + this.elm.className + '</span>,  ';
+    ret += '<span style="color: #000000">' + this.elm.className + '</span>,  ';
     ret += 'p_type: ';
-    ret += '<span style="color: #FF8080">' + (this.promote_type || 'undefined') + '</span>,  ';
+    ret += '<span style="color: #000000">' + (this.promote_type || 'undefined') + '</span>,  ';
     ret += 'unp_type: ';
-    ret += '<span style="color: #FF8080">' + (this.unpromote_type || 'undefined') + '</span>,  ';
+    ret += '<span style="color: #000000">' + (this.unpromote_type || 'undefined') + '</span>,  ';
     if (this.cell && this.cell.elm){
       ret += 'cell:';
-      ret += '<span style="color: #FF8080">' + this.cell.elm.id + '</span>';
+      ret += '<span style="color: #000000">' + this.cell.elm.id + '</span>';
     } else ret += '[no cell]';
     ret += ' ]</div>';
     return ret;
