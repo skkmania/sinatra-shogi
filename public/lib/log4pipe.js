@@ -438,6 +438,6 @@ var tmp_opt = {'title':'LOG','container':'#LOG'
              , 'position': [400, 400]
              , 'width':800, 'height':550
              , 'resizable':true};
-LOG = new Log(Log.DEBUG, 'popup', tmp_opt);
+LOG = new Log(Log.ERROR, 'popup', tmp_opt);
 LOG.debug('this log window is created under this options : ');
 LOG.debug(Log.dumpObject(tmp_opt));

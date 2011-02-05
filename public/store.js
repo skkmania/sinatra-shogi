@@ -12,10 +12,13 @@ var Slice = Class.create(Hash, {
 	/**
 	 * initialize()
 	 */
-  initialize : function initialize($super){
+  initialize : function initialize($super, store){
     LOG.getInto('Slice#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.store = store;
+    this.generation = this.store.generation;
+    LOG.debug('generation is set to : ' + this.generation);
     this.LOG = LOG;
     LOG.goOut();
     return this;
@@ -99,12 +102,13 @@ var Slice = Class.create(Hash, {
 //  keyとしてはbidの数値を使う
 var Slices = Class.create(Hash, {
 	/**
-	 * initialize()
+	 * initialize(store)
 	 */
-  initialize : function initialize($super){
+  initialize : function initialize($super, store){
     LOG.getInto('Slices#initialize');
     $super();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
+    this.store = store;
     this.LOG = LOG;
     LOG.goOut();
   },
@@ -142,9 +146,10 @@ var Store = Class.create(Hash, {
     LOG.getInto('Store#initialize');
     $super();
     this.name  = 'data';
+    this.generation = 0;
     this.initArea();
     this.names = $w('board nextMoves prevMoves movePointsByUser movePointsAverage moveComments boardPointByUser boardPointAverage boardComments');
-    this.slices = new Slices();
+    this.slices = new Slices(this);
     this.currentBid = 1;  // 現在の画面のbidの値を格納。初期値は1となる。
        // stateを読むごとに更新される どこで？
     this.nextBid = null; // 次に表示する画面のbidの値を格納する。
@@ -212,6 +217,7 @@ var Store = Class.create(Hash, {
       this.LOG.debug('typeof slices key: ' + JSON.stringify(typeof this.slices.keys()[0]));
       this.LOG.debug('slice made : ' + JSON.stringify(this.slices.get(bid).toDebugString()));
     }.bind(this));
+    if($('storeSize')) $('storeSize').update(this.slices.keys().length);
     LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
     LOG.debug('slices: keys ');
     LOG.debug(JSON.stringify(this.slices.keys()));
@@ -239,7 +245,7 @@ var Store = Class.create(Hash, {
       // stateから読んだbidは、これから表示しようとする画面のbid
       // なので、currentBidという名をつけてアクセスを容易にする
       // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
-    var slice = (new Slice()).fromState(state);
+    var slice = (new Slice(this)).fromState(state);
       // gps対局の場合、ここで読んだprevMovesは、
       // その指し手のbidにおけるnextMovesである。それはここで初めて取得する
       // 情報なので、Storeに格納しておく必要がある
@@ -254,6 +260,7 @@ var Store = Class.create(Hash, {
       LOG.fatal('Something wrong : storeData.currentBid became not number!');
     }
     this.slices.set(this.currentBid, slice);
+    if($('storeSize')) $('storeSize').update(this.slices.keys().length);
     LOG.debug('slices['+this.currentBid+'] became : ' + this.slices.get(this.currentBid).toDebugString());
     LOG.goOut();
   },
@@ -269,9 +276,9 @@ var Store = Class.create(Hash, {
   makeSlice : function makeSlice(bid, data, mask) { // Store
     LOG.getInto('Store#makeSlice');
     var m = mask || 511;
-    LOG.debug('m : ' + JSON.stringify(m));
+    LOG.debug('mask : ' + JSON.stringify(m));
     var target;
-    var ret = new Slice();
+    var ret = new Slice(this);
     var dataNames = this.getMaskedDataName(m);
     LOG.debug('masked data name : ' + JSON.stringify(dataNames));
     // ほとんどの場合、あるbidの画面にはそのbidを自身のbidとして持つオブジェクトを集める
@@ -391,6 +398,9 @@ var Store = Class.create(Hash, {
         this.readDB(data, 7);
  //       this.LOG.debug('store.toDebugHtml : ' + this.toDebugHtml());
         this.ready = true;
+        this.generation += 1;
+        if($('storeGeneration')) $('storeGeneration').update(this.generation);
+        this.gc();
         this.LOG.goOut();
         return data;
       }.bind(this),
@@ -497,6 +507,29 @@ var Store = Class.create(Hash, {
       this.LOG.debug('nextMoves after : ' + nm.toDebugString());
     }.bind(this));
     LOG.goOut();
+  },
+	/**
+	 * gc()
+	 */
+	// garbage collect
+	// Store肥大化を防ぐ
+        // 入力 : なし
+        // 出力 : なし
+        // 機能 : slicesのkeysのサイズが150を越えたら最もgenerationの小さい
+	//        sliceをunsetする
+  gc: function gc() { // Store
+    LOG.getInto('Store#gc',Log.DEBUG2); 
+    if (this.slices.keys().length > 150){
+      var min_generation = this.slices.min(function(pair){
+        return pair.value.generation;
+      });
+      this.slices.each(function(pair){
+        if (pair.value.generation == min_generation){
+          this.slices.unset(pair.key);
+        }
+      }.bind(this));
+    }
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * dump()

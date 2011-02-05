@@ -32,6 +32,8 @@ var Maintainer = Class.create({
     <option>DEBUG2</option>\
     <option>DEBUG3</option>\
   </select>\
+  <span id="storeGeneration"></span>\
+  <span id="storeSize"></span>\
   <button id="dumpStore-button" class="dumpStorebutton t" onclick="window.dataStore.dump();">dump_store</button>\
   <button id="clearState-button" class="maintainer t" onclick="window.gameController.maintainer.clearState();">clear_state</button>\
   <button id="showState-button" class="maintainer t" onclick="window.gameController.maintainer.showState();">show_state</button>\
