@@ -186,9 +186,11 @@ Piece = Class.create({
 	 */
   createElm: function createElm() {  // Piece
     LOG.getInto('Piece#createElm', Log.DEBUG2);
-    this.elm = document.createElement('img');
+    this.elm = document.createElement('div');
+    //this.elm = document.createElement('img');
     this.elm.obj = this;
     this.elm.src = this.imageUrl;
+    this.elm.innerHTML = Chr2Kanji[this.chr.toLowerCase()];
     this.elm.addClassName('piece');
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
