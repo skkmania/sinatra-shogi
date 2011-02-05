@@ -253,6 +253,9 @@ Board = Class.create({
 	/**
 	 * adjustBorder()
 	 */
+	// cellsのindexと盤上の符号は逆順であることに注意。
+	// 例： 1九の升目はcells[9][1]
+	// 例： 9一の升目はcells[1][9]
   adjustBorder: function adjustBorder() { // Board
     if(!this.cells[1][1].elm) return;
     if(!this.game) return;
@@ -283,6 +286,7 @@ Board = Class.create({
 	 */
   initialShow: function initialShow() {  // Board
     LOG.getInto('Board#initialShow');
+    this.game.controller.top = 0; // by default
     this.cells.flatten().invoke('initialShow');
     this.adjustBorder();
     this.shown = true;
