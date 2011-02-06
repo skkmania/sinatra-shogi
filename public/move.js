@@ -351,16 +351,30 @@ var Moves = Class.create(Hash, {
       case 'prevMoves' :
         // この場合は、クリックされた要素の文字列を、各Moveオブジェクトと比べて、一致するもののbidを返す
         LOG.debug('clicked innerHTML is : ' + inner);
-        var bid = dataStore.currentSlice().get('prevMoves').find(
+        var movePair = dataStore.currentSlice().get('prevMoves').find(
           function(pair){
              this.LOG.debug('value.toKanji : ' + pair.value.toKanji());
              return pair.value.toKanji() == inner;
-           }.bind(this)).value.bid;
+           }.bind(this));
+        if (movePair) {
+          var moveObj = movePair.value;
+        } else {
+          LOG.fatal('Moves#areaClicked: clicked move pair was not found in currentSlice');
+          LOG.fatal('currentSlice : ' + JSON.stringify(dataStore.currentSlice()));
+          break;
+        }
+        if(moveObj) {
+          var bid = moveObj.bid;
+        } else {
+          LOG.fatal('Moves#areaClicked: clicked move was not found');
+          break;
+        }
         if(bid) {
           LOG.debug('bid found : ' + bid);
           window.gameController.makeAndSendReviewDelta(bid);
         } else {
-          LOG.fatal('Moves#areaClicked: clicked move was not found');
+          LOG.fatal('Moves#areaClicked: bid was not found in move Object');
+          break;
         }
         break;
       default :

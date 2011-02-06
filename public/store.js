@@ -246,15 +246,27 @@ var Store = Class.create(Hash, {
       // なので、currentBidという名をつけてアクセスを容易にする
       // 次のstateが降ってくるまで、このbidが画面表示の基礎データとなる
     var slice = (new Slice(this)).fromState(state);
+    LOG.debug('slice became : ' + slice.toDebugString());
       // gps対局の場合、ここで読んだprevMovesは、
       // その指し手のbidにおけるnextMovesである。それはここで初めて取得する
       // 情報なので、Storeに格納しておく必要がある
-    var prevMoves = slice.get('prevMoves');
-    prevMoves.each(function(pair){
-      var m = pair.value;  // このMoveを
-      this.slices.get(m.bid).get('nextMoves').set(m.mid, m);
-        // そのbidのsliceのnextMovesに追加してやればよい
-    }.bind(this));
+    if(state.get('status') == 'gpsc'){
+      var prevMoves = slice.get('prevMoves');
+      prevMoves.each(function(pair){
+        var m = pair.value;  // このMoveを
+          // そのbidのsliceのnextMovesに追加してやればよい
+        if(m){
+          var targetSlice = this.slices.get(m.bid);
+          if (targetSlice) {
+            targetSlice.get('nextMoves').set(m.mid, m);
+          } else {
+            this.LOG.fatal('Fatal ERROR! : targetSlice not found!');
+          }
+        } else {
+          this.LOG.fatal('Fatal ERROR! : move not found!');
+        }
+      }.bind(this));
+    }
  
     if (typeof this.currentBid != 'number'){
       LOG.fatal('Something wrong : storeData.currentBid became not number!');
