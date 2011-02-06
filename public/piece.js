@@ -190,7 +190,7 @@ Piece = Class.create({
     //this.elm = document.createElement('img');
     this.elm.obj = this;
     this.elm.src = this.imageUrl;
-    this.elm.innerHTML = Chr2Kanji[this.chr.toLowerCase()];
+    this.elm.textContent = Chr2Kanji[this.chr.toLowerCase()];
     this.elm.addClassName('piece');
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
