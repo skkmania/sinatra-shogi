@@ -287,6 +287,8 @@ var Store = Class.create(Hash, {
 	// 出力 : Sliceオブジェクト(Hash)
   makeSlice : function makeSlice(bid, data, mask) { // Store
     LOG.getInto('Store#makeSlice');
+    LOG.debug('bid : ' + JSON.stringify(bid));
+    LOG.debug('data : ' + JSON.stringify(data));
     var m = mask || 511;
     LOG.debug('mask : ' + JSON.stringify(m));
     var target;
@@ -333,7 +335,7 @@ var Store = Class.create(Hash, {
           if (target.length > 0){
             this.LOG.debug('target : ' + JSON.stringify(target));
             var obj = new Moves('prevMoves');
-            ret.set('prevMoves', obj.fromDB(target));
+            ret.set('prevMoves', obj.fromDbForce(target));
             this.LOG.debug('obj after fromDB : ' + obj.toDelta());
             this.LOG.debug('ret (Slice): ' + JSON.stringify(ret));
           } else {
@@ -393,6 +395,7 @@ var Store = Class.create(Hash, {
 	 */
   getMsg : function getMsg(bid, uid, level, mask, range, async){ // Store
     LOG.getInto('Store#getMsg'); 
+    LOG.setLevel(Log.DEBUG);
     var request = new Ajax.Request('/getMsg', {
          method: 'get',
          onCreate: function(request, response){

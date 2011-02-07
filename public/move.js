@@ -474,15 +474,25 @@ var Moves = Class.create(Hash, {
       return this;
     }
     var ary = str.split(':');
-    ary.each(function(e){
+    ary.each(function(e, index){
       var m = new Move();
       m.fromDelta(e);
       this.LOG.debug('m : ' + m.toDelta());
       if (Object.isNumber(m.mid)){
-        this.set(m.mid, m);
+        if (this.name == 'nextMoves'){
+          this.set(m.mid, m);
+        } else {
+          this.set(index, m);
+        }
         this.LOG.debug2('m was set to Moves : ' + m.toDelta());
+      } else {
+        LOG.fatal('Fatal ERROR! Moves#fromDelta : mid of move is not Number!');
       }
     }.bind(this));
+    if (ary.size() != this.size()){
+      LOG.fatal('Fatal ERROR! Moves#fromDelta : some moves were missed!');
+      alert('Fatal ERROR! Moves#fromDelta : some moves were missed!');
+    }
     LOG.goOut(Log.DEBUG2);
     return this;
   },
@@ -501,6 +511,28 @@ var Moves = Class.create(Hash, {
     ary.each(function(e){
       var m = (new Move()).fromObj(e);
       if (Object.isNumber(m.mid)) this.set(m.mid, m);
+    }.bind(this));
+    LOG.debug('Moves became : ' + this.toDelta());
+    LOG.goOut();
+    return this;
+  },
+
+	/*
+	 * fromDbForce()
+	 */
+	// DBからのresponseであるjsのobjectの配列を自身に追加的に読み込む
+        // そのとき、Moveオブジェクトを生成しそれに変換してからとりこむ
+	// ただし、midがないmoveは読み込まない
+	// 読み込むmoveのmidが既存でも、新しいmoveが追加される
+	// prevMovesの作成のために用意されたメソッド
+	// keyがmidではないことに注意
+	// 入力 : 配列 要素はjsのオブジェクト
+	// 出力 : 自身
+  fromDbForce : function fromDbForce(ary){ // Moves
+    LOG.getInto('Moves#fromDbForce');
+    ary.each(function(e, index){
+      var m = (new Move()).fromObj(e);
+      if (Object.isNumber(m.mid)) this.set(index, m);
     }.bind(this));
     LOG.debug('Moves became : ' + this.toDelta());
     LOG.goOut();
