@@ -254,6 +254,7 @@ GameController = Class.create({
       LOG.debug('settings : ' + Object.toJSON(this.settings));
     }
     this.maintainer = new Maintainer(this);
+    this.options = new Options(this);
     this.book = new Book(this);
     this.container = $(this.settings['containerId']);
     this.playerSetting = settings['playerSetting'] || 'viewer';

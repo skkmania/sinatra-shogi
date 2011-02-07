@@ -191,6 +191,19 @@ Piece = Class.create({
     this.elm.obj = this;
     this.elm.src = this.imageUrl;
     this.elm.textContent = Chr2Kanji[this.chr.toLowerCase()];
+    switch(this.elm.textContent){
+      case '成銀':
+           this.elm.textContent = '全';
+           break;
+      case '成桂':
+           this.elm.textContent = '圭';
+           break;
+      case '成香':
+           this.elm.textContent = '杏';
+           break;
+      default:
+           break;
+    }
     this.elm.addClassName('piece');
     if (!this.atTop()) {
       this.elm.addClassName('bottom');

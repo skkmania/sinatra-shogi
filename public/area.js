@@ -140,6 +140,13 @@ areaSettings = {
               'width'    : 220,
               'height'   : 380
             },
+  'options' : {
+              'container': 'options',
+              'title'    : 'Options',
+              'position' : [850,580],
+              'width'    : 220,
+              'height'   : 380
+            },
   'maintainer' : {
               'container': 'maintainer',
               'title'    : 'Maintainer',
@@ -153,7 +160,7 @@ function Areas(opt) {
   this.initialize(opt);
 };
 
-Areas.data_name = $w('data menu controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook');
+Areas.data_name = $w('data menu controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook options');
 Areas.prototype = {
   initialize: function(opt) {
     Areas.data_name.each(function(name){
