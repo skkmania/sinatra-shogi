@@ -385,9 +385,9 @@ Board = Class.create({
   	/**
 	 * replace(pair, idx)
 	 */
+	// 入力: pair はpiece.chrを表す文字の組。
+	// pair[0](新しい文字)がpair[1](古い文字)を置き換える。
   replace: function replace(pair, idx){ // Board
-    // pair はpiece.chrを表す文字の組。
-    // pair[0](新しい文字)がpair[1](古い文字)を置き換える。
     LOG.getInto();
     LOG.debug('entered Board#replace with pair: ' + pair.toString() + ', idx : ' + idx);
     var cell = this.getCellByIdx(idx);

@@ -320,10 +320,9 @@ window.gameController.game = this;
 	/**
 	 * promotePiece(actionContents)
 	 */
+	// actionContentsを受け取り、その駒が成る関数を返す
   promotePiece: function promotePiece(actionContents) { // ShogiGame
-    //var log = LOG;
     LOG.getInto('ShogiGame#promotePiece');
-    //log.debug('actionContents : ' + Log.dumpObject(actionContents));
     LOG.debug('actionContents[0] : ' + actionContents[0].toDebugString());
     var ret = actionContents[0].promote;
     LOG.goOut();

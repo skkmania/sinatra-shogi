@@ -31,6 +31,7 @@ Piece = Class.create({
 	 */
   initialize: function initialize(chr, game) { // Piece
     this.game = game || window.gameController.game;
+    this.isTxt = window.gameController.options.isTxt;
     LOG.getInto('Piece#initialize');
     LOG.warn('Piece#initialize entered with : ' + chr, {'indent':1});
     this.type = Chr2Type[chr.toLowerCase()];
@@ -187,30 +188,40 @@ Piece = Class.create({
   createElm: function createElm() {  // Piece
     LOG.getInto('Piece#createElm', Log.DEBUG2);
     this.elm = document.createElement('div');
-    //this.elm = document.createElement('img');
+    this.elm.addClassName('piece');
+    if (this.isTxt) {
+      this.elm.addClassName('isTxt');
+    } else {
+      this.elm.addClassName('isImg');
+    }
     this.elm.obj = this;
-    this.elm.src = this.imageUrl;
-    this.elm.textContent = Chr2Kanji[this.chr.toLowerCase()];
-    switch(this.elm.textContent){
+    this.imgElm = document.createElement('img');
+    this.imgElm.addClassName('pieceImg');
+    this.imgElm.src = this.imageUrl;
+    this.txtElm = document.createElement('div');
+    this.txtElm.textContent = Chr2Kanji[this.chr.toLowerCase()];
+    this.txtElm.addClassName('pieceTxt');
+    switch(this.txtElm.textContent){
       case '成銀':
-           this.elm.textContent = '全';
+           this.txtElm.textContent = '全';
            break;
       case '成桂':
-           this.elm.textContent = '圭';
+           this.txtElm.textContent = '圭';
            break;
       case '成香':
-           this.elm.textContent = '杏';
+           this.txtElm.textContent = '杏';
            break;
       default:
            break;
     }
-    this.elm.addClassName('piece');
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
     }
     else {
       this.elm.addClassName('top');
     }
+    this.elm.appendChild(this.imgElm);
+    this.elm.appendChild(this.txtElm);
     LOG.goOut(Log.DEBUG2);
   },
 	/**
@@ -385,6 +396,9 @@ LOG.goOut();
 	/**
 	 * promote()
 	 */
+	// 駒が成る
+	// elm.srcを成ったほうの画像に替える
+	// 
   promote: function promote() {  // Piece
     LOG.getInto('Piece#promote');
     LOG.debug(this.toDebugString());
@@ -397,6 +411,20 @@ LOG.goOut();
         this.chr = Type2chr[this.type].toUpperCase();
       else
         this.chr = Type2chr[this.type];
+      this.txtElm.textContent = Chr2Kanji[this.chr.toLowerCase()];
+      switch(this.txtElm.textContent){
+        case '成銀':
+             this.txtElm.textContent = '全';
+             break;
+        case '成桂':
+             this.txtElm.textContent = '圭';
+             break;
+        case '成香':
+             this.txtElm.textContent = '杏';
+             break;
+        default:
+             break;
+      }
       this.movableCheck = PieceTypeObjects[this.promote_type].movableCheck;
       this.promote_type = undefined;
       LOG.debug('promoted : ' + this.toDebugString());

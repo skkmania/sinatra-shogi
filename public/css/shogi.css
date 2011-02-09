@@ -106,7 +106,7 @@ div#yesElement {
 div#noElement {
   color: blue;
 }
-img.piece {
+img.pieceImg {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   width: 35px;
@@ -117,11 +117,33 @@ img.piece {
   -webkit-box-shadow: 3px 3px 2px black;
 */
 }
+div.piece.isImg img { display: block; }
+div.piece.isTxt img { display: none; }
+div.piece.isImg div { display: none; }
+div.piece.isTxt div { display: block; }
+
+.pieceTxt {
+  position:		relative;
+  margin:		0px;
+  padding-left:		5px;
+  padding-bottom:	2px;
+  padding-top:		2px;
+  top:			1px;
+  left:			1px;
+  
+  /*width: 20px; */
+  /*height: 20px; */
+  font-size: 30px;
+  /*font-family: '梅 P明朝';*/
+  /*font-family: 'Takao P明朝';*/
+  font-family: 'serif';
+}
+
 div.top {
   -moz-transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
   filter: progid:DXImageTransform.Microsoft.basicimage(rotation=2);
-  margin-top:     16px;
+  /* margin-top:     16px; */
   margin-bottom: -20px;
   margin-left:    10px;
 }

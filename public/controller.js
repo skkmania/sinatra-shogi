@@ -474,8 +474,6 @@ GameController = Class.create({
     if($('join-button')){ $('join-button').hide(); }
     if (!this.game.board.shown) this.game.board.show();
 //  ここの処理は他のコールバックを参考に書き直すこと
-//    this.game.boardReadFromState(state);  // 盤面の読み込み
-//    boardReadFromStateは廃止した
     this.controlPanel.update('over');
       // draggableは消してしまい、ゲームを継続できなくする
     this.game.allPieces().pluck('drag').compact().invoke('destroy');
@@ -758,9 +756,9 @@ GameController = Class.create({
       // thisはこの中ではactionContentsを指す
     var actionContents = this;
     var promote_flag = null;
-    LOG.debug('actionContents[0] : ' + actionContents[0].toDebugString());
+    LOG.debug('actionContents[0] (動かした駒のPieceオブジェクト): ' + actionContents[0].toDebugString());
 
-    LOG.debug('event.element : ' + event.element().id);
+    LOG.debug('event.element(ユーザがクリックした要素のid) : ' + event.element().id);
 
     switch (event.element().id) {
       case 'yesElement':
@@ -768,7 +766,7 @@ GameController = Class.create({
         promote_flag = true;
         window.gameController.game.promotePiece(actionContents).call(actionContents[0]);
 /*
-  ここは、以下の意味。
+  ここは、以下の意味。 動かした駒が成るということ。
         var f = window.gameController.game.promotePiece(actionContents);
         LOG.debug('got function? -- type is  ' + typeof f);
         f.call(actionContents[0]);
@@ -1300,6 +1298,37 @@ GameController = Class.create({
     LOG.getInto('GameController#finish');
     this.message(winner.shortName() + t('win'));
     this.sendDelta(this.makeDelta('finish', winner));
+    LOG.goOut();
+  },
+	/**
+	 * pieceSelect(str)
+	 */
+        // 入力 : str 文字列 駒の表現種類をあらわす文字列
+	//        Options window のpiece-selectリストで選択された値
+	//        例: img:CSA1, chr:serif
+        // 出力 : なし
+        // 機能 : 駒の表現方法を指定されたものに変更する
+  pieceSelect: function pieceSelect(str) { // GameController
+    LOG.getInto('GameController#pieceSelect'); 
+    LOG.debug('str : ' + Object.toJSON(str));
+    var ary = str.split(':');
+    var imgOrTxt = ary[0];
+    var name = ary[1];
+    if (imgOrTxt == 'img') {
+      this.options.isImg = true;
+      this.options.isTxt = false;
+      $$('.piece').each(function(e){
+        e.addClassName('isImg');
+        e.removeClassName('isTxt');
+      });
+    } else {
+      this.options.isImg = false;
+      this.options.isTxt = true;
+      $$('.piece').each(function(e){
+        e.addClassName('isTxt');
+        e.removeClassName('isImg');
+      });
+    }
     LOG.goOut();
   },
 	/**
