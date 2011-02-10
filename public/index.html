@@ -12,9 +12,9 @@
     <script src="lib/livepipe/window.js"></script>
     <script src="lib/scriptaculous/unittest.js"></script>
     <script src="lib/m17n.js" charset="UTF-8"></script>
-    <link rel="stylesheet" href="css/log4pipe.css" type="text/css" />
-    <link rel="stylesheet" href="css/shogi.css" type="text/css" />
-    <link rel="stylesheet" href="css/shogi_old.css" type="text/css" />
+    <link rel="stylesheet"  href="css/log4pipe.css" type="text/css" />
+    <link rel="stylesheet"  href="css/shogi.css" type="text/css" />
+    <link rel="stylesheet"  href="css/shogi_old.css" type="text/css" />
   </head>
 <body>
 
@@ -103,7 +103,7 @@
       //  $('Log').insert(new Element('img',
       //   {id:'handle0', src:"img/lib/window_close.gif"}));
        // new Resizable('Log',{handle:'handle0'});
-        LOG.setLevel(Log.DEBUG);
+        LOG.setLevel(Log.ERROR);
         if(wave){
           window.gameController = new GameController({containerId:'shogi',
                'playerSetting':'playGame', 'gameConstructor':'shogi'});

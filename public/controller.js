@@ -1317,9 +1317,15 @@ GameController = Class.create({
     if (imgOrTxt == 'img') {
       this.options.isImg = true;
       this.options.isTxt = false;
+      PieceImgName = 'img/' + name + '/';
+      for (o in PieceTypeObjects) {
+        PieceTypeObjects[o].imageUrl =  HOST + PieceImgName + PieceTypeObjects[o].type + '.png';
+      }
       $$('.piece').each(function(e){
         e.addClassName('isImg');
         e.removeClassName('isTxt');
+        e.obj.imgElm.src = HOST + PieceImgName + e.obj.type + '.png';
+        e.obj.imageUrl   = HOST + PieceImgName + e.obj.type + '.png';
       });
     } else {
       this.options.isImg = false;

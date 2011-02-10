@@ -46,6 +46,15 @@ Piece = Class.create({
     LOG.goOut();
   },
 	/**
+	 * refreshImageUrl()
+	 */
+  refreshImageUrl: function refreshImageUrl() {  // Piece
+    LOG.getInto('Piece#refreshImageUrl');
+    this.imageUrl = PieceTypeObjects[this.type].imageUrl;
+    this.imgElm.src = this.imageUrl;
+    LOG.goOut();
+  },
+	/**
 	 * isBlack()
 	 */
   isBlack: function isBlack() {  // Piece
@@ -397,14 +406,14 @@ LOG.goOut();
 	 * promote()
 	 */
 	// 駒が成る
-	// elm.srcを成ったほうの画像に替える
+	// imgElm.srcを成ったほうの画像に替える
 	// 
   promote: function promote() {  // Piece
     LOG.getInto('Piece#promote');
     LOG.debug(this.toDebugString());
     if(this.promote_type){
       this.imageUrl = PieceTypeObjects[this.promote_type].imageUrl;
-      this.elm.src = this.imageUrl;
+      this.imgElm.src = this.imageUrl;
       this.type = PieceTypeObjects[this.promote_type].type;
       this.unpromote_type = PieceTypeObjects[this.promote_type].unpromote_type;
       if(this.isBlack())
@@ -441,7 +450,7 @@ LOG.goOut();
     LOG.debug(this.toDebugString());
     if(this.unpromote_type){
       this.imageUrl = PieceTypeObjects[this.unpromote_type].imageUrl;
-      this.elm.src = this.imageUrl;
+      this.imgElm.src = this.imageUrl;
       this.type = PieceTypeObjects[this.unpromote_type].type;
       this.promote_type = PieceTypeObjects[this.unpromote_type].promote_type;
       this.movableCheck = PieceTypeObjects[this.unpromote_type].movableCheck;
@@ -501,6 +510,8 @@ function GoldMovableCheck(dx,dy){
           ][dy + 1][dx + 1];
 }
  
+// default
+var PieceImgName = 'img/csa/';
 /**
  * PieceTypeObjects 
  */
@@ -511,7 +522,7 @@ var PieceTypeObjects = {
 	 * King
 	 */
   King: {
-  imageUrl: HOST + 'img/King.png',
+  imageUrl: HOST + PieceImgName + 'King.png',
   type: 'King',
   movableCheck: KingMovableCheck
   },
@@ -519,7 +530,7 @@ var PieceTypeObjects = {
 	 * Bishop
 	 */
   Bishop: {
-  imageUrl: HOST + 'img/Bishop.png',
+  imageUrl: HOST + PieceImgName + 'Bishop.png',
   type: 'Bishop',
   movableCheck: function movableCheck(dx,dy){
     return (dx == dy || dx == (-1)*dy);
@@ -530,7 +541,7 @@ var PieceTypeObjects = {
 	 * Horse
 	 */
   Horse: {
-  imageUrl: HOST + 'img/Horse.png',
+  imageUrl: HOST + PieceImgName + 'Horse.png',
   type: 'Horse',
   movableCheck: function movableCheck(dx,dy){
     if (dx == dy || dx == (-1)*dy) return true;
@@ -543,7 +554,7 @@ var PieceTypeObjects = {
 	 * Rook
 	 */
   'Rook': {
-  imageUrl: HOST + 'img/Rook.png',
+  imageUrl: HOST + PieceImgName + 'Rook.png',
   type: 'Rook',
   movableCheck: function movableCheck(dx,dy){
     return (dx == 0 || dy == 0);
@@ -554,7 +565,7 @@ var PieceTypeObjects = {
 	 * Dragon
 	 */
   Dragon: {
-  imageUrl : HOST + 'img/Dragon.png',
+  imageUrl : HOST + PieceImgName + 'Dragon.png',
   type : 'Dragon',
   movableCheck: function movableCheck(dx,dy){
     if (dx == 0 || dy == 0) return true;
@@ -567,7 +578,7 @@ var PieceTypeObjects = {
 	 * Gold
 	 */
   Gold: {
-  imageUrl: HOST + 'img/Gold.png',
+  imageUrl: HOST + PieceImgName + 'Gold.png',
   type: 'Gold',
   movableCheck: GoldMovableCheck
   },
@@ -575,7 +586,7 @@ var PieceTypeObjects = {
 	 * Silver
 	 */
   Silver: {
-  imageUrl: HOST + 'img/Silver.png',
+  imageUrl: HOST + PieceImgName + 'Silver.png',
   type: 'Silver',
   movableCheck: function movableCheck(dx,dy){
     if(Math.abs(dx) > 1 || Math.abs(dy) > 1) return false;
@@ -591,7 +602,7 @@ var PieceTypeObjects = {
 	 * Tsilver
 	 */
   Tsilver: {
-  imageUrl: HOST + 'img/Tsilver.png',
+  imageUrl: HOST + PieceImgName + 'Tsilver.png',
   type: 'Tsilver',
   movableCheck: GoldMovableCheck,
   unpromote_type: 'Silver'
@@ -600,7 +611,7 @@ var PieceTypeObjects = {
 	 * kNight
 	 */
   kNight: {
-  imageUrl: HOST + 'img/kNight.png',
+  imageUrl: HOST + PieceImgName + 'kNight.png',
   type: 'kNight',
   movableCheck: function movableCheck(dx,dy){
     return (dx ==  1 && dy == -2) ||
@@ -612,7 +623,7 @@ var PieceTypeObjects = {
 	 * Oknight
 	 */
   Oknight: {
-  imageUrl: HOST + 'img/Oknight.png',
+  imageUrl: HOST + PieceImgName + 'Oknight.png',
   type: 'Oknight',
   movableCheck: GoldMovableCheck,
   unpromote_type: 'kNight'
@@ -621,7 +632,7 @@ var PieceTypeObjects = {
 	 * Lance
 	 */
   Lance: {
-  imageUrl: HOST + 'img/Lance.png',
+  imageUrl: HOST + PieceImgName + 'Lance.png',
   type: 'Lance',
   movableCheck: function movableCheck(dx,dy){
     return (dx == 0 && dy < 0);
@@ -632,7 +643,7 @@ var PieceTypeObjects = {
 	 * Mlance
 	 */
   Mlance: {
-  imageUrl: HOST + 'img/Mlance.png',
+  imageUrl: HOST + PieceImgName + 'Mlance.png',
   type: 'Mlance',
   movableCheck: GoldMovableCheck,
   unpromote_type: 'Lance'
@@ -641,7 +652,7 @@ var PieceTypeObjects = {
 	 * Pawn
 	 */
   Pawn: {
-  imageUrl: HOST + 'img/Pawn.png',
+  imageUrl: HOST + PieceImgName + 'Pawn.png',
   type: 'Pawn',
   movableCheck: function movableCheck(dx,dy){
       return (dx === 0 && dy === -1);
@@ -652,7 +663,7 @@ var PieceTypeObjects = {
 	 * Qpawn
 	 */
   Qpawn: {
-  imageUrl: HOST + 'img/Qpawn.png',
+  imageUrl: HOST + PieceImgName + 'Qpawn.png',
   type: 'Qpawn',
   movableCheck: GoldMovableCheck,
   unpromote_type: 'Pawn'
