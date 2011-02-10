@@ -1328,6 +1328,8 @@ GameController = Class.create({
         e.obj.imageUrl   = HOST + PieceImgName + e.obj.type + '.png';
       });
     } else {
+      var pieceTxtStyle = $A(document.styleSheets[1].cssRules).find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == '.piecetxt':false; });
+      pieceTxtStyle.style.fontFamily = name;
       this.options.isImg = false;
       this.options.isTxt = true;
       $$('.piece').each(function(e){
