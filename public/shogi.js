@@ -112,7 +112,8 @@ window.gameController.game = this;
 	 */ 
   setStandPosition: function setStandPosition() { // ShogiGame
     LOG.getInto('ShogiGame#setStandPosition');
-    $('container').style.width = 180 + (this.width)*30 + 'px';
+    var size = Math.round(this.controller.boardSize * 0.75);
+    $('container').style.width = size*6 + (this.width)*size + 'px';
     if(this.controller.top !== 1){
       $('bottom-stand').appendChild(this.blackStand.elm);
       $('top-stand').appendChild(this.whiteStand.elm);
@@ -122,11 +123,11 @@ window.gameController.game = this;
       $('top-stand').appendChild(this.blackStand.elm);
       LOG.debug('blackStand is set to top beacuse top is ' + this.controller.top);
     }
-    $('bottom-stand').style.height = (this.height - 1)*30 + 'px';
-    $('bottom-stand').style.margin = (this.height - 5)*30 + 'px 0px 0px 0px';
-    $('top-stand').style.height = (this.height - 1)*30 + 'px';
-    $('shogi').style.height = 30 + (this.height)*30 + 'px';
-    $('shogi').style.width = 80 + (this.width)*30 + 'px';
+    $('bottom-stand').style.height = (this.height - 1)*size + 'px';
+    $('bottom-stand').style.margin = (this.height - 5)*size + 'px 0px 0px 0px';
+    $('top-stand').style.height = (this.height - 1)*size + 'px';
+    $('shogi').style.height = size + (this.height)*size + 'px';
+    $('shogi').style.width = size*3 + (this.width)*size + 'px';
     LOG.goOut();
   },
 	/**
@@ -181,7 +182,7 @@ window.gameController.game = this;
         }
       }
 
-      tmp = $$('#top-stand img', '#bottom-stand img');
+      tmp = $$('#top-stand div.piece', '#bottom-stand div.piece');
       if(tmp.size() > 0){
         tmp.invoke('toggleClassName', 'top');
         tmp.invoke('toggleClassName', 'bottom');
@@ -369,8 +370,8 @@ window.gameController.game = this;
     this.confirmActionElement.style.top = actionContents[2].elm.cumulativeOffset()[1];
     this.confirmActionElement.style.position='absolute';
     this.confirmActionElement.style.zIndex=50000;
-    this.confirmActionElement.style.width=100;
-    this.confirmActionElement.style.hight=100;
+    this.confirmActionElement.style.width=this.controller.boardSize;
+    this.confirmActionElement.style.height=this.controller.boardSize;
     LOG.goOut();
   },
 	/**

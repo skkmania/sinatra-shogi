@@ -1,10 +1,5 @@
 @charset "UTF-9";
-/*
-@import "dw.css";
-#test {
-  display: none;
-}
-*/
+
 div#container {
   float: left;
   width: 500px;
@@ -17,12 +12,6 @@ div#top-stand {
   margin: 10px;
   width: 30px;
 }
-#shogi {
-  margin: 10px 10px 20px 0px;
-  float: left;
-  position: relative;
-  /*background-image: url(savanna.png);*/
-}
 div.window_contents {
   float: left;
   overflow: auto;
@@ -32,11 +21,8 @@ div.window_contents {
 #board-panel {
   width: 410px;
   height: 420px;
-  margin: 10px 0px 10px 0px;
   float: left;
-  overflow: auto;
   position: relative;
-  /*background-image: url(savanna.png);*/
 }
 div#bottom-stand {
   background-color: #c8c;
@@ -58,13 +44,9 @@ div.cell {
   width: 40px;
   height: 42px;
   margin-top: -1px;
-  /*margin-left: -1px;*/
-  /*padding: 1px;*/
   border-left: 1px solid black;
   border-bottom: 1px solid black;
-  /*float: left;*/
   position: absolute;
-  /*background-image: url(savanna.png);*/
 }
 div.rightCell {
   border-right: 1px solid black;
@@ -80,22 +62,18 @@ div.dummyCell {
   width: 35px;
   height: 35px;
   position: absolute;
-  background-color: #aaa;
 }
 div.colNum {
   width: 30px;
   height: 20px;
   margin-top: 10px;
-  margin-left: 10px;
+  text-align: center;
 }
 div.rowNum {
   width: 20px;
   height: 20px;
   margin-top: 10px;
   margin-left: 10px;
-}
-div#cornerDummy {
-  background-color: #008;
 }
 div#promoteOrNot {
   background-color: yellow;
@@ -109,13 +87,6 @@ div#noElement {
 img.pieceImg {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
-  width: 35px;
-  height: 35px;
-  margin: 2px;
-/*
-  -moz-box-shadow: 3px 3px 2px black;
-  -webkit-box-shadow: 3px 3px 2px black;
-*/
 }
 div.piece.isImg img { display: block; }
 div.piece.isTxt img { display: none; }
@@ -124,18 +95,7 @@ div.piece.isTxt div { display: block; }
 
 .pieceTxt {
   position:		relative;
-  margin:		0px;
-  padding-left:		5px;
-  padding-bottom:	2px;
-  padding-top:		2px;
-  top:			1px;
-  left:			1px;
-  
-  /*width: 20px; */
-  /*height: 20px; */
-  font-size: 30px;
-  /*font-family: '梅 P明朝';*/
-  /*font-family: 'Takao P明朝';*/
+  font-size: 40px;
   font-family: 'serif';
 }
 
@@ -143,22 +103,11 @@ div.top {
   -moz-transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
   filter: progid:DXImageTransform.Microsoft.basicimage(rotation=2);
-  /* margin-top:     16px; */
-  margin-bottom: -20px;
-  margin-left:    10px;
 }
 img.top {
   -moz-transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
   filter: progid:DXImageTransform.Microsoft.basicimage(rotation=2);
-}
-div.bottom {
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-}
-img.bottom {
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
 }
 .join {
   font-size: medium;
@@ -214,18 +163,6 @@ span.turn {
   height: 60px;
   padding: 3px;
 }
-#bottom-captured img {
-  width: 50px;
-  height: 50px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-}
-#top-captured img {
-  width: 50px;
-  height: 50px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-}
 div#joinButton {
   width: 150px;
 }
@@ -242,11 +179,8 @@ button.join {
   margin-left: 20px;
   font-size: large;
 }
-pre#json {
-  clear: both;
-}
 table.storeTable tr td{
-  border: 1px solid yellow;
+  border: 1px solid #ccc;
 }
 
 p#links_pool {

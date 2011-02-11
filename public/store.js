@@ -395,7 +395,7 @@ var Store = Class.create(Hash, {
 	 */
   getMsg : function getMsg(bid, uid, level, mask, range, async){ // Store
     LOG.getInto('Store#getMsg'); 
-    LOG.setLevel(Log.DEBUG);
+    //LOG.setLevel(Log.DEBUG);
     var request = new Ajax.Request('/getMsg', {
          method: 'get',
          onCreate: function(request, response){

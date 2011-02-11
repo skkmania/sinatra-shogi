@@ -23,10 +23,11 @@ Stand = Class.create({
 	 */
   createElm: function createElm() {  // Stand
     LOG.getInto('Stand#createElm');
+    var bs = window.gameController.options.boardSize;
     this.elm = document.createElement('div');
     this.elm.id = this.id;
     this.elm.obj = this;
-    this.elm.style.height = (this.game.height - 1)*30 + 'px';
+    this.elm.style.height = (this.game.height - 1)*bs + 'px';
     LOG.goOut();
   },
 	/**

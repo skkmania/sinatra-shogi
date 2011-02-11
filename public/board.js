@@ -61,7 +61,6 @@ Board = Class.create({
     this.boardPanel = new Element('div',{ id: 'board-panel' });
     this.area.window_contents.appendChild(this.boardPanel);
     this.bottomStand = new Element('div',{ id: 'bottom-stand' });
-    this.bottomStand.setStyle({ margin:'150px 0px 0px 400px' });
     this.area.window_contents.appendChild(this.bottomStand);
     this.area.window.open();
     LOG.goOut();

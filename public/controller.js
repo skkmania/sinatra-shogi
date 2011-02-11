@@ -291,6 +291,8 @@ GameController = Class.create({
         this.mode = '';
         this.lookForParticipants();
         this.game = new ShogiGame(settings, this);
+        // defaultではcellのsizeを40で開始する
+        this.resizeBoard(40);
         break;
       case 'gpsclient': // GPS将棋クライアントモード
         break;
@@ -1298,6 +1300,82 @@ GameController = Class.create({
     LOG.getInto('GameController#finish');
     this.message(winner.shortName() + t('win'));
     this.sendDelta(this.makeDelta('finish', winner));
+    LOG.goOut();
+  },
+	/**
+	 * resizeBoard()
+	 */
+        // 入力 : bs 数値 cellのサイズをpx単位で指定。これが無ければ
+	//        Options window のboardSizeリストで選択された数値を扱う
+        // 出力 : なし
+        // 機能 : Boardのサイズを指定により変更する
+  resizeBoard: function resizeBoard(bs) { // GameController
+    LOG.getInto('GameController#resizeBoard');
+    this.options.boardSize = bs || parseInt($('boardSize').value);
+    var bs = this.options.boardSize; 
+    // 各種のサイズをあわせる
+    var cssRules = $A(document.styleSheets[1].cssRules);
+       // boardPanel
+    var boardPanelStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == '#board-panel':false; });
+    boardPanelStyle.style.width  = (bs*10 + 10) + 'px';
+    boardPanelStyle.style.height = (Math.round(bs*1.05)*10 + 10) + 'px';
+       // cell
+    var cellStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == 'div.cell':false; });
+    cellStyle.style.width  = bs + 'px';
+    cellStyle.style.height = Math.round(bs*1.05) + 'px';
+       // dummyCell
+    var dummyCellStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == 'div.dummycell':false; });
+    dummyCellStyle.style.width  = Math.round(bs*0.9) + 'px';
+    dummyCellStyle.style.height = Math.round(bs*0.9) + 'px';
+       // position of cells
+    $$('.cell').each(function(e){
+      e.obj.width = bs;
+      e.obj.height = Math.round(bs*1.05);
+      e.obj.getPosition();
+    });
+       // position of dummyCells
+    $$('.dummyCell').each(function(e){
+      e.obj.width  = bs
+      e.obj.height = Math.round(bs*1.05);
+      e.obj.getPosition();
+    });
+       // colNum
+    var colNumStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == 'div.colnum':false; });
+    colNumStyle.style.width     = Math.round(bs*0.7) + 'px';
+    colNumStyle.style.height    = Math.round(bs*0.5) + 'px';
+    colNumStyle.style.marginTop = Math.round(bs*0.5) + 'px';
+    colNumStyle.style.fontSize  = Math.round(bs*0.5) + 'px';
+       // rowNum
+    var rowNumStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == 'div.rownum':false; });
+    rowNumStyle.style.width     = Math.round(bs*0.5) + 'px';
+    rowNumStyle.style.height    = Math.round(bs*0.5) + 'px';
+    rowNumStyle.style.fontSize  = Math.round(bs*0.5) + 'px';
+       // pieceTxt
+    var pieceTxtStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == '.piecetxt':false; });
+    pieceTxtStyle.style.fontSize  = bs + 'px';
+       // pieceImg
+    var pieceImgStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == 'img.pieceimg':false; });
+    pieceImgStyle.style.width   = Math.round(bs*0.9) + 'px';
+    pieceImgStyle.style.height  = Math.round(bs*0.9) + 'px';
+       // bottomStand
+    $('bottom-stand').style.marginLeft = '0px';
+    $('bottom-stand').style.marginTop  = Math.round(bs*3) + 'px';
+    $('bottom-stand').style.height     = Math.round(bs*8) + 'px';
+    $('bottom-stand').style.width      = bs + 'px';
+       // topStand
+    $('top-stand').style.marginLeft = '0px';
+    $('top-stand').style.marginTop  = bs + 'px';
+    $('top-stand').style.height     = Math.round(bs*8) + 'px';
+    $('top-stand').style.width      = bs + 'px';
+       // blackStand, whiteStand
+    this.game.blackStand.elm.style.height     = Math.round(bs*8) + 'px';
+    this.game.whiteStand.elm.style.height     = Math.round(bs*8) + 'px';
+    this.game.blackStand.elm.style.width      = bs + 'px';
+    this.game.whiteStand.elm.style.width      = bs + 'px';
+       // window size
+    this.game.board.area.window.container.style.width  = bs * 13;
+    this.game.board.area.window.container.style.height = bs * 12;
+
     LOG.goOut();
   },
 	/**

@@ -19,8 +19,8 @@ Cell.prototype = {
     //this.top = top;
     this.marginTop = 0;
     this.marginLeft = 0;
-    this.width = 40;
-    this.hight = 42;
+    this.width = window.gameController.options.boardSize;
+    this.height = Math.round(this.width * 1.05);
     LOG.goOut(Log.DEBUG2);
   },
 	/**
@@ -70,16 +70,17 @@ Cell.prototype = {
     if (this.game.controller.top == 1){
       var bh = this.game.height;
       this.elm.style.left = (this.marginLeft + this.width * this.x) + 'px';
-      this.elm.style.top = (this.marginTop + this.hight * (bh - 1 - this.y)) + 'px';
+      this.elm.style.top = (this.marginTop + this.height * (bh - 1 - this.y)) + 'px';
     } else {
       var bw = this.game.width;
       this.elm.style.left = (this.marginLeft + this.width * (bw - 1 - this.x)) + 'px';
-      this.elm.style.top = (this.marginTop + this.hight * this.y) + 'px';
+      this.elm.style.top = (this.marginTop + this.height * this.y) + 'px';
     }
   },
 	/**
 	 * createDummyElm()
 	 */
+/*
   createDummyElm: function createDummyElm() {  // Cell
     this.elm = document.createElement('div');
     this.elm.id = 'dummyCell-' + this.x + '-' + this.y;
@@ -101,6 +102,30 @@ Cell.prototype = {
       }
     }
     this.elm.appendChild(this.dummyPiece);
+    this.board.elm.appendChild(this.elm);
+  },
+*/
+	/**
+	 * createDummyElm()
+	 */
+  createDummyElm: function createDummyElm() {  // Cell
+    this.elm = document.createElement('div');
+    this.elm.id = 'dummyCell-' + this.x + '-' + this.y;
+    this.elm.obj = this;
+    this.elm.addClassName('dummyCell');
+    this.getPosition();
+    if(this.x === 0 && this.y === 0){
+      this.elm.id = 'cornerDummy';
+    } else {
+      if(this.x === 0){
+        this.elm.addClassName('rowNum');
+        this.elm.innerHTML = this.y.toKanji();
+      }
+      if(this.y === 0){
+        this.elm.addClassName('colNum');
+        this.elm.innerHTML = this.x;
+      }
+    }
     this.board.elm.appendChild(this.elm);
   },
 	/**
