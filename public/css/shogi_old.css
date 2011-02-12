@@ -5,76 +5,7 @@
   padding: 0px;
  }
 
- #wrap {
-   width: 1500px;
- }
-
- #head {
-   height: 20px;
-   vertical-align: middle;
-   margin-top: 20px;
-   margin-bottom: 10px;
- }
-
- #head #hTitle {
-   margin-left: 10px;
-   float: left;
- }
-
- #head #huserTitle {
-   margin-left: 30px;
-   float: left;
- }
-
-
- #head #loginform {
-   margin-left: 30px;
-   float: left;
- }
-
- #inputUserName {
-   float: left;
- }
-
- #displayConf {
-   margin-left: 50px;
-   float: left;
-   width: 300px;
-   z-index: 2;
- /*  background-color: #000080; 
-   color : #FFFFF0; */
- }
-
-/*  これはいらなそう。ログインフォームでおきかえてしまったから。
- #head #huserName {
-   width: 100px;
-   height: 20px;
-   vertical-align: middle;
-   margin-left: 20px;
-   float: left;
- }
-*/
-
- #sTable { width: 500px; height: 20px; }
-
- #Title {
-/*
-   margin-left: 120px;
-   margin-top: 15px;
-   margin-bottom: 15px;
-   height: 20px;
-   width:  280px;
-   vertical-align: middle;
-*/
- }
-
  #Title #kid {
-   float: left;
-   vertical-align: middle;
- }
-
- #Title #inputId {
-   width: 150px;
    float: left;
    vertical-align: middle;
  }
@@ -86,44 +17,6 @@
    vertical-align: middle;
  }
 
- #Title #turnTitle {
-   float: left;
-   vertical-align: middle;
- }
-
- .titleTd {
-   font-size: 10pt;
- }
-
- #myTable {
-   float: left;
-   width: 220px;
-   margin: 0px 0px 30px 10px;
- }
-
- #testTable {
-   table-layout: fixed;
-   width: 210px;
-   margin: 0px;
-   border-width: 1px;
-   border-style: solid none;
-   border-top-style: hidden;
-   border-collapse: collapse;
-   border-spacing: 0px 0px;
- }
-
- #whiteStand {
-   width: 24px;
-   float: left;
-   text-align: center;
- }
-
- #blackStand {
-   width: 22px;
-   float: left;
-   text-align: center;
- }
-
  .Stand {
    margin: 0px;
    table-layout: fixed;
@@ -132,75 +25,6 @@
    border-style: solid hidden;
    border-collapse: collapse;
    border-spacing: 0px 0px;
- }
-
- .stdTr, .stdTd {
-   text-align: center;
-   border-width: 0px;
-   border-style: solid hidden;
-   border-collapse: collapse;
-   border-spacing: 0px 0px;
-   height: 20px;
-   width: 22px;
- }
-
- .numP {
-   text-align: center;
-   font-size: 8pt;
-   width: 22px;
-   height: 12px;
-   border-style: none;
-   border-collapse: collapse;
-   border-spacing: 0px 0px;
- }
-
- .numC {
-   text-align: center;
-   font-size: 8pt;
-   border-style: none;
-   border-collapse: collapse;
-   border-spacing: 0px 0px;
- }
-
- .bp {
-   width: 22px;
-   height: 24px;
-   border-width: 1px;
-   border-style: solid;
-   border-collapse: collapse;
-   border-spacing: 0px 0px;
- }
-
- .clickedPiece {
-   background-color: #ffff88;
- }
-
- /* .row { */
- #testTable tr {
-   position: relative;
-   margin: 0px;
-   padding: 0px;
-   top: 0px;
-   left: 0px;
-   width: 220px;
-   height: 24px;
-   border-top-style: none;
-   border-top-width: 1px;
-   border-top-color: black;
-   background-color: transparent
- }
-
- #prevMoves {
-   float: left;
-   offset: 0px;
-   margin: 10px;
-   width: 110px;
-   clear: both;
- }
-
- #BoardAndStands {
-   float: left;
-   width: 280px;
  }
 
  #nxtMvTitle {
@@ -486,12 +310,3 @@
    width: 400px;
  }
 
- #situationImage {
-   clear: both;
- }
-
- #kifRead {
- }
- #footer {
-   text-align: right;
- }
