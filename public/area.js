@@ -46,8 +46,8 @@ var Area = Class.create({
       this.anchor.insert(this.title);
       this.window = new Control.Window(this.anchor, this.default_options); 
       // window_headerにwindow_titleとwindow_closeを挿入してから
-      this.window_header.insert(this.window_title);
       this.window_header.insert(this.window_close);
+      this.window_header.insert(this.window_title);
       // windowの先頭にwindow_header要素を挿入しておく。
       this.window.container.insert(this.window_header); 
       // headerの後に、contents要素を挿入する。
@@ -66,16 +66,16 @@ areaSettings = {
   'menu' : {
               'container': 'menu',
               'title'    : 'Menu',
-              'position' : [10,600],
+              'position' : [10,630],
               'width'    : 200,
               'height'   : 300 
             },
   'controlPanel' : {
               'container': 'controlPanel',
               'title'    : 'ControlPanel',
-              'position' : [110,0],
-              'width'    : 500,
-              'height'   : 90 
+              'position' : [10,30],
+              'width'    : 700,
+              'height'   : 50 
             },
   'data' : {
               'container': 'data',

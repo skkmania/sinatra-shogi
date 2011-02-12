@@ -124,9 +124,10 @@ img.top {
 
 }
 #counter {
-  margin-top: 2px;
-  margin-right: 2px;
-  text-align: right;
+  float:	left;
+  margin-top:	2px;
+  margin-right:	2px;
+  margin-left:	10px;
 }
 #bottom-panel {
   float: left;
@@ -134,7 +135,6 @@ img.top {
   margin-top: 2px;
 }
 #message {
-/*  height: 100px; */
   font-size: small;
 }
 #message-body {
@@ -183,10 +183,10 @@ table.storeTable tr td{
   border: 1px solid #ccc;
 }
 
-p#links_pool {
+div#links_pool {
   width: 300px;
 }
 
-p#links_pool a,#window_pool a {
+div#links_pool a,#window_pool a {
   margin: 3px;
 }

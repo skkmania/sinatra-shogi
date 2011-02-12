@@ -155,6 +155,9 @@ ControlPanel = Class.create({
         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
         contents += '<div id="bottom-panel" class="player"><span class="t">sente</span> : <span class="t">waiting</span></div>';
         contents += '<div id="top-panel" class="player"><span class="t">gote</span> : <span class="t">waiting</span></div>';
+        contents += '<div id="gameTurn"></div>';
+        contents += '<div id="boardTurn"></div>';
+        contents += '<div id="viewersTurn"></div>';
     this.area.window_contents.update(contents);
     this.area.window.open();
     LOG.goOut();

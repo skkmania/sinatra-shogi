@@ -108,12 +108,7 @@
  background-position:top left;
  -moz-border-radius: 5px;
  -webkit-border-radius: 5px;
-/*
- padding:10px;
-*/
- color:#000;
- min-width:150px;
- min-height:100px;
+ color:#222;
  }
  .window .window_contents {
  background-color: #fff;
@@ -126,7 +121,6 @@
  }
  .window .window_header {
  text-align:center;
- float:clear;
  }
 
  .window .window_footer {
@@ -144,23 +138,21 @@
  }
 
  .resizable_handle {
- height:13px;
- width:13px;
- background-image:url("../img/lib/window_close.gif");
- float:right;
- cursor:nw-resize;
+ height:	16px;
+ width:		16px;
+ background:	url(../img/lib/material-icon-ball-64x64.jpg) -30px -105px no-repeat;
+ float:		right;
+ cursor:	nw-resize;
  }
 
- .window .window_title {
-/*
- margin-top:-7px;
- margin-bottom:7px;
-*/
- cursor:move;
- color: #bbb;
- }
+.window .window_title {
+    cursor:	move;
+    color:	#bbb;
+    height:	16px;
+    font-size:	15px;
+}
 
- .window .window_resizable {
+.window .window_resizable {
  display:block;
  position:absolute;
  top:4px;
@@ -170,21 +162,18 @@
  background-image:url("../img/lib/window_close.gif");
  cursor:pointer;
  cursor:hand;
- }
+}
 
- .window .window_close {
- display:block;
-/*
- position:absolute;
- top:4px;
- left:5px;
-*/
- height:13px;
- width:13px;
- background-image:url("../img/lib/window_close.gif");
- cursor:pointer;
- cursor:hand;
- }
+.window .window_close {
+   display:block;
+   height:13px;
+   width:13px;
+   background-image:url("../img/lib/window_close.gif");
+   cursor:pointer;
+   float:		left;
+   margin-top:	2px;
+   margin-left:	1px;
+}
 
 #control_overlay { background-color:#000; }
 
