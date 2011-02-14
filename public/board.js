@@ -527,6 +527,94 @@ Board = Class.create({
       ret += '<br>';
     }
     return ret;
+  },
+	/*
+	 * makeBookmark()
+	 */
+	// 入力：なし。（自分自身が処理対象）
+	// 出力：
+  makeBookmark : function makeBookmark(){ // Board
+    LOG.getInto('Board#makeBookmark', Log.DEBUG2);
+    var bm = new Bookmark(this);
+    LOG.goOut(Log.DEBUG2);
+  },
+	/*
+	 * makeToPngButton()
+	 */
+	// 入力：なし。（自分自身が処理対象）
+	// 出力：
+  makeToPngButton : function makeToPngButton(){ // Board
+    LOG.getInto('Board#makeToPngButton', Log.DEBUG2);
+    this.toPngButton = new Element('div',{ id: 'toPngButton' });  
+    this.toPngButton.observe('click', this.makeBookmark.bind(this));
+    this.area.window_title.insert(this.toPngButton);
+    LOG.goOut(Log.DEBUG2);
+  },
+	/*
+	 * toPNG()
+	 */
+	// 入力: canvas canvas要素
+	// 出力: dataURL canvasをdataURLに変換して返す
+  toPNG : function toPNG(canvas){ // Board
+    LOG.getInto('Board#toPNG', Log.DEBUG2);
+    var context = canvas.getContext("2d");
+    // Board
+    var width = 20;
+    var height = Math.round(width*1.05);
+    context.translate(Math.round(width*1.5), 0);
+    context.fillStyle = "gray";
+    context.beginPath();
+    for ( var i = 0; i < 10; i++) {
+      context.moveTo(i*width+0.5, 0.5);
+      context.lineTo(i*width+0.5, 9*height+0.5);
+      context.stroke();
+    }
+    context.beginPath();
+    for ( var i = 0; i < 10; i++) {
+      context.moveTo(0.5, i*height+0.5);
+      context.lineTo(9*width+0.5, i*height+0.5);
+      context.stroke();
+    }
+    context.font = "19px serif";
+    // black Pieces on Board
+    this.cells.flatten().each(function(c){
+      if(c.piece && c.piece.isBlack()){
+        context.fillText(Chr2KanjiOne[c.piece.chr.toLowerCase()], (9-c.x)*width, c.y*height-1);
+      }
+    });
+    // blackStand
+    if (this.game.blackStand.pieces.length > 0) {
+      context.fillText('▲',  width*9.5, height*1);
+      this.game.blackStand.pieces.each(function(p, idx){
+        context.fillText(Chr2KanjiOne[p.chr.toLowerCase()], 9.5*width, (2+idx)*height);
+      });
+    } else {
+      context.fillText('▲',  width*9.5, height*1);
+      context.fillText('な', width*9.5, height*2);
+      context.fillText('し', width*9.5, height*3);
+    }
+    // white Pieces on Board
+    context.rotate(Math.PI);
+    this.cells.flatten().each(function(c){
+      if(c.piece && !c.piece.isBlack()){
+        context.fillText(Chr2KanjiOne[c.piece.chr.toLowerCase()], (c.x-10)*width, (1 - c.y)*height-2);
+      }
+    });
+    // whiteStand
+    context.translate(Math.round(width*1.5), 0);
+    if (this.game.whiteStand.pieces.length > 0) {
+      context.fillText('△',  width*(-1), height*(-8));
+      this.game.whiteStand.pieces.each(function(p, idx){
+        context.fillText(Chr2KanjiOne[p.chr.toLowerCase()], (-1)*width, (-7+idx)*height);
+      });
+    } else {
+      context.fillText('△',  width*(-1), height*(-8));
+      context.fillText('な', width*(-1), height*(-7));
+      context.fillText('し', width*(-1), height*(-6));
+    }
+
+    LOG.goOut(Log.DEBUG2);
+    return canvas.toDataURL();
   }
 });
 
@@ -611,4 +699,3 @@ var BoardData = Class.create(Hash, {
     return ret;
   }
 });
-

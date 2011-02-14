@@ -296,6 +296,7 @@ GameController = Class.create({
         this.game = new ShogiGame(settings, this);
         // defaultではcellのsizeを40で開始する
         this.resizeBoard(40);
+        this.game.board.makeToPngButton();
         break;
       case 'gpsclient': // GPS将棋クライアントモード
         break;

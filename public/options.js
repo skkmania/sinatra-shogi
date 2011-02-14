@@ -29,6 +29,7 @@ var Options = Class.create({
   <select id="piece-select" class="pieceSelect" onChange="window.gameController.pieceSelect($(\'piece-select\').value);">\
     <option>chr:serif</option>\
     <option>chr:sans-serif</option>\
+    <option>chr:mikachan\-P</option>\
     <option>chr:Takao P明朝</option>\
     <option>chr:Takao Pゴシック</option>\
     <option>img:csa</option>\

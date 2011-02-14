@@ -9,4 +9,6 @@ lib/log/*.*
 img/*.*
 public/lib/*.*
 public/lib
+public/fonts/*.*
+public/fonts
 test/unit/sample/*.*

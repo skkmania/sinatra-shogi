@@ -1,4 +1,4 @@
-@charset "UTF-9";
+@charset "UTF-8";
 
 div#container {
   float: left;
@@ -94,9 +94,9 @@ div.piece.isImg div { display: none; }
 div.piece.isTxt div { display: block; }
 
 .pieceTxt {
-  position:		relative;
-  font-size: 40px;
-  font-family: 'serif';
+  position:	relative;
+  font-size:	40px;
+  font-family:	Tangerine, serif;
 }
 
 div.top {
@@ -190,3 +190,10 @@ div#links_pool {
 div#links_pool a,#window_pool a {
   margin: 3px;
 }
+
+div#toPngButton {
+ height:	16px;
+ width:		16px;
+ background:	url(../img/lib/material-icon-ball-64x64.jpg) -230px -105px no-repeat;
+ float:		right;
+ }

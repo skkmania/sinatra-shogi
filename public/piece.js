@@ -14,6 +14,11 @@ var Chr2Kanji= { 'p': '歩', 'l': '香', 'n': '桂', 's': '銀',
                  'q': 'と','m': '成香','o': '成桂','t': '成銀',
                  'h': '馬','d': '龍'}; 
 
+var Chr2KanjiOne= { 'p': '歩', 'l': '香', 'n': '桂', 's': '銀',
+                 'g': '金', 'b': '角','r': '飛',   'k': '玉',
+                 'q': 'と','m': '杏','o': '圭','t': '全',
+                 'h': '馬','d': '龍'}; 
+
 function create_piece(chr){
   LOG.getInto();
   LOG.debug('entered create_piece: ' );
@@ -208,8 +213,9 @@ Piece = Class.create({
     this.imgElm.addClassName('pieceImg');
     this.imgElm.src = this.imageUrl;
     this.txtElm = document.createElement('div');
-    this.txtElm.textContent = Chr2Kanji[this.chr.toLowerCase()];
+    this.txtElm.textContent = Chr2KanjiOne[this.chr.toLowerCase()];
     this.txtElm.addClassName('pieceTxt');
+/*
     switch(this.txtElm.textContent){
       case '成銀':
            this.txtElm.textContent = '全';
@@ -223,6 +229,7 @@ Piece = Class.create({
       default:
            break;
     }
+*/
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
     }
@@ -420,7 +427,8 @@ LOG.goOut();
         this.chr = Type2chr[this.type].toUpperCase();
       else
         this.chr = Type2chr[this.type];
-      this.txtElm.textContent = Chr2Kanji[this.chr.toLowerCase()];
+      this.txtElm.textContent = Chr2KanjiOne[this.chr.toLowerCase()];
+/*
       switch(this.txtElm.textContent){
         case '成銀':
              this.txtElm.textContent = '全';
@@ -434,6 +442,7 @@ LOG.goOut();
         default:
              break;
       }
+*/
       this.movableCheck = PieceTypeObjects[this.promote_type].movableCheck;
       this.promote_type = undefined;
       LOG.debug('promoted : ' + this.toDebugString());
