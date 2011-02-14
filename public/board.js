@@ -535,6 +535,10 @@ Board = Class.create({
 	// 出力：
   makeBookmark : function makeBookmark(){ // Board
     LOG.getInto('Board#makeBookmark', Log.DEBUG2);
+      // 現在のbidのbookmarkがすでにあるならば何もせずreturnする。
+    if ($$('.bookmark_title').pluck('textContent').find(function(e){
+      return parseInt(e) == this.bid;
+    }.bind(this))) return;
     var bm = new Bookmark(this);
     LOG.goOut(Log.DEBUG2);
   },
@@ -554,12 +558,14 @@ Board = Class.create({
 	 * toPNG()
 	 */
 	// 入力: canvas canvas要素
+	//       size   数値  作成する画像のcellの幅。dot pixel単位。
+	//              defaultは20.
 	// 出力: dataURL canvasをdataURLに変換して返す
-  toPNG : function toPNG(canvas){ // Board
+  toPNG : function toPNG(canvas, size){ // Board
     LOG.getInto('Board#toPNG', Log.DEBUG2);
     var context = canvas.getContext("2d");
     // Board
-    var width = 20;
+    var width = size || 20;
     var height = Math.round(width*1.05);
     context.translate(Math.round(width*1.5), 0);
     context.fillStyle = "gray";
@@ -575,7 +581,7 @@ Board = Class.create({
       context.lineTo(9*width+0.5, i*height+0.5);
       context.stroke();
     }
-    context.font = "19px serif";
+    context.font = (width - 2) + "px serif";
     // black Pieces on Board
     this.cells.flatten().each(function(c){
       if(c.piece && c.piece.isBlack()){

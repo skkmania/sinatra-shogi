@@ -37,6 +37,7 @@ var Options = Class.create({
   </select><br>\
   <span id="storeGeneration"></span>\
   <span id="storeSize"></span><br>\
+  <p><label>Bookmark Size:<input type="number" max="50" min="10" name="bookmarkSize" id="bookmarkSize" onChange="window.gameController.options.bkmkSize = $(\'bookmarkSize\').value;"/></label></p><br>\
 </div>';
     this.area.window_contents.update(contents);
     this.area.window.open();

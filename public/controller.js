@@ -915,13 +915,14 @@ GameController = Class.create({
 	 */
         // 機能：　jumpボタン押下に対し反応し指定bidの局面へ移動する
 	//         
-        // 入力： なし。ただし画面のinputTextの値を入力のように扱う
+        // 入力： 数値 arg_bid。ただしなくても可。
+	//        その場合は画面のinputTextの値を入力のように扱う
         // 出力： なし
 	// 副作用: dataStore.currentBidを画面のinputTextの値にする
-  jumpButtonPressed: function jumpButtonPressed() { // GameController
+  jumpButtonPressed: function jumpButtonPressed(arg_bid) { // GameController
     LOG.getInto('GameController#jumpButtonPressed');
     var delta = {};
-    var bid = parseInt($('inputText').value);
+    var bid = arg_bid || parseInt($('inputText').value);
     dataStore.currentBid = bid;
     this.refreshBoard(bid);
     this.game.toggleDraggable();

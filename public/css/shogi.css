@@ -194,6 +194,17 @@ div#links_pool a,#window_pool a {
 div#toPngButton {
  height:	16px;
  width:		16px;
+ -moz-border-radius:	8px;
+ -webkit-border-radius: 8px;
  background:	url(../img/lib/material-icon-ball-64x64.jpg) -230px -105px no-repeat;
+ float:		right;
+ }
+
+div.toMain {
+ height:	16px;
+ width:		16px;
+ -moz-border-radius:	8px;
+ -webkit-border-radius: 8px;
+ background:	url(../img/lib/material-icon-ball-64x64.jpg) -90px -35px no-repeat;
  float:		right;
  }
