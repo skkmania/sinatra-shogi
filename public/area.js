@@ -147,6 +147,13 @@ areaSettings = {
               'width'    : 220,
               'height'   : 380
             },
+  'bookmarks' : {
+              'container': 'bookmarks',
+              'title'    : 'BookMarks',
+              'position' : [800,50],
+              'width'    : 350,
+              'height'   : 600
+            },
   'maintainer' : {
               'container': 'maintainer',
               'title'    : 'Maintainer',
@@ -160,7 +167,7 @@ function Areas(opt) {
   this.initialize(opt);
 };
 
-Areas.data_name = $w('data menu controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook options');
+Areas.data_name = $w('data menu controlPanel board nextMoves prevMoves nextMovePoints nextMoveComments boardPoint boardComments maintainer readBook options bookmarks');
 Areas.prototype = {
   initialize: function(opt) {
     Areas.data_name.each(function(name){

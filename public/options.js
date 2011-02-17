@@ -13,6 +13,7 @@ var Options = Class.create({
     this.isTxt = true;
     this.isImg = false;
     this.boardSize = 40;
+    this.bkmkSize  = 20;
     this.initArea();
     LOG.goOut();
   },

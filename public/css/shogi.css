@@ -208,3 +208,27 @@ div.toMain {
  background:	url(../img/lib/material-icon-ball-64x64.jpg) -90px -35px no-repeat;
  float:		right;
  }
+
+div.save {
+ height:	16px;
+ width:		16px;
+ -moz-border-radius:	8px;
+ -webkit-border-radius: 8px;
+ background:	url(../img/lib/material-icon-ball-64x64.jpg) -90px -175px no-repeat;
+ float:		right;
+ }
+
+.deleteBkmkButton {
+ height:13px;
+ width:13px;
+ background-image:url("../img/lib/window_close.gif");
+ }
+
+div.bkmkEntry {
+  clear: both;
+}
+
+div.bkmkEntry * {
+  float: left;
+  margin: 5px;
+}

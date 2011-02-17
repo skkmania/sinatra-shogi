@@ -539,7 +539,8 @@ Board = Class.create({
     if ($$('.bookmark_title').pluck('textContent').find(function(e){
       return parseInt(e) == this.bid;
     }.bind(this))) return;
-    var bm = new Bookmark(this);
+    var bm = new Bookmark().fromBoard(this);
+    bookMarks.addEntry(bm);
     LOG.goOut(Log.DEBUG2);
   },
 	/*
@@ -557,16 +558,19 @@ Board = Class.create({
 	/*
 	 * toPNG()
 	 */
-	// 入力: canvas canvas要素
+	// 入力: canvasId 文字列 canvas要素のid
 	//       size   数値  作成する画像のcellの幅。dot pixel単位。
 	//              defaultは20.
 	// 出力: dataURL canvasをdataURLに変換して返す
-  toPNG : function toPNG(canvas, size){ // Board
+  toPNG : function toPNG(canvasId, size){ // Board
     LOG.getInto('Board#toPNG', Log.DEBUG2);
-    var context = canvas.getContext("2d");
-    // Board
     var width = size || 20;
     var height = Math.round(width*1.05);
+    var canvas = new Element('canvas',{ id:  canvasId,
+                                      width: width*12 + 'px',
+                                     height: height*10 + 'px' });
+    var context = canvas.getContext("2d");
+    // Board
     context.translate(Math.round(width*1.5), 0);
     context.fillStyle = "gray";
     context.beginPath();
