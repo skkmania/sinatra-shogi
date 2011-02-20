@@ -15,6 +15,7 @@ Stand = Class.create({
     this.type = 'stand';
     this.initialString = '';
     this.pieces = $A([]);
+    this.pockets = $A([]);
     this.createElm();
     LOG.goOut();
   },
@@ -28,6 +29,12 @@ Stand = Class.create({
     this.elm.id = this.id;
     this.elm.obj = this;
     this.elm.style.height = (this.game.height - 1)*bs + 'px';
+    this.sign = document.createElement('div');
+    this.sign.textContent = (this.id == 'black-stand' ? '▲' : '△');
+    this.sign.style.fontSize = bs + 'px';
+    this.elm.appendChild(this.sign);
+    this.pockets[0] = { num: 1, piece: this.id,
+                        top: 0, left: 0, suffix:{} };
     LOG.goOut();
   },
 	/**
@@ -74,7 +81,7 @@ Stand = Class.create({
     var addCandidate = strFromState.subtract(str_now);
     LOG.debug('Stand#read addCandidate : ' + addCandidate, {'indent':-1} );
     $A(addCandidate).each(function(c){
-      this.put_from_read(new Piece(c));
+      this._put(new Piece(c));
     }.bind(this));
     LOG.debug('leaving  Stand#read' );
 LOG.goOut();
@@ -90,30 +97,31 @@ LOG.goOut();
 	/**
 	 * put(piece)
 	 */
+	// 駒台に持ち駒を載せる
   put: function put(piece){ // Stand
-    // 駒台に持ち駒を載せる
-    LOG.getInto('Stand#put');
-    LOG.debug('this is : ' + this.id + ', piece : ' + piece.toDebugString());
+    LOG.getInto('Stand#put', Log.DEBUG2);
+    LOG.debug2('this is : ' + this.id + ', piece : ' + piece.toDebugString());
     piece.toggleBW();
+    this._put(piece);
+/*
     piece.cell = null;
     this.pieces.push(piece);
     this.elm.appendChild(piece.elm);
-    LOG.debug('leaving ' + this.id + ', Stand#put : ' + piece.toDebugString());
-    LOG.debug(this.id + ' : ' + this.toString());
-    LOG.goOut();
+*/
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
-	 * put_from_read(piece)
+	 * _put(piece)
 	 */
-  put_from_read: function put_from_read(piece){ // Stand
-    // 駒台に持ち駒を載せるが、readからの場合、chrはそのまま。toggleはしない
-LOG.getInto();
-    LOG.debug('entered ' + this.id + ' Stand#put_from_read with : ' + piece.toDebugString());
+	// 駒台に持ち駒を載せる
+	// readからの場合、chrはそのまま。toggleはしない
+  _put: function _put(piece){ // Stand
+    LOG.getInto('Stand#_put', Log.DEBUG2);
+    LOG.debug2('entered ' + this.id + ' Stand#_put with : ' + piece.toDebugString());
     piece.cell = null;
     this.pieces.push(piece);
     this.elm.appendChild(piece.elm);
-    LOG.debug('leaving ' + this.id + ' Stand#put : ' + piece.toDebugString());
-LOG.goOut();
+    LOG.debug2('leaving ' + this.id + ' Stand#put : ' + piece.toDebugString());
   },
 	/**
 	 * pull(piece)
