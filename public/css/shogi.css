@@ -31,11 +31,13 @@ div#bottom-stand {
   width: 30px;
 }
 div#black-stand {
+  position:	relative;
   background-color: #c80;
   width: 30px;
   height: 100%;
 }
 div#white-stand {
+  position:	relative;
   background-color: #c8c;
   width: 30px;
   height: 100%;
@@ -87,11 +89,37 @@ div#noElement {
 img.pieceImg {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
+  position:	absolute;
 }
-div.piece.isImg img { display: block; }
-div.piece.isTxt img { display: none; }
-div.piece.isImg div { display: none; }
-div.piece.isTxt div { display: block; }
+div.piece.isImg img {
+  display: block;
+  position: relative;
+}
+div.piece.isTxt img {
+  display: none;
+  position: relative;
+}
+div.piece.isImg div {
+  display: none;
+  position: relative;
+}
+div.piece.isTxt div {
+  display: block;
+  position: relative;
+}
+
+div#white-stand div {
+  position: absolute;
+}
+div#white-stand img {
+  position: absolute;
+}
+div#black-stand div {
+  position: absolute;
+}
+div#black-stand img {
+  position: absolute;
+}
 
 .pieceTxt {
   position:	relative;
