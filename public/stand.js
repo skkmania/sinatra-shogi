@@ -32,13 +32,18 @@ Stand = Class.create({
     this.elm.id = this.id;
     this.elm.obj = this;
     this.elm.style.height = (this.game.height - 1)*bs + 'px';
+    this.elm.style.width  = 1.5*bs + 'px';
     this.sign = document.createElement('div');
     this.sign.textContent = (this.id == 'black-stand' ? '▲' : '△');
     this.sign.style.fontSize = bs + 'px';
     this.elm.appendChild(this.sign);
     $R(1,8).each(function(i){
-      this.suffixes[i] = document.createElement('div');
-      this.elm.appendChild(this.suffixes[i]);
+      this.pockets[i].elm =
+        new Element('div',{ id:'pocket'+ i, className:'pocket' });
+      this.suffixes[i] = 
+        new Element('div',{ id:'suffix'+ i, className:'suffix' });
+      this.pockets[i].elm.appendChild(this.suffixes[i]);
+      this.elm.appendChild(this.pockets[i].elm);
     }.bind(this));
     LOG.goOut();
   },
@@ -137,9 +142,30 @@ LOG.goOut();
     LOG.debug2('entered ' + this.id + ' Stand#_put with : ' + piece.toDebugString());
     piece.cell = null;
     this.pieces.push(piece);
-    this.addToPockets(piece);
-    this.elm.appendChild(piece.elm);
+    this.pieces.sort(function(a,b){ return Chr2Ord[b.chr] - Chr2Ord[a.chr] });
+//    this.addToPockets(piece);
+    this.pockets[Chr2Ord[piece.chr]].elm.appendChild(piece.elm);
+    this.recalcPockets(piece);
     LOG.debug2('leaving ' + this.id + ' Stand#_put : ' + piece.toDebugString());
+    LOG.goOut(Log.DEBUG2);
+  },
+	/**
+	 * recalcPockets(piece)
+	 */
+	// pocketsの各値を更新する
+	// 
+  recalcPockets: function recalcPockets(piece){ // Stand
+    LOG.getInto('Stand#recalcPockets', Log.DEBUG2);
+    LOG.debug2('entered ' + this.id + ' Stand#recalcPockets with : ' + piece.toDebugString());
+    var idx = Chr2Ord[piece.chr];
+    var pieceCount = $$('#' + this.id + ' #pocket'+idx+' div.piece').length;
+    if (pieceCount > 1) this.suffixes[idx].textContent = pieceCount;
+    else                this.suffixes[idx].textContent = null;
+    if (pieceCount > 1){
+      $$('#' + this.id + ' #pocket'+idx+' div.piece').each(
+               function(e){ e.style.position = 'absolute'; });
+      $$('#' + this.id + ' #pocket'+idx)[0].style.height = window.gameController.options.boardSize; 
+    }
     LOG.goOut(Log.DEBUG2);
   },
 	/**

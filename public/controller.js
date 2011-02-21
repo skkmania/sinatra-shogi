@@ -1366,19 +1366,19 @@ GameController = Class.create({
     $('bottom-stand').style.marginLeft = '0px';
     $('bottom-stand').style.marginTop  = Math.round(bs*3) + 'px';
     $('bottom-stand').style.height     = Math.round(bs*8) + 'px';
-    $('bottom-stand').style.width      = bs + 'px';
+    $('bottom-stand').style.width      = 1.5*bs + 'px';
        // topStand
     $('top-stand').style.marginLeft = '0px';
     $('top-stand').style.marginTop  = bs + 'px';
     $('top-stand').style.height     = Math.round(bs*8) + 'px';
-    $('top-stand').style.width      = bs + 'px';
+    $('top-stand').style.width      = 1.5*bs + 'px';
        // blackStand, whiteStand
     this.game.blackStand.elm.style.height     = Math.round(bs*8) + 'px';
     this.game.whiteStand.elm.style.height     = Math.round(bs*8) + 'px';
-    this.game.blackStand.elm.style.width      = bs + 'px';
-    this.game.whiteStand.elm.style.width      = bs + 'px';
+    this.game.blackStand.elm.style.width      = 1.5*bs + 'px';
+    this.game.whiteStand.elm.style.width      = 1.5*bs + 'px';
        // window size
-    this.game.board.area.window.container.style.width  = bs * 13;
+    this.game.board.area.window.container.style.width  = bs * 14;
     this.game.board.area.window.container.style.height = bs * 12;
 
     LOG.goOut();

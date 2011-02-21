@@ -19,6 +19,11 @@ var Chr2KanjiOne= { 'p': '歩', 'l': '香', 'n': '桂', 's': '銀',
                  'q': 'と','m': '杏','o': '圭','t': '全',
                  'h': '馬','d': '龍'}; 
 
+var Chr2Ord =  { 'p':1, 'l':2, 'n':3, 's':4, 'g':5, 'b':6, 'r':7, 'k':8,
+                 'q':1, 'm':2, 'o':3, 't':4,        'h':6, 'd':7,
+                 'P':1, 'L':2, 'N':3, 'S':4, 'G':5, 'B':6, 'R':7, 'K':8,
+                 'Q':1, 'M':2, 'O':3, 'T':4,        'H':6, 'D':7 }; 
+
 function create_piece(chr){
   LOG.getInto();
   LOG.debug('entered create_piece: ' );
@@ -27,6 +32,7 @@ function create_piece(chr){
   LOG.goOut();
   return p;
 }
+
 /**
  * Piece Class
  */
