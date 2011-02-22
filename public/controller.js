@@ -1377,6 +1377,18 @@ GameController = Class.create({
     this.game.whiteStand.elm.style.height     = Math.round(bs*8) + 'px';
     this.game.blackStand.elm.style.width      = 1.5*bs + 'px';
     this.game.whiteStand.elm.style.width      = 1.5*bs + 'px';
+       // suffix
+    var suffixStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == '.suffix':false; });
+    suffixStyle.style.marginLeft = bs + 'px';
+    suffixStyle.style.marginTop  = Math.round(bs*0.5) + 'px';
+    suffixStyle.style.fontSize   = Math.round(bs*0.5) + 'px';
+       // suffix.top
+/*
+    var suffixStyle = cssRules.find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == '.suffix.top':false; });
+    suffixStyle.style.marginLeft = 0.5*bs + 'px';
+    suffixStyle.style.marginTop  = '0px';
+    suffixStyle.style.fontSize   = Math.round(bs*0.5) + 'px';
+*/
        // window size
     this.game.board.area.window.container.style.width  = bs * 14;
     this.game.board.area.window.container.style.height = bs * 12;

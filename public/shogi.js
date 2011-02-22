@@ -182,11 +182,11 @@ window.gameController.game = this;
         }
       }
 
-      tmp = $$('#top-stand div.piece', '#bottom-stand div.piece');
-      if(tmp.size() > 0){
-        tmp.invoke('toggleClassName', 'top');
-        tmp.invoke('toggleClassName', 'bottom');
-      }
+      tmp = $$('#top-stand div.piece', '#bottom-stand div.piece', '.suffix','#pocket0');
+      tmp.invoke('toggleClassName', 'top');
+      tmp.invoke('toggleClassName', 'bottom');
+      this.blackStand.reverse();
+      this.whiteStand.reverse();
     }
     LOG.goOut();
   },

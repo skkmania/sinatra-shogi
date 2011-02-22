@@ -118,7 +118,7 @@ div#black-stand .piece {
 }
 
 .suffix {
-  float: right;
+  position: absolute;
 }
 
 div.top {
