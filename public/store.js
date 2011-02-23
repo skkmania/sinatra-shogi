@@ -286,7 +286,7 @@ var Store = Class.create(Hash, {
 	//           指定方法：this.nameの添字をbitに見立てた二進から10進変換
 	// 出力 : Sliceオブジェクト(Hash)
   makeSlice : function makeSlice(bid, data, mask) { // Store
-    LOG.getInto('Store#makeSlice');
+    LOG.getInto('Store#makeSlice', Log.DEBUG2);
     LOG.debug('bid : ' + JSON.stringify(bid));
     LOG.debug('data : ' + JSON.stringify(data));
     var m = mask || 511;
@@ -352,7 +352,7 @@ var Store = Class.create(Hash, {
     }.bind(this));
     // prevMovesだけは、あるbidの画面にはnxt_bidがbidのオブジェクトを集める
     LOG.debug('returning from makeSlice with : ' + ret.toDebugString());
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return ret; 
   },
 	/**

@@ -296,23 +296,23 @@ var Moves = Class.create(Hash, {
         // 入力 文字列 name  自身がnextMovesなのか、prevMovesなのかを保持
   initialize : function($super, name){ // Moves
     this.LOG = LOG;
-    LOG.getInto('Moves#initialize');
+    LOG.getInto('Moves#initialize', Log.DEBUG2);
     $super();
     this.name = name;
     this.initArea();
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   },
 	/*
 	 * initArea()
 	 */
   initArea : function initArea() { // Moves
-    LOG.getInto('Moves#initArea');
+    LOG.getInto('Moves#initArea', Log.DEBUG2);
     this.area = areas[this.name];
     if (this.area.notInited) {
       this.initOnClick();
       this.area.window.open();
     }
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   },
 	/*
 	 * initOnClick()
@@ -507,13 +507,13 @@ var Moves = Class.create(Hash, {
 	// 入力 : 配列 要素はjsのオブジェクト
 	// 出力 : 自身
   fromDB : function fromDB(ary){ // Moves
-    LOG.getInto('Moves#fromDB');
+    LOG.getInto('Moves#fromDB', Log.DEBUG2);
     ary.each(function(e){
       var m = (new Move()).fromObj(e);
       if (Object.isNumber(m.mid)) this.set(m.mid, m);
     }.bind(this));
     LOG.debug('Moves became : ' + this.toDelta());
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return this;
   },
 
@@ -529,13 +529,13 @@ var Moves = Class.create(Hash, {
 	// 入力 : 配列 要素はjsのオブジェクト
 	// 出力 : 自身
   fromDbForce : function fromDbForce(ary){ // Moves
-    LOG.getInto('Moves#fromDbForce');
+    LOG.getInto('Moves#fromDbForce', Log.DEBUG2);
     ary.each(function(e, index){
       var m = (new Move()).fromObj(e);
       if (Object.isNumber(m.mid)) this.set(index, m);
     }.bind(this));
     LOG.debug('Moves became : ' + this.toDelta());
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return this;
   },
 

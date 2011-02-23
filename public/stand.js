@@ -16,7 +16,6 @@ Stand = Class.create({
     this.initialString = '';
     this.pieces   = $A([]);
     this.pockets  = $A([]);
-    // this.pockets.max = 0;
     this.suffixes = $A([]);
     // this.updatePockets();
     this.createElm();
@@ -50,6 +49,7 @@ Stand = Class.create({
         new Element('div',{ id:'suffix'+ i, className:'suffix' });
       this.pockets[i].appendChild(this.suffixes[i]);
     }.bind(this));
+    this.pockets.each(function(p){ p.pieceCount = 0; });
     this.pockets[0].textContent = (this.id == 'black-stand' ? '▲' : '△');
     this.pockets[0].style.fontSize = bs + 'px';
     if(this.id == 'black-stand') {
@@ -111,11 +111,11 @@ Stand = Class.create({
   updatePockets: function updatePockets() {  // Stand
     LOG.getInto('Stand#updatePockets');
     var bs = window.gameController.options.boardSize;
-    this.pockets[0] = { num: 1, piece: this.id,
+    this.pockets[0] = { pieceCount: 1, piece: this.id,
                         top: 0, left: 0,
                         suffix: { top: '0px', left: bs + 'px' } };
     $R(1,8).each(function(i){
-      this.pockets[i] = { num: 0, piece: null,
+      this.pockets[i] = { pieceCount: 0, piece: null,
                           top: i * bs + 'px', left: '0px',
                           suffix: { top: i * bs + 'px', left: bs + 'px' } };
     }.bind(this));
@@ -127,8 +127,8 @@ Stand = Class.create({
   removeByObj: function removeByObj(piece){  // Stand
     // 指定された駒のオブジェクトを駒台から取り除く
     LOG.getInto('Stand#removeByObj');
-    this.pockets[Chr2Ord[chr]].removeChild(piece.elm);
-    //this.removeFromPockets(piece);
+    this.pockets[Chr2Ord[piece.chr]].removeChild(piece.elm);
+    this.removeFromPockets(piece);
     this.pieces = this.pieces.reject(function(p){ return p==piece; });
     LOG.goOut();
   },
@@ -140,7 +140,7 @@ Stand = Class.create({
     // 取り除いたpieceを返す
     var target = this.pieces.find(function(p){ return p.chr == chr; });
     this.pockets[Chr2Ord[chr]].removeChild(target.elm);
-    //this.removeFromPockets(target);
+    this.removeFromPockets(target);
     this.pieces = this.pieces.reject(function(p){ return p==target; });
     return target;
   },
@@ -215,15 +215,32 @@ LOG.goOut();
   recalcPockets: function recalcPockets(piece){ // Stand
     LOG.getInto('Stand#recalcPockets', Log.DEBUG2);
     LOG.debug2('entered ' + this.id + ' Stand#recalcPockets with : ' + piece.toDebugString());
+    var bs = window.gameController.options.boardSize; 
     var idx = Chr2Ord[piece.chr];
     var pieceCount = $$('#' + this.id + ' #pocket'+idx+' div.piece').length;
     if (pieceCount > 1) this.suffixes[idx].textContent = pieceCount;
     else                this.suffixes[idx].textContent = null;
+	// pocketに複数の駒を置くときは同じ位置に重なるようにstyleを調整する
     if (pieceCount > 1){
       $$('#' + this.id + ' #pocket'+idx+' div.piece').each(
-               function(e){ e.style.position = 'absolute'; });
-      $$('#' + this.id + ' #pocket'+idx)[0].style.height = window.gameController.options.boardSize; 
+        function(e){
+          e.style.position = 'absolute';
+          if (this.isBottom()) {
+            e.style.marginLeft = '0px';
+          } else {
+            e.style.marginLeft = 0.5*bs + 'px';
+          }
+        }.bind(this));
+      $$('#' + this.id + ' #pocket'+idx)[0].style.height = bs;
+      if (this.isBottom()) {
+        this.suffixes[idx].style.marginLeft = bs + 'px';
+        this.suffixes[idx].style.marginTop  = bs*0.5 + 'px';
+      } else {
+        this.suffixes[idx].style.marginLeft = '0px';
+        this.suffixes[idx].style.marginTop  = '0px';
+      }
     }
+    this.pockets[idx].pieceCount = pieceCount;
     LOG.goOut(Log.DEBUG2);
   },
 	/**
@@ -243,9 +260,9 @@ LOG.goOut();
       idx = this.pockets.max;
     }
     this.pockets[idx].piece = piece.chr;
-    this.pockets[idx].num   += 1;
-    if (this.pockets[idx].num > 1) {
-      this.suffixes[idx].textContent = this.pockets[idx].num;
+    this.pockets[idx].pieceCount   += 1;
+    if (this.pockets[idx].pieceCount > 1) {
+      this.suffixes[idx].textContent = this.pockets[idx].pieceCount;
       this.suffixes[idx].style.top  = this.pockets[idx].suffix.top;
       this.suffixes[idx].style.left = this.pockets[idx].suffix.left;
     }
@@ -261,46 +278,12 @@ LOG.goOut();
 	// 
   removeFromPockets: function removeFromPockets(piece){ // Stand
     LOG.getInto('Stand#removeFromPockets', Log.DEBUG2);
-    LOG.debug2('entered ' + this.id + ' Stand#removeFromPockets with : ' + piece.toDebugString());
-    var idx = $R(1,this.pockets.max).find(function(e){
-      return this.pockets[e].piece == piece.chr;
-    }.bind(this));
-    if (!idx) {
-      LOG.fatal('存在する持駒のpocketsを指定したはずなのに見つからない!');
-    } else {
-      LOG.debug2('idx of found pocket is ' + idx);
-    }
-    if(this.pockets[idx].num == 1){
-      // 最後のひとつを盤上に移したとき
-      this.pockets[idx].num = 0;
-         // 後続のpocketを順次繰り上げる
-      $R(idx,7).find(function(e){
-        this.pockets[e].num   = this.pockets[e+1].num;
-        this.pockets[e].piece = this.pockets[e+1].piece;
-      }.bind(this));
-      this.pockets[8].num   = 0;
-      this.pockets[8].piece = null;
-      this.pockets.max--;
-    } else {
-      // 2つ以上あるうちのひとつを盤上に移したとき
-         // countを減らすだけ
-      this.pockets[idx].num -= 1;
-    }
-    // pocketsの値の更新を各駒のstyleに反映させる
-    this.pieces.each(function(p){
-      var i = $R(1,8).find(function(e){
-        this.pockets[e].piece = e.piece;
-      }.bind(this));
-      if (i) {
-        p.elm.style.top  = this.pockets[i].top;
-        p.elm.style.left = this.pockets[i].left;
-      }
-    }.bind(this));
-    // pocketsの値の更新を各suffixに反映させる
-    $R(1,8).each(function(e){
-      if(this.pockets[e].num > 1)
-        this.suffixes[e].textContent = this.pockets[e].num;
-    }.bind(this));
+    var idx = Chr2Ord[piece.chr];
+    this.pockets[idx].pieceCount -= 1;
+    if(this.pockets[idx].pieceCount > 1)
+      this.suffixes[idx].textContent = this.pockets[idx].pieceCount;
+    else
+      this.suffixes[idx].textContent = null;
     LOG.goOut(Log.DEBUG2);
   },
 	/**

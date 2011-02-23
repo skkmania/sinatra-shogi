@@ -640,9 +640,9 @@ Board = Class.create({
 var BoardData = Class.create(Hash, {
 
   initialize : function($super){ // BoardData
-    LOG.getInto('BoardData#initialize');
+    LOG.getInto('BoardData#initialize', Log.DEBUG2);
     $super();
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
     return this;
   },
 	/*

@@ -151,7 +151,10 @@ Cell.prototype = {
         this.LOG.getInto('Cell#Droppable#onDrop',{ "background":"#aaccff" });
 
         // make action contents
-        var fromObj = draggable.parentNode.obj;
+        if(draggable.parentNode.hasClassName('pocket'))
+          var fromObj = draggable.parentNode.parentNode.obj;
+        else
+          var fromObj = draggable.parentNode.obj;
         var toCell = this;
         var piece = draggable.obj;
         var actionContents = [piece, fromObj, toCell];

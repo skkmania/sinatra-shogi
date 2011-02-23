@@ -78,7 +78,7 @@ Piece = Class.create({
 	 * toggleBW()
 	 */
   toggleBW: function toggleBW() {  // Piece
-    LOG.getInto('Piece#toggleBW');
+    LOG.getInto('Piece#toggleBW', Log.DEBUG2);
     if (this.chr == this.chr.toUpperCase())
       this.chr = this.chr.toLowerCase(); 
     else
@@ -87,7 +87,7 @@ Piece = Class.create({
     this.elm.toggleClassName('top');
     this.elm.toggleClassName('bottom');
 
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * addDraggable(startMessage)
@@ -121,7 +121,7 @@ Piece = Class.create({
 	 * toggleDraggable()
 	 */
   toggleDraggable: function toggleDraggable(){ // Piece
-    LOG.getInto('Piece#toggleDraggable');
+    LOG.getInto('Piece#toggleDraggable', Log.DEBUG2);
 
     // for log
     LOG.debug('piece : '+this.toDebugString());
@@ -138,7 +138,7 @@ Piece = Class.create({
       this.simpleToggleDraggable();
     else
       this.viewerRelatedToggleDraggable();
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   },
 
 	/**
@@ -166,7 +166,7 @@ Piece = Class.create({
 	 * viewerRelatedToggleDraggable()
 	 */
   viewerRelatedToggleDraggable: function viewerRelatedToggleDraggable(){ // Piece
-    LOG.getInto('Piece#viewerRelatedToggleDraggable');
+    LOG.getInto('Piece#viewerRelatedToggleDraggable', Log.DEBUG2);
     var thisPieceIsViewers = this.isViewersP();
     LOG.debug('isViewersP : '+ thisPieceIsViewers);
     var thisTurnIsViewers = this.game.controller.isViewersTurn();
@@ -200,7 +200,7 @@ Piece = Class.create({
         }
     }
     LOG.debug(this.drag ? 'drag remains':'no drag');
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   },
 	/**
 	 * createElm()
@@ -221,21 +221,6 @@ Piece = Class.create({
     this.txtElm = document.createElement('div');
     this.txtElm.textContent = Chr2KanjiOne[this.chr.toLowerCase()];
     this.txtElm.addClassName('pieceTxt');
-/*
-    switch(this.txtElm.textContent){
-      case '成銀':
-           this.txtElm.textContent = '全';
-           break;
-      case '成桂':
-           this.txtElm.textContent = '圭';
-           break;
-      case '成香':
-           this.txtElm.textContent = '杏';
-           break;
-      default:
-           break;
-    }
-*/
     if (!this.atTop()) {
       this.elm.addClassName('bottom');
     }
@@ -473,6 +458,7 @@ LOG.goOut();
         this.chr = Type2chr[this.type].toUpperCase();
       else
         this.chr = Type2chr[this.type];
+      this.txtElm.textContent = Chr2Kanji[this.chr.toLowerCase()];
       this.unpromote_type = undefined;
       LOG.debug('unpromoted : ' + this.toDebugString());
     } else {

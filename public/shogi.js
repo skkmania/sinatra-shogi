@@ -299,6 +299,7 @@ window.gameController.game = this;
     this.whiteStand.pieces.invoke('toggleDraggable');
 
        // 確認のため再度dragsの中身をログに書き出してみる
+/*
     if(Draggables.drags.length > 0){
       LOG.debug('again, contents of Draggables.drags :');
       LOG.debug('Draggables.drags #: ' + Draggables.drags.length);
@@ -307,6 +308,7 @@ window.gameController.game = this;
         this.LOG.debug(str);
       }.bind(this));
     }
+*/
     LOG.goOut();
   },
 	/**
