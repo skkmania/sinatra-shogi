@@ -9,25 +9,27 @@ Stand = Class.create({
     LOG.getInto('Stand#initialize');
     this.game = game;
     this.top = game.controller.top;
-    this.width = 1; 
-    this.height = game.height - 1;
-    this.id = id;
+    this.id = id;	// 'black-stand', 'white-stand'のいずれか
     this.type = 'stand';
     this.initialString = '';
     this.pieces   = $A([]);
     this.pockets  = $A([]);
+	// Standを駒の種類ごとの小部屋に分割して使うというイメージ
+	// Piece.elmをappendChildまたはremoveChildするのはこの要素である
     this.suffixes = $A([]);
-    // this.updatePockets();
+	// pocketにある駒の個数を表現するためのスペースを用意する
+	// pockets, suffixesの添字はPieceのChr2Ordで定義され
+	// 駒の種類と対応している
     this.createElm();
     LOG.goOut();
   },
 	/**
 	 * createElm()
 	 */
+	// define this own element
   createElm: function createElm() {  // Stand
     LOG.getInto('Stand#createElm');
     var bs = window.gameController.options.boardSize;
-      // define this own element
     this.elm = document.createElement('div');
     this.elm.id = this.id;
     this.elm.obj = this;
@@ -49,9 +51,13 @@ Stand = Class.create({
         new Element('div',{ id:'suffix'+ i, className:'suffix' });
       this.pockets[i].appendChild(this.suffixes[i]);
     }.bind(this));
+     // pocketsの各要素はその駒の個数を意味するpieceCountプロパティを持つ
+     // 初期化なので全て0にする
     this.pockets.each(function(p){ p.pieceCount = 0; });
+	// pockets[0]は先後を表すサインである
     this.pockets[0].textContent = (this.id == 'black-stand' ? '▲' : '△');
     this.pockets[0].style.fontSize = bs + 'px';
+	// pocketsをstandのelmに並べる順序はtop, bottomにより逆になる
     if(this.id == 'black-stand') {
       $R(0,7).each(function(i){
         this.suffixes[i].addClassName('bottom');
@@ -75,6 +81,8 @@ Stand = Class.create({
 	/**
 	 * reverse()
 	 */
+	// topにあるときとbottomにあるときでは並べかたが大きく変わる
+	// それを全て丁寧にここで面倒をみている
   reverse: function reverse() {  // Stand
     LOG.getInto('Stand#reverse', Log.DEBUG2);
     var bs = window.gameController.options.boardSize;
@@ -106,26 +114,14 @@ Stand = Class.create({
     LOG.goOut(Log.DEBUG2);
   },
 	/**
-	 * updatePockets()
-	 */
-  updatePockets: function updatePockets() {  // Stand
-    LOG.getInto('Stand#updatePockets');
-    var bs = window.gameController.options.boardSize;
-    this.pockets[0] = { pieceCount: 1, piece: this.id,
-                        top: 0, left: 0,
-                        suffix: { top: '0px', left: bs + 'px' } };
-    $R(1,8).each(function(i){
-      this.pockets[i] = { pieceCount: 0, piece: null,
-                          top: i * bs + 'px', left: '0px',
-                          suffix: { top: i * bs + 'px', left: bs + 'px' } };
-    }.bind(this));
-    LOG.goOut();
-  },
-	/**
 	 * removeByObj(piece)
 	 */
+	// 指定された駒のオブジェクトを駒台から取り除く
+	// 対象がStand.elmではなく、pocketsであることに注意
+	// 入力 : pieceオブジェクト
+	// 出力 : なし
+	// 副作用：piecesから要素がひとつ取り除かれる
   removeByObj: function removeByObj(piece){  // Stand
-    // 指定された駒のオブジェクトを駒台から取り除く
     LOG.getInto('Stand#removeByObj');
     this.pockets[Chr2Ord[piece.chr]].removeChild(piece.elm);
     this.removeFromPockets(piece);
@@ -135,9 +131,13 @@ Stand = Class.create({
 	/**
 	 * removeStandsPieceByChr(chr)
 	 */
+	// chrで指定された駒を駒台から取り除く
+	// 取り除いたpieceを返す
+	// 対象がStand.elmではなく、pocketsであることに注意
+	// 入力 : chr 文字 駒のchr
+	// 出力 : Pieceオブジェクト 取り除いたpiece
+	// 副作用：piecesから要素がひとつ取り除かれる
   removeStandsPieceByChr: function removeStandsPieceByChr(chr){  // Stand
-    // chrで指定された駒を駒台から取り除く
-    // 取り除いたpieceを返す
     var target = this.pieces.find(function(p){ return p.chr == chr; });
     this.pockets[Chr2Ord[chr]].removeChild(target.elm);
     this.removeFromPockets(target);
@@ -200,8 +200,6 @@ LOG.goOut();
     LOG.debug2('entered ' + this.id + ' Stand#_put with : ' + piece.toDebugString());
     piece.cell = null;
     this.pieces.push(piece);
-//    this.pieces.sort(function(a,b){ return Chr2Ord[b.chr] - Chr2Ord[a.chr] });
-//    this.addToPockets(piece);
     this.pockets[Chr2Ord[piece.chr]].appendChild(piece.elm);
     this.recalcPockets(piece);
     LOG.debug2('leaving ' + this.id + ' Stand#_put : ' + piece.toDebugString());
@@ -228,10 +226,14 @@ LOG.goOut();
           if (this.isBottom()) {
             e.style.marginLeft = '0px';
           } else {
+		// topの場合はsuffixのぶんをずらす
             e.style.marginLeft = 0.5*bs + 'px';
           }
         }.bind(this));
+	// pocketの内部要素をすべてフロートにしてしまったので
+	// pocketの高さがなくなってしまう。そこで手動で設定する
       this.pockets[idx].style.height = bs + 'px';
+	// suffixの位置もtopとbottomで異るので設定
       if (this.isBottom()) {
         this.suffixes[idx].style.marginLeft = bs + 'px';
         this.suffixes[idx].style.marginTop  = bs*0.5 + 'px';
@@ -240,40 +242,16 @@ LOG.goOut();
         this.suffixes[idx].style.marginTop  = '0px';
       }
     }
+	// 上記のように複数駒のとき設定したheightは、駒が0になったとき
+	// には逆に邪魔になるので0としておく。
+	// こうしないと、standに空白が生じてしまう。
     if (pieceCount == 0){
       this.pockets[idx].style.height = '0px';
     }
+	// pieceCountをpocketに保持させておく。suffixの値とするため。
     this.pockets[idx].pieceCount = pieceCount;
     LOG.goOut(Log.DEBUG2);
   },
-	/**
-	 * addToPockets(piece)
-	 */
-	// pocketsの各値を更新する
-	// 
-/*
-  addToPockets: function addToPockets(piece){ // Stand
-    LOG.getInto('Stand#addToPockets', Log.DEBUG2);
-    LOG.debug2('entered ' + this.id + ' Stand#addToPockets with : ' + piece.toDebugString());
-    var idx = $R(1,8).find(function(e){
-      return this.pockets[e].piece == piece.chr;
-    }.bind(this));
-    if (!idx) {
-      this.pockets.max++;
-      idx = this.pockets.max;
-    }
-    this.pockets[idx].piece = piece.chr;
-    this.pockets[idx].pieceCount   += 1;
-    if (this.pockets[idx].pieceCount > 1) {
-      this.suffixes[idx].textContent = this.pockets[idx].pieceCount;
-      this.suffixes[idx].style.top  = this.pockets[idx].suffix.top;
-      this.suffixes[idx].style.left = this.pockets[idx].suffix.left;
-    }
-    piece.elm.style.top  = this.pockets[idx].top;
-    piece.elm.style.left = this.pockets[idx].left;
-    LOG.goOut(Log.DEBUG2);
-  },
-*/
 	/**
 	 * removeFromPockets(piece)
 	 */
@@ -288,18 +266,6 @@ LOG.goOut();
     else
       this.suffixes[idx].textContent = null;
     LOG.goOut(Log.DEBUG2);
-  },
-	/**
-	 * pull(piece)
-	 */
-  pull: function pull(piece){ // Stand
-    // 駒台から持ち駒を離す
-    this.pieces.pop(piece);
-  },
-	/**
-	 * show()
-	 */
-  show: function show(){ // Stand
   },
 	/**
 	 * toString()
