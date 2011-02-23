@@ -50,6 +50,10 @@ Cell.prototype = {
     LOG.getInto('Cell#put');
     this.piece = piece;
     this.piece.cell = this;
+      // cell上のpieceのstyle. Standから来たとき変更されているかもしれないので
+      // ここで直しておく
+    piece.elm.style.margin   = '0px';
+    piece.elm.style.position = 'relative';
     if(this.elm) this.elm.appendChild(piece.elm);
     LOG.debug('leaving with piece : ' + this.piece.toDebugString());
     LOG.goOut();
@@ -157,6 +161,11 @@ Cell.prototype = {
           var fromObj = draggable.parentNode.obj;
         var toCell = this;
         var piece = draggable.obj;
+          // cell上のpieceのstyle.
+          // Standから来たとき変更されているかもしれないので
+          // ここで直しておく
+        piece.elm.style.margin   = '0px';
+        piece.elm.style.position = 'relative';
         var actionContents = [piece, fromObj, toCell];
         this.LOG.debug('actionContents:');
         this.LOG.debug('piece :' + piece.toDebugString());
@@ -217,6 +226,8 @@ Cell.prototype = {
     }
     if (this.piece) {
       LOG.debug('in show of Cell, processing -> ' + this.piece.toDebugString());
+      this.piece.elm.style.margin   = '0px';
+      this.piece.elm.style.position = 'relative';
       this.elm.appendChild(this.piece.elm);
       if(this.piece.isBlack() == (this.game.controller.top === 0)){
         this.piece.elm.addClassName('bottom');

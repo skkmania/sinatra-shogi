@@ -231,7 +231,7 @@ LOG.goOut();
             e.style.marginLeft = 0.5*bs + 'px';
           }
         }.bind(this));
-      $$('#' + this.id + ' #pocket'+idx)[0].style.height = bs;
+      this.pockets[idx].style.height = bs + 'px';
       if (this.isBottom()) {
         this.suffixes[idx].style.marginLeft = bs + 'px';
         this.suffixes[idx].style.marginTop  = bs*0.5 + 'px';
@@ -239,6 +239,9 @@ LOG.goOut();
         this.suffixes[idx].style.marginLeft = '0px';
         this.suffixes[idx].style.marginTop  = '0px';
       }
+    }
+    if (pieceCount == 0){
+      this.pockets[idx].style.height = '0px';
     }
     this.pockets[idx].pieceCount = pieceCount;
     LOG.goOut(Log.DEBUG2);
