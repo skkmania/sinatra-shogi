@@ -19,8 +19,7 @@ var Maintainer = Class.create({
      LOG.getInto('Maintainer#initArea');
     this.area = areas[this.name];
      var contents =
-'<div id="rev-b">\
-  <button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>\
+ '<button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>\
   <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>\
   <select id="log-level" class="logLevelSelect" onChange="LOG.fatal(\'Log Level Changed to Log.\' + $(\'log-level\').value);LOG.setLevel($(\'log-level\').value.toLowerCase());LOG.fatal(LOG.currentLevel);">\
     <option>NONE</option>\
@@ -37,7 +36,6 @@ var Maintainer = Class.create({
   <p><label>storeをダンプ:<button id="dumpStore-button" class="dumpStorebutton t" onclick="window.dataStore.dump();">dump_store</button></label></p><br>\
   <button id="clearState-button" class="maintainer t" onclick="window.gameController.maintainer.clearState();">clear_state</button>\
   <button id="showState-button" class="maintainer t" onclick="window.gameController.maintainer.showState();">show_state</button>\
-</div>\
 <div id="showState"></div>';
     this.area.window_contents.update(contents);
     this.area.window.open();

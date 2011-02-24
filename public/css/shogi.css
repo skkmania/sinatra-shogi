@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+* {
+ margin: 0px;
+ padding: 0px;
+}
+
 div#container {
   float: left;
   width: 500px;
@@ -7,14 +12,16 @@ div#container {
 }
 div#top-stand {
   clear: both;
-  background-color: #c80;
+/*  background-color: #c80; */
   float: left;
   margin: 10px;
 }
 div.window_contents {
+/*
   float: left;
   overflow: auto;
   position: relative;
+*/
 }
 
 #board-panel {
@@ -28,11 +35,11 @@ div#bottom-stand {
 }
 div#black-stand {
   position:	relative;
-  background-color: #c80;
+/*  background-color: #c80; */
 }
 div#white-stand {
   position:	relative;
-  background-color: #c8c;
+/*  background-color: #c8c; */
 }
 div.cell {
   width: 40px;
@@ -177,6 +184,7 @@ span.turn {
   margin-top: 0;
   float: left;
 }
+/*
 #bottom-captured {
   height: 60px;
   padding: 3px;
@@ -185,12 +193,9 @@ span.turn {
   height: 60px;
   padding: 3px;
 }
+*/
 div#joinButton {
   width: 150px;
-}
-div#rev-b {
-  float:left;
-  display: inline;
 }
 button.join {
   width: 150px;
