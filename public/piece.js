@@ -24,6 +24,8 @@ var Chr2Ord =  { 'p':7, 'l':6, 'n':5, 's':4, 'g':3, 'b':2, 'r':1, 'k':0,
                  'P':7, 'L':6, 'N':5, 'S':4, 'G':3, 'B':2, 'R':1, 'K':0,
                  'Q':7, 'M':6, 'O':5, 'T':4,        'H':2, 'D':1 }; 
 
+var Ord2Kanji = { 7:'歩', 6:'香', 5:'桂', 4:'銀', 3:'金', 2:'角', 1:'飛', 0:'玉' };
+
 function create_piece(chr){
   LOG.getInto();
   LOG.debug('entered create_piece: ' );
