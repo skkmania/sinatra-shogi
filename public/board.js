@@ -567,9 +567,17 @@ Board = Class.create({
     var width = size || 20;
     var height = Math.round(width*1.05);
     var canvas = new Element('canvas',{ id:  canvasId,
-                                      width: width*12 + 'px',
-                                     height: height*10 + 'px' });
+                                      width: width*12.5 + 'px',
+                                     height: height*10.5 + 'px' });
     var context = canvas.getContext("2d");
+    // turn
+    context.font = (width - 5) + "px serif";
+    if(window.gameController.getTurn())
+      context.fillText('【先手番】' , 4.5*width, 10*height);
+    else
+      context.fillText('【後手番】' , 4.5*width, 10*height);
+      
+
     // Board
     context.translate(Math.round(width*1.5), 0);
     context.fillStyle = "gray";
@@ -589,12 +597,12 @@ Board = Class.create({
     // black Pieces on Board
     this.cells.flatten().each(function(c){
       if(c.piece && c.piece.isBlack()){
-        context.fillText(Chr2KanjiOne[c.piece.chr.toLowerCase()], (9-c.x)*width, c.y*height-1);
+        context.fillText(Chr2KanjiOne[c.piece.chr.toLowerCase()], (9-c.x)*width+1, c.y*height-2);
       }
     });
     // blackStand
       // サインは常に書きこむ
-    context.fillText('▲',  width*9.5, height*1);
+    context.fillText('▲',  width*9.2, height*1);
     if (this.game.blackStand.pieces.length > 0) {
      // 持駒のあるとき
         // 駒のあるpocketのindexの配列を求める
@@ -606,11 +614,12 @@ Board = Class.create({
         // 駒のあるpocketについて
       indiciesWhoHasPiece.each(function(i){
           // まずその駒の名を記入
-        context.fillText(Ord2Kanji[i], 9.5*width, (2+cumulative++)*height);
+        context.fillText(Ord2Kanji[i], 9.2*width, (2+cumulative)*height);
         var count = window.gameController.game.blackStand.pockets[i].pieceCount; 
           // 次に駒の個数が1より大きければその数も記入
         if(count > 1)
-          context.fillText(count, 9.5*width, (2+cumulative++)*height);
+          context.fillText(count, 10.2*width, (2+cumulative)*height);
+        cumulative++;
       });
     } else {
      // 持駒のないとき
@@ -618,17 +627,18 @@ Board = Class.create({
       context.fillText('し', width*9.5, height*3);
     }
     // white Pieces on Board
+      // まず回転
     context.rotate(Math.PI);
     this.cells.flatten().each(function(c){
       if(c.piece && !c.piece.isBlack()){
-        context.fillText(Chr2KanjiOne[c.piece.chr.toLowerCase()], (c.x-10)*width, (1 - c.y)*height-2);
+        context.fillText(Chr2KanjiOne[c.piece.chr.toLowerCase()], (c.x-10)*width+1, (1 - c.y)*height-3);
       }
     });
     // whiteStand
-      // まず回転
+      // 平行移動
     context.translate(Math.round(width*1.5), 0);
       // サインは常に書きこむ
-    context.fillText('△',  width*(-1), height*(-8));
+    context.fillText('△',  width*(-1.5), height*(-8));
     if (this.game.whiteStand.pieces.length > 0) {
      // 持駒のあるとき
         // 駒のあるpocketのindexの配列を求める
@@ -640,11 +650,12 @@ Board = Class.create({
         // 駒のあるpocketについて
       indiciesWhoHasPiece.each(function(i){
           // まずその駒の名を記入
-        context.fillText(Ord2Kanji[i], (-1)*width, (-7+cumulative++)*height);
+        context.fillText(Ord2Kanji[i], (-1.5)*width, (-7+cumulative)*height);
         var count = window.gameController.game.whiteStand.pockets[i].pieceCount; 
           // 次に駒の個数が1より大きければその数も記入
         if(count > 1)
-          context.fillText(count, (-1)*width, (-7+cumulative++)*height);
+          context.fillText(count, (-0.5)*width, (-7+cumulative)*height);
+        cumulative++;
       });
     } else {
      // 持駒のないとき
