@@ -1392,6 +1392,12 @@ GameController = Class.create({
        // window size
     this.game.board.area.window.container.style.width  = bs * 14;
     this.game.board.area.window.container.style.height = bs * 12;
+    this.game.board.area.window.container.style.left = 
+        parseInt(areas.prevMoves.window.container.style.left)
+      + parseInt(areas.prevMoves.window.container.style.width) + 'px';
+    areas.nextMoves.window.container.style.left =
+        parseInt(this.game.board.area.window.container.style.left) 
+      + bs * 14 + 'px';
 
     LOG.goOut();
   },
