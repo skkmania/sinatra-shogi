@@ -29,7 +29,7 @@ div.window_contents {
   position: relative;
 }
 div#bottom-stand {
-  background-color: #c8c;
+/*  background-color: #c8c; */
   margin: 100px 0px 0px 0px;
   float: left;
 }
@@ -259,3 +259,14 @@ div.bkmkEntry * {
   float: left;
   margin: 5px;
 }
+
+.bkmk_resizable {
+ height:	10px;
+ width:		30px;
+/*
+ background:	url(../img/lib/material-icon-ball-64x64.jpg) -30px -105px no-repeat;
+*/
+ background-color: #ccc;
+ float:		right;
+ cursor:	se-resize;
+ }

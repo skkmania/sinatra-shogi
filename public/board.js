@@ -550,7 +550,7 @@ Board = Class.create({
 	// 出力：
   makeToPngButton : function makeToPngButton(){ // Board
     LOG.getInto('Board#makeToPngButton', Log.DEBUG2);
-    this.toPngButton = new Element('div',{ id: 'toPngButton' });  
+    this.toPngButton = new Element('div',{ id: 'toPngButton', title:'BookMark' });  
     this.toPngButton.observe('click', this.makeBookmark.bind(this));
     this.area.window_title.insert(this.toPngButton);
     LOG.goOut(Log.DEBUG2);

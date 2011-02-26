@@ -47,12 +47,14 @@ var Bookmark = Class.create({
               width:	this.size*13,
               height:	this.size*12 };
 
-    this.toMainButton = new Element('div', { className:'toMain' });
+    this.toMainButton = new Element('div', { className:'toMain', title:'toMain' });
     this.toMainButton.observe('click', this.toMain.bind(this));
 
-    this.saveButton = new Element('div', { className:'save' });
+    this.saveButton = new Element('div', { className:'save', title:'save' });
     this.saveButton.observe('click', this.save.bind(this));
 
+    this.resizable_handle = new Element('div', { className:'bkmk_resizable', title:'resize' });
+    this.options.resizable = this.resizable_handle;
 
     this.imgDiv = new Element('img');
     this.imgDiv.src = this.imgData;
@@ -66,6 +68,7 @@ var Bookmark = Class.create({
     this.area.window_contents.insert(this.name);
     this.area.window_contents.insert(this.imgDiv);
     this.area.window_contents.insert(this.linkToComments);
+    this.area.window_contents.insert(this.resizable_handle);
     this.area.window.open();
     LOG.goOut();
   }, 
@@ -111,10 +114,13 @@ var Bookmark = Class.create({
     initArea: function() { // BookMarks              
       this.area = areas[this.name];
 
-      this.saveButton = new Element('div', { className:'save' });
+      this.saveButton = new Element('div', { className:'save', title:'save' });
       this.saveButton.observe('click', this.saveLocal.bind(this));
       this.area.window_title.insert(this.saveButton);
 
+      this.resizable_handle = areaSettings['bookmarks']['resizable'];
+
+      this.area.window_contents.insert(this.resizable_handle);
       this.area.window.open();
     }, 
 	/**
@@ -155,7 +161,7 @@ var Bookmark = Class.create({
       nameDiv.id = bm.bid + 'bkmksName';
       nameDiv.textContent = bm.name.textContent;
       entry.insert(nameDiv);
-      this.area.window_contents.insert(entry);
+      this.area.window_contents.insert({ top:entry });
     },
 	/**
 	 * addEntry(bm)

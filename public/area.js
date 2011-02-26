@@ -68,14 +68,14 @@ areaSettings = {
               'title'    : 'Menu',
               'position' : [10,630],
               'width'    : 200,
-              'height'   : 300 
+              'height'   : 200 
             },
   'controlPanel' : {
               'container': 'controlPanel',
               'title'    : 'ControlPanel',
-              'position' : [10,30],
-              'width'    : 700,
-              'height'   : 50 
+              'position' : [5,22],
+              'width'    : 600,
+              'height'   : 68 
             },
   'data' : {
               'container': 'data',
@@ -143,23 +143,25 @@ areaSettings = {
   'options' : {
               'container': 'options',
               'title'    : 'Options',
-              'position' : [850,580],
-              'width'    : 220,
-              'height'   : 380
+              'position' : [550,630],
+              'width'    : 330,
+              'height'   : 150
             },
   'bookmarks' : {
               'container': 'bookmarks',
               'title'    : 'BookMarks',
-              'position' : [800,50],
-              'width'    : 350,
-              'height'   : 600
+              'position' : [900,50],
+              'width'    : 300,
+              'height'   : 400,
+              'resizable': new Element('div',
+                           { className:'bkmk_resizable', title:'resize' })
             },
   'maintainer' : {
               'container': 'maintainer',
               'title'    : 'Maintainer',
-              'position' : [600,800],
-              'width'    : 400,
-              'height'   : 200
+              'position' : [250,630],
+              'width'    : 250,
+              'height'   : 100
             }
 };
 
