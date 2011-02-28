@@ -5,11 +5,28 @@
  padding: 0px;
 }
 
+body {
+  background-color: #eee;
+}
+
 div#container {
   float: left;
   width: 500px;
   height: 500px;
 }
+
+#inputViewerId {
+  float: left;
+}
+
+#kid {
+  float: left;
+}
+
+#reverse-button {
+  float: right;
+}
+
 div#top-stand {
   clear: both;
 /*  background-color: #c80; */
@@ -166,9 +183,13 @@ img.top {
 #message {
   font-size: small;
 }
-#message-body {
-  padding: 1px;
+#message-title {
+  float: left;
 }
+#message-body {
+  margin-left: 10px;
+}
+
 .player {
   margin: 5px;
 }

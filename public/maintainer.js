@@ -19,8 +19,7 @@ var Maintainer = Class.create({
      LOG.getInto('Maintainer#initArea');
     this.area = areas[this.name];
      var contents =
- '<button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>\
-  <button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>\
+ '<button id="dump-button" class="dump t" onclick="window.gameController.game.debug_dump();">dump</button>\
   <select id="log-level" class="logLevelSelect" onChange="LOG.fatal(\'Log Level Changed to Log.\' + $(\'log-level\').value);LOG.setLevel($(\'log-level\').value.toLowerCase());LOG.fatal(LOG.currentLevel);">\
     <option>NONE</option>\
     <option>FATAL</option>\

@@ -16,7 +16,7 @@ Board = Class.create({
     this.elm = this.boardPanel || document.body;
     this.shown = false;
     this.turn = true; // trueは先手番、falseは後手番。初期化なので先手スタート
-    $('boardTurn').update('board : ' + this.turn.toString());
+    // $('boardTurn').update('board : ' + this.turn.toString());
     this.cells = [];
     for (var r = 0; r < this.game.height; r++) {
       var row = [];

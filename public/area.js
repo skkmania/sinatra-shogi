@@ -66,15 +66,15 @@ areaSettings = {
   'menu' : {
               'container': 'menu',
               'title'    : 'Menu',
-              'position' : [10,630],
+              'position' : [5,22],
               'width'    : 200,
-              'height'   : 200 
+              'height'   : 68 
             },
   'controlPanel' : {
               'container': 'controlPanel',
               'title'    : 'ControlPanel',
-              'position' : [5,22],
-              'width'    : 600,
+              'position' : [205,22],
+              'width'    : 400,
               'height'   : 68 
             },
   'data' : {
@@ -122,14 +122,14 @@ areaSettings = {
   'boardPoint' : {
               'container': 'boardPoint',
               'title'    : 'BoardPoint',
-              'position' : [10,450],
+              'position' : [5,450],
               'width'    : 120,
-              'height'   : 100
+              'height'   : 70
             },
   'boardComments' : {
               'container': 'boardComments',
               'title'    : 'BoardComments',
-              'position' : [10,580],
+              'position' : [5,580],
               'width'    : 700,
               'height'   : 100
             },

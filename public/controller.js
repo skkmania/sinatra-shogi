@@ -33,18 +33,6 @@ Player = Class.create({
     return this.name.split('@').first();
   },
 	/**
-	 * statusHtml()
-	 */
-  statusHtml: function statusHtml() { // Player
-// playerのshort nameのspan のHTMLを返す。mine, turnのどちらかあるいは両方をclassとして指定する。
-// classの意味（効果はcssで次のように定義されている。）
-// mine は下線をひく
-// turn は背景色を黄色にする
-    var classNames = this.isViewer ? 'mine' : '';
-    if (window.gameController.playerInTurn() == this) classNames += ' turn';
-    return '<span class="' + classNames + '">' + this.shortName() + '</span>';
-  },
-	/**
 	 * toString()
 	 */
   toString: function toString() { // Player
@@ -78,18 +66,20 @@ Menu = Class.create({
   initArea: function initArea() { // Menu              
     this.area = areas[this.name];
     LOG.getInto('Menu#initArea');
-    var contents = '<input id="inputViewerId" type="text" name="viewerId" maxlength="10" />\
-<button id="review-button" class="review t" onclick="window.gameController.reviewButtonPressed($F(\'inputViewerId\')); this.hide();">review</button>\
-<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed($F(\'inputViewerId\')); this.hide();">join</button>\
-<div id="play-list">Play List</div>\
-<button id="play-button" class="play t" onclick="window.gameController.playButtonPressed($F(\'inputViewerId\')); this.hide();">play</button>\
-<div id="watch-list">Watch List</div>\
-<button id="watch-button" class="watch t" onclick="window.gameController.watchButtonPressed($F(\'inputViewerId\')); this.hide();">watch</button>\
-<form>\
-<button id="gpsPlay-button" class="gpsPlay t" onclick="window.gameController.gpsPlayButtonPressed($F(\'inputViewerId\'));return false;">gpsPlay</button>\
-<input type="radio" name="turnRequestBlack" class="reqBlack t" label="reqBlack t" />\
-<input type="radio" name="turnRequestWhite" class="reqWhite t" label="reqWhite t" />\
-</form>'
+    var contents = '<input id="inputViewerId" type="text" name="viewerId" maxlength="10" />';
+    contents += '<button id="review-button" class="review t" onclick="window.gameController.reviewButtonPressed($F(\'inputViewerId\')); this.hide();">review</button>';
+    contents += '<button id="join-button" class="join t" onclick="window.gameController.joinButtonPressed($F(\'inputViewerId\')); this.hide();">join</button>';
+
+    contents += '<form>';
+    contents += '<button id="gpsPlay-button" class="gpsPlay t" onclick="window.gameController.gpsPlayButtonPressed($F(\'inputViewerId\'));return false;">gpsPlay</button>';
+    contents += '<input type="radio" name="turnRequestBlack" class="reqBlack t" label="reqBlack t" />';
+    contents += '<input type="radio" name="turnRequestWhite" class="reqWhite t" label="reqWhite t" />';
+    contents += '</form>'
+
+    contents += '<div id="play-list">Play List</div>';
+    contents += '<button id="play-button" class="play t" onclick="window.gameController.playButtonPressed($F(\'inputViewerId\')); this.hide();">play</button>';
+    contents += '<div id="watch-list">Watch List</div>';
+    contents += '<button id="watch-button" class="watch t" onclick="window.gameController.watchButtonPressed($F(\'inputViewerId\')); this.hide();">watch</button>';
     this.area.window_contents.update(contents);
     this.area.window.open();
     LOG.goOut();
@@ -139,25 +129,27 @@ ControlPanel = Class.create({
   initArea: function initArea() { // ControlPanel              
     this.area = areas[this.name];
     LOG.getInto('ControlPanel#initArea');
-    var contents =   '<div id="sidebar">\
-                       <div id="control-panel">\
-                         <div id="message">\
-                           <div class="t">message</div>\
+    var contents = '<div id="message">\
+                           <div id="message-title" class="t">message</div>\
                            <div id="message-body"></div>\
-                         </div>\
-                       </div>\
-                     </div>';
+                    </div>';
+        contents += '<button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>';
         contents +=  '<div id="Title">\
                        <p id="kid">局面ID: </p>\
                        <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
                        <button onclick="javascript:window.gameController.jumpButtonPressed();" id="submitButton">jump</button>\
                     </div>';
         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
-        contents += '<div id="bottom-panel" class="player"><span class="t">sente</span> : <span class="t">waiting</span></div>';
-        contents += '<div id="top-panel" class="player"><span class="t">gote</span> : <span class="t">waiting</span></div>';
+        contents += '<div id="bottom-panel" class="player"><span id="bottom-turn" class="t">sente</span> : <span id="bottom-player" class="t">waiting</span></div>';
+        contents += '<div id="top-panel" class="player"><span id="top-turn" class="t turn">gote</span> : <span id="top-player" class="t">waiting</span></div>';
+            // ここでわざとtopにclassNames turnを付与しておくと
+            // bottom is black by default なので、後でCPがupdateされたとき
+            // 辻褄があうのだ。
+/*
         contents += '<div id="gameTurn"></div>';
         contents += '<div id="boardTurn"></div>';
         contents += '<div id="viewersTurn"></div>';
+*/
     this.area.window_contents.update(contents);
     this.area.window.open();
     LOG.goOut();
@@ -166,7 +158,7 @@ ControlPanel = Class.create({
 	 * reverse()
 	 */
   reverse: function reverse() { // ControlPanel              
-     LOG.getInto('ControlPanel#reverse');
+     LOG.getInto('ControlPanel#reverse', Log.DEBUG2);
       if (this.controller.top == 1){                                                
         this.player1Elm = $('top-panel');
         this.player2Elm = $('bottom-panel');
@@ -174,9 +166,7 @@ ControlPanel = Class.create({
         this.player2Elm = $('top-panel');
         this.player1Elm = $('bottom-panel');
       }                    
-    this.player1Elm.update(t('sente') + (this.controller.player1 ? this.controller.player1.statusHtml() : t('waiting')));
-    this.player2Elm.update(t('gote') +  (this.controller.player2 ? this.controller.player2.statusHtml() : t('waiting')));
-    LOG.goOut();
+    LOG.goOut(Log.DEBUG2);
   }, 
 	/**
 	 * waitPlayer()
@@ -193,6 +183,10 @@ ControlPanel = Class.create({
     LOG.debug('mode : ' + mode);
     // counter: の表示を現手数へ更新
     this.counterElm.update(this.controller.count);
+    // 手番表示の更新
+    // if(this.game) $('boardTurn').update('board : ' + this.game.board.turn.toString());
+    $('bottom-turn').toggleClassName('turn');
+    $('top-turn').toggleClassName('turn');
     // bidの表示を現在の盤面のbidへ更新
     $('inputText').value = this.controller.game.board.bid;
     if (!this.elm) this.elm = $('control-panel');                         
@@ -211,12 +205,12 @@ ControlPanel = Class.create({
       case 'playing':
         this.controller.message('');
         if(this.controller.player1)
-          this.player1Elm.innerHTML = t('sente') + this.controller.player1.statusHtml();
+          $('bottom-player').textContent = this.controller.player1.shortName();
         else
           this.player1Elm.innerHTML = t('sente');
         LOG.debug('player1 is written on panel');
         if(this.controller.player2)
-          this.player2Elm.innerHTML = t('gote') + this.controller.player2.statusHtml();
+          $('top-player').textContent = this.controller.player2.shortName();
         else
           this.player2Elm.innerHTML = t('gote');
         LOG.debug('player2 is written on panel');
@@ -224,9 +218,9 @@ ControlPanel = Class.create({
       case 'over':
         this.controller.message(t('already_over') + '<br>' + wave.getState().get('winner') + t('win'));
         if(this.controller.player1)
-          this.player1Elm.innerHTML = t('sente') + this.controller.player1.statusHtml();
+          $('bottom-player').textContent = this.controller.player1.shortName();
         if(this.controller.player2)
-          this.player2Elm.innerHTML = t('gote') + this.controller.player2.statusHtml();
+          $('top-player').textContent = this.controller.player2.shortName();
         break;
       case 'slice':
         this.controller.message('');
@@ -437,7 +431,6 @@ GameController = Class.create({
     dataStore.getMsg((this.game.board.bid || 1), 1, 3, 7, 'full', true);
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
-    $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.controlPanel.update('playing');
     dataStore.currentSlice().get('nextMoves').show();
     dataStore.currentSlice().get('prevMoves').show();
@@ -459,7 +452,6 @@ GameController = Class.create({
     $('inputText').value = dataStore.currentBid;
     this.game.board.turn = this.readTurnFromState(state);
     this.game.board.bid    = parseInt(state.get('bid') || 1);
-    $('boardTurn').update('board : ' + this.game.board.turn.toString());
     this.game.boardReadFromDB();
     this.game.toggleDraggable();
     this.controlPanel.update('review');
@@ -1398,6 +1390,43 @@ GameController = Class.create({
     areas.nextMoves.window.container.style.left =
         parseInt(this.game.board.area.window.container.style.left) 
       + bs * 14 + 'px';
+    areas.nextMovePoints.window.container.style.left =
+        parseInt(areas.nextMoves.window.container.style.left) 
+      + parseInt(areas.nextMoves.window.container.style.width) + 'px';
+    areas.nextMoveComments.window.container.style.left =
+        parseInt(areas.nextMovePoints.window.container.style.left) 
+      + parseInt(areas.nextMovePoints.window.container.style.width) + 'px';
+    areas.boardPoint.window.container.style.left =
+        areas.menu.window.container.style.left ;
+    areas.boardPoint.window.container.style.width =
+        parseInt(areas.prevMoves.window.container.style.width)
+      + parseInt(areas.board.window.container.style.width)
+      + parseInt(areas.nextMoves.window.container.style.width) + 'px';
+    areas.boardPoint.window.container.style.top =
+        parseInt(areas.board.window.container.style.top)
+      + parseInt(areas.board.window.container.style.height) + 25 + 'px';
+    areas.boardComments.window.container.style.left =
+        areas.menu.window.container.style.left ;
+    areas.boardComments.window.container.style.width =
+        areas.boardPoint.window.container.style.width ;
+    areas.boardComments.window.container.style.top =
+        parseInt(areas.boardPoint.window.container.style.top)
+      + parseInt(areas.boardPoint.window.container.style.height) + 25 + 'px';
+    areas.bookmarks.window.container.style.left =
+        parseInt(areas.nextMoveComments.window.container.style.left)
+      + parseInt(areas.nextMoveComments.window.container.style.width)
+      + 15 + 'px';
+    areas.options.window.container.style.left =
+        areas.bookmarks.window.container.style.left;
+    areas.options.window.container.style.top =
+        areas.boardPoint.window.container.style.top;
+    areas.maintainer.window.container.style.left =
+        areas.bookmarks.window.container.style.left;
+    areas.maintainer.window.container.style.top =
+        parseInt(areas.options.window.container.style.top)
+      + parseInt(areas.options.window.container.style.height)
+      + 15 + 'px';
+ 
 
     LOG.goOut();
   },
