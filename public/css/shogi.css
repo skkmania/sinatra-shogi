@@ -291,3 +291,36 @@ div.bkmkEntry * {
  float:		right;
  cursor:	se-resize;
  }
+
+.window_option {
+ height:	16px;
+ width:		16px;
+ background-color: #0c6;
+ float:		left;
+ -moz-border-radius:	8px;
+ -webkit-border-radius: 8px;
+ }
+
+.setOptionElm {
+  floart: left;
+  position: absolute;
+  top: 20px;
+  left: 0px;
+  width: 180px;
+  height: 100px;
+  background-color: #FFCCCC;
+}
+
+.colorApplyButton {
+ height:	16px;
+ width:		16px;
+ background-color: #0ca;
+ float:		left;
+ -moz-border-radius:	8px;
+ -webkit-border-radius: 8px;
+ }
+
+#saveWindowColorsButton {
+  font-size:  20px;
+  background-color: #aca;
+}

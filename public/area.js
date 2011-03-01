@@ -18,7 +18,22 @@ var Area = Class.create({
     this.window_title = new Element('div',{  className: 'window_title'  });  
     this.window_title.insert(this.title);
     this.window_close = new Element('div',{  className: 'window_close'  });  
+    this.window_option_button = new Element('div',{  className: 'window_option', title:'options'  });  
+    this.window_option_button.observe('click', this.setOption.bind(this));
     this.window_contents = new Element('div',{  className: 'window_contents'  });  
+
+    this.setOptionElement = new Element('div',{className:'setOptionElm' });
+    this.setColorLabel = new Element('label',{value:'color', name:'color' });
+    this.setColorInput = new Element('input',{type:'color', name:'colorSelector' });
+    this.setColorInput.style.width = '60px';
+    this.setColorInput.style.marginLeft = '10px';
+    this.setColorLabel.insert('color:');
+    this.setColorLabel.insert(this.setColorInput);
+    this.setOptionElement.insert('<span>Option</span><br>');
+    this.setOptionElement.insert(this.setColorLabel);
+    this.window_contents.insert(this.setOptionElement, {position:'top'});
+    this.setOptionElement.hide();
+
     this.default_options = { 
               resizable:true,
               insertRemoteContentAt: this.window_contents,
@@ -34,6 +49,26 @@ var Area = Class.create({
     LOG.goOut();
   },
 
+  setOption: function setOption(){ // Area
+    LOG.getInto('Area#setOption', Log.DEBUG2);
+    this.setOptionElement.show();
+    this.setColorInput.focus();
+    this.setColorInput.observe('change', this.applyColor.bind(this));
+    LOG.goOut(Log.DEBUG2);
+  },
+
+  applyColor: function applyColor(){ // Area
+    LOG.getInto('Area#applyColor', Log.DEBUG2);
+    var color = parseInt(this.setColorInput.value, 16)
+    this.window_option_button.style.color = Math.round(1.2*color).toString(16);
+    this.window_header.style.color = Math.round(1.2*color).toString(16);
+    this.window_header.style.backgroundColor = Math.round(0.8*color).toString(16);
+    this.window_contents.style.backgroundColor = color.toString(16);
+    this.setColorInput.stopObserving('change', this.applyColor.bind(this));
+    this.setOptionElement.hide();
+    LOG.goOut(Log.DEBUG2);
+  },
+
   openWindow: function openWindow(){ // Area
     LOG.getInto('Area#openWindow');
     var links_pool = $('links_pool');
@@ -47,6 +82,7 @@ var Area = Class.create({
       this.window = new Control.Window(this.anchor, this.default_options); 
       // window_headerにwindow_titleとwindow_closeを挿入してから
       this.window_header.insert(this.window_close);
+      this.window_header.insert(this.window_option_button);
       this.window_header.insert(this.window_title);
       // windowの先頭にwindow_header要素を挿入しておく。
       this.window.container.insert(this.window_header); 
