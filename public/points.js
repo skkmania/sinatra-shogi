@@ -117,11 +117,36 @@ var BoardPoint = Class.create({
     this.bid = bid;
     this.total = total;
     this.personal = personal;
+    this.initArea();
   },
 
   initArea : function initArea() {
     // boardPoint用のエリア
-//    this.area = new Area(this, 'boardPoint', 'BoardPoint',{position:[10,450], width:120, height:100});
+    var bs = (window.gameController ? window.gameController.options.boardSize : 40);
+    this.area = areas['boardPoint'];
+    this.totalArea = new Element('div',{id:'totalBoardPoint'});
+    this.totalArea.style.fontSize = bs + 'px';
+    this.slider = new Element('input',{id:'boardPointSlider',type:'range', name:'boardPointSlider'});
+    this.slider.min   = -5;
+    this.slider.max   =  5;
+    this.slider.value =  0;
+/*
+<input type="range" name="manzoku" min="-5" max="5" value="0">
+<output name="result" onforminput="value=manzoku.value"></output><br>
+*/
+
+    this.slider.style.width = bs*9 + 'px';
+    this.form = new Element('form');
+    this.output = new Element('output');
+    this.output.onforminput = 'value = boardPointSlider.value';
+    this.personalArea = new Element('div',{id:'personalBoardPoint'});
+    this.personalArea.style.fontSize = bs + 'px';
+    this.area.window_contents.insert(this.totalArea);
+    this.form.insert(this.slider);
+    this.form.insert(this.output);
+    this.area.window_contents.insert(this.form);
+    this.area.window_contents.insert(this.personalArea);
 //    this.area.initOnClick();
+    this.area.window.open();
   }
 });

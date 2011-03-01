@@ -324,3 +324,15 @@ div.bkmkEntry * {
   font-size:  20px;
   background-color: #aca;
 }
+
+#totalBoardPoint {
+  float: left;
+}
+
+#boardPointSlider {
+  margin: 10px;
+}
+
+#personalBoardPoint {
+  float: right;
+}

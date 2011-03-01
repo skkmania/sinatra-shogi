@@ -158,14 +158,14 @@ areaSettings = {
   'boardPoint' : {
               'container': 'boardPoint',
               'title'    : 'BoardPoint',
-              'position' : [5,450],
+              'position' : [5,550],
               'width'    : 120,
               'height'   : 70
             },
   'boardComments' : {
               'container': 'boardComments',
               'title'    : 'BoardComments',
-              'position' : [5,580],
+              'position' : [5,680],
               'width'    : 700,
               'height'   : 100
             },
