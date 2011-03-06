@@ -40,7 +40,7 @@ var Bookmark = Class.create({
 	 */
   initArea: function initArea() { // Bookmark              
     LOG.getInto('Bookmark#initArea');
-    this.size = window.gameController ? window.gameController.options.bkmkSize : 20;
+    this.size = globalOptions.bkmkSize || 20;
     this.options = { 
               container:document,
               title:	this.bid,

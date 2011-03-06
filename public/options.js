@@ -5,15 +5,16 @@
 // するためのwindowを表示する
 
 var Options = Class.create({
-  initialize : function initialize(controller) {
+  initialize : function initialize() {
     LOG.getInto('Options#initialize');
-    this.controller = controller;
     this.name = 'options';
     // default
     this.isTxt = true;
     this.isImg = false;
     this.boardSize = 40;
     this.bkmkSize  = 20;
+    this.msgOption = { bid: 1, uid: 1, level: 3, mask: 7,
+                       range:'full', async: true };
     this.initArea();
     LOG.goOut();
   },
@@ -38,7 +39,7 @@ var Options = Class.create({
   </select>\
   <span id="storeGeneration"></span>\
   <span id="storeSize"></span>\
-  <p><label>Bookmark Size:<input type="number" max="50" min="10" name="bookmarkSize" id="bookmarkSize" onChange="window.gameController.options.bkmkSize = $(\'bookmarkSize\').value;"/></label></p>\
+  <p><label>Bookmark Size:<input type="number" max="50" min="10" name="bookmarkSize" id="bookmarkSize" onChange="globalOptions.bkmkSize = $(\'bookmarkSize\').value;"/></label></p>\
 </div>';
     contents += '<div id="saveWindowColorsButton">save Window Colors</div>';
     contents += '<div id="loadWindowColorsButton">load Window Colors</div>';
@@ -92,4 +93,14 @@ var Options = Class.create({
     $('showState').update(wave.getState().toDebugHtml());
     LOG.goOut();
   }, 
+	/**
+	 * getMsgOption()
+	 */
+  getMsgOption: function getMsgOption() { // Options              
+    LOG.getInto('Options#getMsgOption');
+    $('getMsgOption').update(wave.getState().toDebugHtml());
+    LOG.goOut();
+  }, 
 });
+
+globalOptions = new Options();

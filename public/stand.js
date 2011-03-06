@@ -29,7 +29,7 @@ Stand = Class.create({
 	// define this own element
   createElm: function createElm() {  // Stand
     LOG.getInto('Stand#createElm');
-    var bs = window.gameController.options.boardSize;
+    var bs = globalOptions.boardSize;
     this.elm = document.createElement('div');
     this.elm.id = this.id;
     this.elm.obj = this;
@@ -43,7 +43,7 @@ Stand = Class.create({
 	 */
 	// prepare pockets
   preparePockets: function preparePockets() {  // Stand
-    var bs = window.gameController.options.boardSize;
+    var bs = globalOptions.boardSize;
     $R(0,7).each(function(i){
       this.pockets[i] =
         new Element('div',{ id:'pocket'+ i, className:'pocket' });
@@ -85,7 +85,7 @@ Stand = Class.create({
 	// それを全て丁寧にここで面倒をみている
   reverse: function reverse() {  // Stand
     LOG.getInto('Stand#reverse', Log.DEBUG2);
-    var bs = window.gameController.options.boardSize;
+    var bs = globalOptions.boardSize;
     if (this.isBottom()) {
       for(var i = 0; i <= 7; i++){
         this.elm.removeChild(this.pockets[i]);
@@ -213,7 +213,7 @@ LOG.goOut();
   recalcPockets: function recalcPockets(piece){ // Stand
     LOG.getInto('Stand#recalcPockets', Log.DEBUG2);
     LOG.debug2('entered ' + this.id + ' Stand#recalcPockets with : ' + piece.toDebugString());
-    var bs = window.gameController.options.boardSize; 
+    var bs = globalOptions.boardSize; 
     var idx = Chr2Ord[piece.chr];
     var pieceCount = $$('#' + this.id + ' #pocket'+idx+' div.piece').length;
     if (pieceCount > 1) this.suffixes[idx].textContent = pieceCount;

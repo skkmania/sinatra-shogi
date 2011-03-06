@@ -158,7 +158,7 @@ var Store = Class.create(Hash, {
        // 次の画面情報を作成するときに使われる
     // まず初期盤面のデータを取得しておく
     //  mask値が7なのは暫定。これは
-    this.getMsg(1, 1, 3, 7, 'full', false);
+    this.getMsg({ async: false });
     // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
     // this.ready = true;
     LOG.goOut();
@@ -391,11 +391,20 @@ var Store = Class.create(Hash, {
     }
   },
 	/**
-	 * getMsg(bid, uid, level, mask, range, async)
+	 * getMsg(option)
 	 */
-  getMsg : function getMsg(bid, uid, level, mask, range, async){ // Store
+  getMsg : function getMsg(option){ // Store
     LOG.getInto('Store#getMsg'); 
     //LOG.setLevel(Log.DEBUG);
+    var bid   = this.currentBid;
+    var uid   = globalOptions.msgOption.uid;
+    var level = globalOptions.msgOption.level;
+    var mask  = globalOptions.msgOption.mask;
+    var range = globalOptions.msgOption.range;
+    if (option && option.async)
+      var async = option.async;
+    else
+      var async = globalOptions.msgOption.async;
     var request = new Ajax.Request('/getMsg', {
          method: 'get',
          onCreate: function(request, response){

@@ -122,7 +122,7 @@ var BoardPoint = Class.create({
 
   initArea : function initArea() {
     // boardPoint用のエリア
-    var bs = (window.gameController ? window.gameController.options.boardSize : 40);
+    var bs = globalOptions.boardSize || 40;
     this.area = areas['boardPoint'];
     this.totalArea = new Element('div',{id:'totalBoardPoint'});
     this.totalArea.style.fontSize = bs + 'px';

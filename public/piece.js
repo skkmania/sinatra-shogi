@@ -44,7 +44,6 @@ Piece = Class.create({
 	 */
   initialize: function initialize(chr, game) { // Piece
     this.game = game || window.gameController.game;
-    this.isTxt = window.gameController.options.isTxt;
     LOG.getInto('Piece#initialize');
     LOG.warn('Piece#initialize entered with : ' + chr, {'indent':1});
     this.type = Chr2Type[chr.toLowerCase()];
@@ -211,7 +210,7 @@ Piece = Class.create({
     LOG.getInto('Piece#createElm', Log.DEBUG2);
     this.elm = document.createElement('div');
     this.elm.addClassName('piece');
-    if (this.isTxt) {
+    if (globalOptions.isTxt) {
       this.elm.addClassName('isTxt');
     } else {
       this.elm.addClassName('isImg');

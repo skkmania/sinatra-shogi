@@ -251,7 +251,6 @@ GameController = Class.create({
       LOG.debug('settings : ' + Object.toJSON(this.settings));
     }
     this.maintainer = new Maintainer(this);
-    this.options = new Options(this);
     this.book = new Book(this);
     this.container = $(this.settings['containerId']);
     this.playerSetting = settings['playerSetting'] || 'viewer';
@@ -429,7 +428,8 @@ GameController = Class.create({
     //if (!this.game.board.shown) this.game.board.show();
     this.game.boardReadFromDB();  // 盤面の読み込み
     // １手ごとのデータ先読み
-    dataStore.getMsg((this.game.board.bid || 1), 1, 3, 7, 'full', true);
+    globalOptions.msgOption.async = true;
+    dataStore.getMsg();
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
     this.controlPanel.update('playing');
@@ -503,7 +503,9 @@ GameController = Class.create({
     LOG.debug('slice['+bid+'] : ' + Object.toJSON(slice));
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
-      dataStore.getMsg(bid, 1, 3, 7, 'full', false);
+      this.msgOption.bid = bid;
+      this.msgOption.async = false;
+      dataStore.getMsg();
       slice = dataStore.slices.get(bid);
     }
     if(slice){
@@ -578,7 +580,9 @@ GameController = Class.create({
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
       LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
-      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      this.msgOption.bid = value;
+      this.msgOption.async = false;
+      dataStore.getMsg();
       slice = dataStore.slices.get(value);
     }
     LOG.debug('slice : ' + slice.toDebugString());
@@ -629,7 +633,9 @@ GameController = Class.create({
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
       LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
-      dataStore.getMsg(value, 1, 3, 7, 'full', false);
+      this.msgOption.bid = value;
+      this.msgOption.async = false;
+      dataStore.getMsg();
       slice = dataStore.slices.get(value);
     }
     LOG.debug('slice : ' + slice.toDebugString());
@@ -1309,8 +1315,8 @@ GameController = Class.create({
         // 機能 : Boardのサイズを指定により変更する
   resizeBoard: function resizeBoard(bs) { // GameController
     LOG.getInto('GameController#resizeBoard');
-    this.options.boardSize = bs || parseInt($('boardSize').value);
-    var bs = this.options.boardSize; 
+    globalOptions.boardSize = bs || parseInt($('boardSize').value);
+    var bs = globalOptions.boardSize; 
     // 各種のサイズをあわせる
     var cssRules = $A(document.styleSheets[1].cssRules);
        // boardPanel
@@ -1446,8 +1452,8 @@ GameController = Class.create({
     var imgOrTxt = ary[0];
     var name = ary[1];
     if (imgOrTxt == 'img') {
-      this.options.isImg = true;
-      this.options.isTxt = false;
+      globalOptions.isImg = true;
+      globalOptions.isTxt = false;
       PieceImgName = 'img/' + name + '/';
       for (o in PieceTypeObjects) {
         PieceTypeObjects[o].imageUrl =  HOST + PieceImgName + PieceTypeObjects[o].type + '.png';
@@ -1461,8 +1467,8 @@ GameController = Class.create({
     } else {
       var pieceTxtStyle = $A(document.styleSheets[1].cssRules).find(function(e){ return e.selectorText?e.selectorText.toLowerCase() == '.piecetxt':false; });
       pieceTxtStyle.style.fontFamily = name;
-      this.options.isImg = false;
-      this.options.isTxt = true;
+      globalOptions.isImg = false;
+      globalOptions.isTxt = true;
       $$('.piece').each(function(e){
         e.addClassName('isTxt');
         e.removeClassName('isImg');

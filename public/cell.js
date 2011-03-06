@@ -19,7 +19,7 @@ Cell.prototype = {
     //this.top = top;
     this.marginTop = 0;
     this.marginLeft = 0;
-    this.width = window.gameController.options.boardSize;
+    this.width = globalOptions.boardSize;
     this.height = Math.round(this.width * 1.05);
     LOG.goOut(Log.DEBUG2);
   },
