@@ -4,7 +4,12 @@
 // サーバ側が持っているstateを書き換えるなどのメンテナンス作業を
 // するためのwindowを表示する
 
-var Maintainer = Class.create({
+
+(function(global){
+  function Maintainer() {
+    this.initialize();
+  }
+  Maintainer.prototype = {
   initialize : function initialize(controller) {
     LOG.getInto('Maintainer#initialize');
     this.controller = controller;
@@ -55,5 +60,7 @@ var Maintainer = Class.create({
     LOG.getInto('Maintainer#showState');
     $('showState').update(wave.getState().toDebugHtml());
     LOG.goOut();
-  }, 
-});
+  } 
+  }; // end of prototype of Maintainer
+  global.maintainer = new Maintainer();
+})(window);
