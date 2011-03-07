@@ -38,8 +38,8 @@
   <span id="storeGeneration"></span>\
   <span id="storeSize"></span>\
   <p><label>storeをダンプ:<button id="dumpStore-button" class="dumpStorebutton t" onclick="window.dataStore.dump();">dump_store</button></label></p><br>\
-  <button id="clearState-button" class="maintainer t" onclick="window.gameController.maintainer.clearState();">clear_state</button>\
-  <button id="showState-button" class="maintainer t" onclick="window.gameController.maintainer.showState();">show_state</button>\
+  <button id="clearState-button" class="maintainer t" onclick="maintainer.clearState();">clear_state</button>\
+  <button id="showState-button" class="maintainer t" onclick="maintainer.showState();">show_state</button>\
 <div id="showState"></div>';
     this.area.window_contents.update(contents);
     this.area.window.open();

@@ -49,7 +49,11 @@ Player = Class.create({
 /**
  * Menu
  */
-Menu = Class.create({
+(function(global){
+  function Menu() {
+    this.initialize();
+  }
+  Menu.prototype = {
 	/**
 	 * initialize(game)
 	 */
@@ -106,7 +110,9 @@ Menu = Class.create({
     var contents = '<button id="toryo-button" class="toryo t" onclick="window.gameController.toryoButtonPressed(); this.hide();">toryo</button>';
     this.area.window_contents.insert(contents, { after: $('inputViewerId')});
   }
-});
+};  // end of prototype of Menu
+  global.menu = new Menu();
+})(window);
 
 /**
  * ControlPanel
@@ -257,7 +263,6 @@ GameController = Class.create({
     this.playerObjects = $A([]); // playerオブジェクトの配列
     this.blackplayers = $A([]);  // 先手playerのPlayerオブジェクトの配列
     this.whiteplayers = $A([]);  // 後手playerのPlayerオブジェクトの配列
-    this.menu = new Menu(this);
     this.controlPanel = new ControlPanel(this);
     this.count = 0;
        // 手数。このgameではcount手目を指した局面がthis.gameの
@@ -863,7 +868,7 @@ GameController = Class.create({
     LOG.debug('sending delta : ' + Log.dumpObject(delta));
 
     // 局面指定GPS対局ボタンを用意する
-    this.menu.addGpsPlayButton();
+    menu.addGpsPlayButton();
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
     wave.getState().submitDelta(delta);
@@ -903,7 +908,7 @@ GameController = Class.create({
     // に載っているままでよい
     LOG.debug('arguments : ' + name);
     LOG.debug('sending delta : ' + Log.dumpObject(delta));
-    this.menu.addToryoButton();
+    menu.addToryoButton();
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
     wave.getState().submitDelta(delta);
@@ -949,7 +954,7 @@ GameController = Class.create({
     // に載っているままでよい
     LOG.debug('arguments : ' + name);
     LOG.debug('sending delta : ' + Log.dumpObject(delta));
-    this.menu.addGpsPlayButton();
+    menu.addGpsPlayButton();
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
     wave.getState().submitDelta(delta);

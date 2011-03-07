@@ -34,7 +34,9 @@ M17N = {
       click_join_button:	'参加ボタンを押してください',
       already_over:	'勝負はついています。',
       win:	'さんの勝ちです',
-      dump_store:	'Store'
+      dump_store:	'Store',
+      clear_state:	'Stateクリア',
+      show_state:	'State表示'
     },
     en: {
       sente:	'Black: ',
@@ -68,7 +70,9 @@ M17N = {
       click_join_button:	'Click Join button',
       already_over:	'Already over,',
       win:	' Win!!',
-      dump_store:	'Store'
+      dump_store:	'Store',
+      clear_state:	'clear State',
+      show_state:	'show State'
     }
   },
   translate: function(key) {
