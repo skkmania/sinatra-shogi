@@ -51,8 +51,10 @@ var Options = Class.create({
     dataStore.names.each(function(n, idx){
       label = new Element('label');
       label.textContent = n;
-      label.insert(new Element('input',
-           { type:'checkbox', name: n, value: idx, className: 'maskCkbx' }));
+      var tmp = new Element('input',
+           { type:'checkbox', name: n, value: idx, className: 'maskCkbx' });
+      if(idx < 3) tmp.checked = true;  // by default
+      label.insert(tmp);
       maskElm.insert(label);
     });
 
