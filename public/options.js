@@ -63,6 +63,7 @@ var Options = Class.create({
     this.area.window.open();
     $('saveWindowColorsButton').observe('click',this.saveWindowColors.bind(this));
     $('loadWindowColorsButton').observe('click',this.loadWindowColors.bind(this));
+    $('maskElm').observe('click', this.getMask.bind(this));
     LOG.goOut();
   }, 
 

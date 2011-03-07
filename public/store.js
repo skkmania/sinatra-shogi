@@ -199,16 +199,17 @@ var Store = Class.create(Hash, {
     return ret;
   },
 	/**
-	 * readDB(data, mask)
+	 * readDB(data)
 	 */
 	// サーバからうけたデータを自身に格納する
         // makeSliceを使い、jsのオブジェクトをそれぞれの型のオブジェクトに
         // 変換しまとめてSliceオブジェクトとしてから、
         // このStoreのslicesプロパティに格納する。
+	// dataNameの使用範囲を指定する数字であるmask値は
+	// globalOptions.msgOption.maskによる。みつからなければ511とする。
 	// 入力 : data  DBからのresponseをunpackしたjavascriptのオブジェクト
-	//        mask  dataNameの使用範囲を指定する数字, 省略時は511
 	// 出力 : なし
-  readDB : function readDB(data, mask) { // Store
+  readDB : function readDB(data) { // Store
     LOG.getInto('Store#readDB');
     // dataに含まれるbidを取り出して配列として保持
     var bids = data['board'].pluck('bid');
@@ -217,7 +218,7 @@ var Store = Class.create(Hash, {
     // bidsは、数値の配列
     LOG.debug('bids : ' + JSON.stringify(bids));
     LOG.debug('bids size : ' + JSON.stringify(bids.length));
-    var m = mask || 511;
+    var m = globalOptions.msgOption.mask || 511;
     bids.each(function(bid){
       this.LOG.debug('bid : ' + JSON.stringify(bid) + ', typof bid: '+ typeof bid);
       this.slices.set(bid, this.makeSlice(bid, data, m));
@@ -351,6 +352,22 @@ var Store = Class.create(Hash, {
           }
           this.LOG.goOut(Log.DEBUG2);
           break;
+        case 'boardPointByUser':
+          this.LOG.getInto('processing boardPointByUser',Log.DEBUG2);
+          target = data['boardPointByUser'].find(function(e){
+             return e.bid == bid;
+          });
+          this.LOG.debug('target : ' + JSON.stringify(target));
+          this.LOG.debug('target.bid : ' + JSON.stringify(target.bid));
+          this.LOG.debug('target.pbpoint : ' + JSON.stringify(target.pbpoint));
+          var obj = new BoardPointByUser();
+          this.LOG.debug('obj after initialize : ' + obj.toDelta());
+          obj.fromDB(target);
+          this.LOG.debug('obj after fromDB : ' + obj.toDelta());
+          ret.set('boardPointByUser', obj);
+          this.LOG.debug('ret[boardPointByUser] became : ' + JSON.stringify(ret.get('boardPointByUser')));
+          this.LOG.goOut(Log.DEBUG2);
+          break;
         default:
           this.LOG.fatal('Store#makeSlice : wrong data name arrived!');
           break;
@@ -426,7 +443,7 @@ var Store = Class.create(Hash, {
         this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
         this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
-        this.readDB(data, 7);
+        this.readDB(data);
  //       this.LOG.debug('store.toDebugHtml : ' + this.toDebugHtml());
         this.ready = true;
         this.generation += 1;
@@ -492,7 +509,7 @@ var Store = Class.create(Hash, {
         window.gameController.game.new_bid = parseInt(data['board'][0]['bid']);
               // DBからの返事である、盤面のbid
         // 新しいbidのデータをdataStoreに追加する
-        this.readDB(data, 7);
+        this.readDB(data);
         // registBoardの場合、それだけでは追加が足りない。新局面に至った新手の情報がまだ追加されていないから、それを追加する。
         // 新手の情報とは、この新局面にとってのprevMoves[0]にほかならない。
         this.addMovesAsNextMoves(data['prevMoves'])
