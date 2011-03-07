@@ -43,11 +43,45 @@ var Options = Class.create({
 </div>';
     contents += '<div id="saveWindowColorsButton">save Window Colors</div>';
     contents += '<div id="loadWindowColorsButton">load Window Colors</div>';
+
+    // checkbox for mask
+    var maskElm = new Element('div', { id:'maskElm' });
+    maskElm.insert('mask');
+    var label = null;
+    dataStore.names.each(function(n, idx){
+      label = new Element('label');
+      label.textContent = n;
+      label.insert(new Element('input',
+           { type:'checkbox', name: n, value: idx, className: 'maskCkbx' }));
+      maskElm.insert(label);
+    });
+
     this.area.window_contents.update(contents);
+    this.area.window_contents.insert(maskElm);
     this.area.window.open();
     $('saveWindowColorsButton').observe('click',this.saveWindowColors.bind(this));
     $('loadWindowColorsButton').observe('click',this.loadWindowColors.bind(this));
     LOG.goOut();
+  }, 
+
+	/**
+	 * getMask()
+	 */
+	// チェックされた項目の値の2のべき乗の和をthis.msgOption.maskに
+	// 格納して、それを返す
+	// 入力： なし
+	//        だが、画面のチェックボックスの状態が入力値として働く
+	// 出力： this.msgOption.mask
+	// 副作用：this.msgOption.maskを更新する
+  getMask: function getMask() { // Options              
+    LOG.getInto('Options#getMask', Log.DEBUG2);
+    this.msgOption.mask =  $$('.maskCkbx').filter(function(c){
+                                    return c.checked; }
+           ).pluck('value').inject(0,function(acc,v){
+                                  return acc + Math.pow(2,parseInt(v));
+           });
+    LOG.goOut(Log.DEBUG2);
+    return this.msgOption.mask;
   }, 
 	/**
 	 * saveWindowColors()
@@ -104,3 +138,4 @@ var Options = Class.create({
 });
 
 globalOptions = new Options();
+dataStore.getInitialData();

@@ -156,8 +156,15 @@ var Store = Class.create(Hash, {
        // 初期値はわからないのでnullとする。
        // ユーザアクションを受けてはじめて決まり、
        // 次の画面情報を作成するときに使われる
-    // まず初期盤面のデータを取得しておく
-    //  mask値が7なのは暫定。これは
+    LOG.goOut();
+  },
+	/**
+	 * getInitialData()
+         */
+	// まず初期盤面のデータを取得しておく
+	//  mask値は、globalOptionsにより決定されているはず
+  getInitialData: function getInitialData(){
+    LOG.getInto('Store#getInitialData');
     this.getMsg({ async: false });
     // 初期盤面のデータを取得後に、ready をtrueにする。（on Successのなか）
     // this.ready = true;
