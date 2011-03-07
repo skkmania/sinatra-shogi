@@ -117,13 +117,16 @@ Player = Class.create({
 /**
  * ControlPanel
  */
-ControlPanel = Class.create({
+(function(global){
+  function ControlPanel() {
+    this.initialize();
+  }
+  ControlPanel.prototype = {
 	/**
 	 * initialize(game)
 	 */
   initialize: function initialize(controller) { // ControlPanel
     LOG.getInto('ControlPanel#initialize');
-    this.controller = controller;
     this.name = 'controlPanel';
     this.initArea();
     this.counterElm = $('counterNum');
@@ -139,11 +142,11 @@ ControlPanel = Class.create({
                            <div id="message-title" class="t">message</div>\
                            <div id="message-body"></div>\
                     </div>';
-        contents += '<button id="reverse-button" class="reverse t" onclick="window.gameController.game.reverse();">reverse</button>';
+        contents += '<button id="reverse-button" class="reverse t" onclick="gameController.game.reverse();">reverse</button>';
         contents +=  '<div id="Title">\
                        <p id="kid">局面ID: </p>\
                        <input id="inputText" type="text" name="bid" maxlength="7" value="1" />\
-                       <button onclick="javascript:window.gameController.jumpButtonPressed();" id="submitButton">jump</button>\
+                       <button onclick="javascript:gameController.jumpButtonPressed();" id="submitButton">jump</button>\
                     </div>';
         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
         contents += '<div id="bottom-panel" class="player"><span id="bottom-turn" class="t">sente</span> : <span id="bottom-player" class="t">waiting</span></div>';
@@ -165,7 +168,7 @@ ControlPanel = Class.create({
 	 */
   reverse: function reverse() { // ControlPanel              
      LOG.getInto('ControlPanel#reverse', Log.DEBUG2);
-      if (this.controller.top == 1){                                                
+      if (global.gameController.top == 1){                                                
         this.player1Elm = $('top-panel');
         this.player2Elm = $('bottom-panel');
       } else {       
@@ -188,15 +191,15 @@ ControlPanel = Class.create({
     LOG.getInto('ControlPanel#update');
     LOG.debug('mode : ' + mode);
     // counter: の表示を現手数へ更新
-    this.counterElm.update(this.controller.count);
+    this.counterElm.update(global.gameController.count);
     // 手番表示の更新
     // if(this.game) $('boardTurn').update('board : ' + this.game.board.turn.toString());
     $('bottom-turn').toggleClassName('turn');
     $('top-turn').toggleClassName('turn');
     // bidの表示を現在の盤面のbidへ更新
-    $('inputText').value = this.controller.game.board.bid;
+    $('inputText').value = global.gameController.game.board.bid;
     if (!this.elm) this.elm = $('control-panel');                         
-    if (this.controller.top == 1){                                                
+    if (global.gameController.top == 1){                                                
       this.player1Elm = $('top-panel');
       this.player2Elm = $('bottom-panel');
     } else {       
@@ -205,31 +208,31 @@ ControlPanel = Class.create({
     }                    
     switch(mode){
       case 'onePlayer':
-        if(this.controller.players[0])
-          $('message-body').update(this.controller.players[0] + ' is waiting');
+        if(global.gameController.players[0])
+          $('message-body').update(global.gameController.players[0] + ' is waiting');
         break;
       case 'playing':
-        this.controller.message('');
-        if(this.controller.player1)
-          $('bottom-player').textContent = this.controller.player1.shortName();
+        global.gameController.message('');
+        if(global.gameController.player1)
+          $('bottom-player').textContent = global.gameController.player1.shortName();
         else
           this.player1Elm.innerHTML = t('sente');
         LOG.debug('player1 is written on panel');
-        if(this.controller.player2)
-          $('top-player').textContent = this.controller.player2.shortName();
+        if(global.gameController.player2)
+          $('top-player').textContent = global.gameController.player2.shortName();
         else
           this.player2Elm.innerHTML = t('gote');
         LOG.debug('player2 is written on panel');
         break;
       case 'over':
-        this.controller.message(t('already_over') + '<br>' + wave.getState().get('winner') + t('win'));
-        if(this.controller.player1)
-          $('bottom-player').textContent = this.controller.player1.shortName();
-        if(this.controller.player2)
-          $('top-player').textContent = this.controller.player2.shortName();
+        global.gameController.message(t('already_over') + '<br>' + wave.getState().get('winner') + t('win'));
+        if(global.gameController.player1)
+          $('bottom-player').textContent = global.gameController.player1.shortName();
+        if(global.gameController.player2)
+          $('top-player').textContent = global.gameController.player2.shortName();
         break;
       case 'slice':
-        this.controller.message('');
+        global.gameController.message('');
         break;
       default:
         this.player1Elm.innerHTML = t('sente');
@@ -238,7 +241,10 @@ ControlPanel = Class.create({
     LOG.warn('cp update leaving'); 
     LOG.goOut();
   } 
-});
+}; // end of prototype of ControlPanel
+  global.controlPanel = new ControlPanel();
+})(window);
+
 
 /*
  *	 GameController
@@ -263,7 +269,6 @@ GameController = Class.create({
     this.playerObjects = $A([]); // playerオブジェクトの配列
     this.blackplayers = $A([]);  // 先手playerのPlayerオブジェクトの配列
     this.whiteplayers = $A([]);  // 後手playerのPlayerオブジェクトの配列
-    this.controlPanel = new ControlPanel(this);
     this.count = 0;
        // 手数。このgameではcount手目を指した局面がthis.gameの
        // board, blackStand, whiteStandに反映されているものとする.
@@ -373,7 +378,7 @@ GameController = Class.create({
         // 機能：最初の参加者を受付、次の参加を待つ
   noPlayers: function noPlayers() { // GameController
     LOG.getInto('GameController#noPlayers');
-    this.controlPanel.update('noPlayers');
+    controlPanel.update('noPlayers');
         // join buttonがclickされるのを待つ
     this.message(t('click_join_button'));
     LOG.goOut();
@@ -387,7 +392,7 @@ GameController = Class.create({
   onePlayer: function onePlayer(state) { // GameController
     LOG.getInto('GameController#onePlayer');
     this.getPlayersFromState(state);
-    this.controlPanel.update('onePlayer');
+    controlPanel.update('onePlayer');
     LOG.goOut();
   },
         /*
@@ -400,12 +405,11 @@ GameController = Class.create({
     this.getPlayersFromState(state);
     if(!this.game.askPlayersEnough(this.players)){
       LOG.fatal('game says not enouph player!');
-      //this.controlPanel.waitPlayer();
     } else {
       //this.mainRoutine();
       this.playing(state);
     }
-    this.controlPanel.update('preparePlayers');
+    controlPanel.update('preparePlayers');
     LOG.goOut();
   }, 
 	/**
@@ -436,7 +440,7 @@ GameController = Class.create({
     dataStore.getMsg();
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
-    this.controlPanel.update('playing');
+    controlPanel.update('playing');
     dataStore.currentSlice().get('nextMoves').show();
     dataStore.currentSlice().get('prevMoves').show();
     //this.prepareFromState(state);
@@ -459,7 +463,7 @@ GameController = Class.create({
     this.game.board.bid    = parseInt(state.get('bid') || 1);
     this.game.boardReadFromDB();
     this.game.toggleDraggable();
-    this.controlPanel.update('review');
+    controlPanel.update('review');
     dataStore.currentSlice().get('nextMoves').show();
     dataStore.currentSlice().get('prevMoves').show();
     LOG.goOut();
@@ -477,7 +481,7 @@ GameController = Class.create({
     if($('join-button')){ $('join-button').hide(); }
     if (!this.game.board.shown) this.game.board.show();
 //  ここの処理は他のコールバックを参考に書き直すこと
-    this.controlPanel.update('over');
+    controlPanel.update('over');
       // draggableは消してしまい、ゲームを継続できなくする
     this.game.allPieces().pluck('drag').compact().invoke('destroy');
     LOG.goOut();
@@ -507,8 +511,8 @@ GameController = Class.create({
     LOG.debug('slice['+bid+'] : ' + Object.toJSON(slice));
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
-      this.msgOption.bid = bid;
-      this.msgOption.async = false;
+      globalOptions.msgOption.bid = bid;
+      globalOptions.msgOption.async = false;
       dataStore.getMsg();
       slice = dataStore.slices.get(bid);
     }
@@ -584,8 +588,8 @@ GameController = Class.create({
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
       LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
-      this.msgOption.bid = value;
-      this.msgOption.async = false;
+      globalOptions.msgOption.bid = value;
+      globalOptions.msgOption.async = false;
       dataStore.getMsg();
       slice = dataStore.slices.get(value);
     }
@@ -637,8 +641,8 @@ GameController = Class.create({
     if(!slice){
       LOG.debug('was not found in slices key, so try getMsg.');
       LOG.debug('slices key is : ' + dataStore.slices.keys().join(','));
-      this.msgOption.bid = value;
-      this.msgOption.async = false;
+      globalOptions.msgOption.bid = value;
+      globalOptions.msgOption.async = false;
       dataStore.getMsg();
       slice = dataStore.slices.get(value);
     }
@@ -1063,7 +1067,6 @@ GameController = Class.create({
         delta[deltakey] = wave.getViewer().getId();
         delta['mode'] = this.mode;
     }
-    //this.controlPanel.update(this.mode);
     LOG.debug('sending delta : ' + Log.dumpObject(delta));
     LOG.goOut();
     // 以下を呼べば、acceptStateに飛んでしまう
@@ -1203,7 +1206,7 @@ GameController = Class.create({
 	 */
   nextTurn: function nextTurn() { // GameController
     LOG.getInto('GameController#nextTurn');
-    this.controlPanel.update('playing');
+    controlPanel.update('playing');
     this.clearMessage();
     LOG.goOut();
   },
@@ -1531,7 +1534,7 @@ GameController = Class.create({
 	 */
   prepareFromState: function prepareFromState(state) { // GameController
     LOG.getInto('GameController#prepareFromState');
-    this.controlPanel.update('playing');
+    controlPanel.update('playing');
     this.mainRoutine();
     LOG.warn('leaving Game#prepareFromState');
     LOG.goOut();

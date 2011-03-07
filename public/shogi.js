@@ -152,7 +152,7 @@ window.gameController.game = this;
     this.controller.top = top || (this.controller.top === 0 ? 1 : 0);
     this.controller.top_by_viewer = this.controller.top;
     this.controller.message('top became ' + this.controller.top);
-    this.controller.controlPanel.reverse();
+    controlPanel.reverse();
     this.board.reverse();
     this.board.adjust();
     if($('top-stand') && $('bottom-stand')){
