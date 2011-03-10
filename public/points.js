@@ -110,9 +110,12 @@ var MovePoints = Class.create({
 });
 
 //
-//  盤面へのポイント
-var BoardPoint = Class.create({
-
+//  盤面へのポイントを表示するエリア
+(function(global){
+  function BoardPoint() {
+    this.initialize();
+  }
+  BoardPoint.prototype = {
   initialize : function(bid, total, personal){
     this.bid = bid;
     this.total = total;
@@ -130,15 +133,12 @@ var BoardPoint = Class.create({
     this.slider.min   = -5;
     this.slider.max   =  5;
     this.slider.value =  0;
-/*
-<input type="range" name="manzoku" min="-5" max="5" value="0">
-<output name="result" onforminput="value=manzoku.value"></output><br>
-*/
-
     this.slider.style.width = bs*9 + 'px';
+
     this.form = new Element('form');
     this.output = new Element('output');
     this.output.onforminput = 'value = boardPointSlider.value';
+
     this.personalArea = new Element('div',{id:'personalBoardPoint'});
     this.personalArea.style.fontSize = bs + 'px';
     this.area.window_contents.insert(this.totalArea);
@@ -146,7 +146,95 @@ var BoardPoint = Class.create({
     this.form.insert(this.output);
     this.area.window_contents.insert(this.form);
     this.area.window_contents.insert(this.personalArea);
-//    this.area.initOnClick();
     this.area.window.open();
   }
-});
+}; // end of prototype of BoardPoint
+    global.boardPoint = new BoardPoint(1, 0, 0);
+})(window);
+
+/*
+ *  BoardPointByUser
+ */
+//
+//  userがつけた盤面へのポイントを保持しておくためのオブジェクト
+(function(global){
+  global.BoardPointByUser = function BoardPointByUser() {
+    this.initialize();
+  }
+  BoardPointByUser.prototype = {
+    initialize : function(){
+    },
+  
+    // DBから取得したデータのオブジェクトを読み、とりいれる。
+    fromObj : function fromObj(h){ // BoardPointByUser
+      this.bid		= h.bid;
+      this.uid		= h.userid;
+      this.pbpoint	= h.pbpoint;
+      return this;
+    },
+	/*
+	 * toDebugString()
+	 */
+    toDebugString : function toDebugString(){ // BoardPointByUser
+      var ret;
+      ret =  'bid : ' + this.bid;
+      ret += 'uid : ' + this.uid;
+      ret += ', personal : ' + this.pbpoint;
+      return ret;
+    },
+  	/*
+  	 * toDelta()
+  	 */
+    toDelta : function toDelta(){ // BoardPointByUser
+      var ret;
+      ret =  this.bid + ',' + this.uid;
+      ret += ',' + this.pbpoint
+      return ret;
+    }
+  }; // end of prototype of BoardPointByUser
+})(window);
+
+/*
+ *  BoardPointAverage
+ */
+//
+//  盤面へのポイントの全体平均を保持しておくためのオブジェクト
+(function(global){
+  global.BoardPointAverage = function BoardPointAverage(obj) {
+    return this.initialize(obj);
+  }
+  BoardPointAverage.prototype = {
+    initialize : function(obj){
+      this.bid		= obj.bid;
+      this.bpoint	= obj.bpoint;
+      return this;
+    },
+  
+    // DBから取得したデータのオブジェクトを読み、とりいれる。
+    fromObj : function fromObj(h){ // BoardPointAverage
+      this.bid		= h.bid;
+      this.bpoint	= h.bpoint;
+      return this;
+    },
+	/*
+	 * toDebugString()
+	 */
+    toDebugString : function toDebugString(){ // BoardPointAverage
+      var ret;
+      ret =  'bid : ' + this.bid;
+      ret += ', avg : ' + this.bpoint;
+      //ret += ', avg : ' + this.bpoint.toFixed(2);
+      return ret;
+    },
+  	/*
+  	 * toDelta()
+  	 */
+    toDelta : function toDelta(){ // BoardPointAverage
+      var ret;
+      ret =  this.bid;
+      //ret += ',' + this.bpoint.toFixed(2);
+      ret += ',' + this.bpoint;
+      return ret;
+    }
+  }; // end of prototype of BoardPointAverage
+})(window);

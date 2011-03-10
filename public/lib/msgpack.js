@@ -1,8 +1,8 @@
 
-// === msgpack ===
+// === uu.msgpack / window.msgpack ===
 // MessagePack -> http://msgpack.sourceforge.net/
 
-this.msgpack || (function(globalScope) {
+(this.uu || this).msgpack || (function(globalScope) {
 
 globalScope.msgpack = {
     pack:       msgpackpack,    // msgpack.pack(data:Mix):ByteArray
@@ -333,11 +333,12 @@ function msgpackdownload(url,        // @param String:
                                      //    option.timeout - Number(= 10): timeout sec
                                      //    option.before  - Function: before(xhr, option)
                                      //    option.after   - Function: after(xhr, option, { status, ok })
-                         callback) { // @param Function: callback(data, option, { status, ok })
-                                     //    data   - Mix/null:
-                                     //    option - Hash:
-                                     //    status - Number: HTTP status code
-                                     //    ok     - Boolean:
+                         callback) { // @param CallbackFunction: callback(response)
+                                     //    response.ok     - Boolean(= false):
+                                     //    response.data   - Mix(= null):
+                                     //    response.date   - DateHash(= null):
+                                     //    response.option - Hash: option argument
+                                     //    response.status - Number: HTTP status code
     option.method = "GET";
     option.binary = true;
     ajax(url, option, callback);
@@ -351,11 +352,12 @@ function msgpackupload(url,        // @param String:
                                    //    option.timeout - Number(= 10): timeout sec
                                    //    option.before  - Function: before(xhr, option)
                                    //    option.after   - Function: after(xhr, option, { status, ok })
-                       callback) { // @param Function: callback(data, option, { status, ok })
-                                   //    data   - String: responseText
-                                   //    option - Hash:
-                                   //    status - Number: HTTP status code
-                                   //    ok     - Boolean:
+                       callback) { // @param CallbackFunction: callback(response)
+                                   //    response.ok     - Boolean(= false):
+                                   //    response.data   - Mix(= null):
+                                   //    response.date   - DateHash(= null):
+                                   //    response.option - Hash: option argument
+                                   //    response.status - Number: HTTP status code
     option.method = "PUT";
     option.binary = true;
 
@@ -387,11 +389,11 @@ function ajax(url,        // @param String:
                           //    option.before  - Function: before(xhr, option)
                           //    option.after   - Function: after(xhr, option, { status, ok })
                           //    option.worker  - Boolean(= false): true is use WebWorkers
-              callback) { // @param Function: callback(data, option, { status, ok })
-                          //    data   - String/Mix/null:
-                          //    option - Hash:
-                          //    status - Number: HTTP status code
-                          //    ok     - Boolean:
+              callback) { // @param CallbackFunction: callback(response)
+                          //    response.ok     - Boolean:
+                          //    response.data   - String/Mix/null:
+                          //    response.option - Hash:
+                          //    response.status - Number: HTTP status code
     function readyStateChange() {
         if (xhr.readyState === 4) {
             var data, status = xhr.status, worker, byteArray,
@@ -593,4 +595,4 @@ _ie && document.write('<script type="text/vbscript">\
 Function vblen(b)vblen=LenB(b.responseBody)End Function\n\
 Function vbstr(b)vbstr=CStr(b.responseBody)+chr(0)End Function</'+'script>');
 
-})(this);
+})(this.uu || this);

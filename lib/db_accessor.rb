@@ -112,7 +112,7 @@ class DbAccessor
     			 where bid in ( #{bids_expr} ) order by bid,mid;",
     "moveComments"	=> "select bid,mid,mcomment,userid,uname from move_comments natural inner join users where bid in ( #{bids_expr} ) order by mid;",
     "boardPointByUser"=> "select bid, coalesce(sum(pbpoint), 0) as pbpoint from boardp_users where bid in ( #{bids_expr} ) and userid = #{@uid} group by bid;",
-    "boardPointAverage"=> "select bid, coalesce(sum(bpoint), 0) as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
+    "boardPointAverage"=> "select bid, round(coalesce(sum(bpoint), 0.00)::numeric,2)::text as bpoint from board_points where bid in ( #{bids_expr} ) group by bid;",
     "boardComments"	=> "select bid, bcomment,userid,uname from board_comments natural inner join users where bid in ( #{bids_expr} ) order by userid;",
     "book"		=> "select * from get_book_with_meta(#{@kid});",
     }
@@ -191,6 +191,18 @@ class DbAccessor
 
     total += "\n" + prev_key + " :\n"
     total += moves_tos.call(obj, prev_key, :nxt_bid)
+
+    unless obj['boardPointByUser'].nil?
+      total += "\n boardPointByUser :\n"
+      total += (obj['boardPointByUser'].inject(''){|acc, h|
+                             acc += (sprintf("%.2f", h[:pbpoint]) + ', ') })
+    end
+
+    unless obj['boardPointAverage'].nil?
+      total += "\n boardPointAverage :\n"
+      total += (obj['boardPointAverage'].inject(''){|acc, h|
+                             acc += (sprintf("%.2f", h[:bpoint]) + ', ') })
+    end
     return total
   end
   

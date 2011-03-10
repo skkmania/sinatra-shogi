@@ -362,11 +362,29 @@ var Store = Class.create(Hash, {
           this.LOG.debug('target.pbpoint : ' + JSON.stringify(target.pbpoint));
           var obj = new BoardPointByUser();
           this.LOG.debug('obj after initialize : ' + obj.toDelta());
-          obj.fromDB(target);
-          this.LOG.debug('obj after fromDB : ' + obj.toDelta());
+          obj.fromObj(target);
+          this.LOG.debug('obj after fromObj : ' + obj.toDelta());
           ret.set('boardPointByUser', obj);
           this.LOG.debug('ret[boardPointByUser] became : ' + JSON.stringify(ret.get('boardPointByUser')));
           this.LOG.goOut(Log.DEBUG2);
+          break;
+        case 'boardPointAverage':
+          this.LOG.setLevel(Log.DEBUG2);
+          this.LOG.getInto('processing boardPointAverage',Log.DEBUG2);
+          target = data['boardPointAverage'].find(function(e){
+             return e.bid == bid;
+          });
+          this.LOG.debug('target : ' + JSON.stringify(target));
+          this.LOG.debug('target.bid : ' + JSON.stringify(target.bid));
+          this.LOG.debug('target.bpoint : ' + JSON.stringify(target.bpoint));
+          var obj = new BoardPointAverage(target);
+          this.LOG.debug('obj after initialize : ' + obj.toDelta());
+          //obj.fromObj(target);
+          //this.LOG.debug('obj after fromObj : ' + obj.toDelta());
+          ret.set('boardPointAverage', obj);
+          this.LOG.debug('ret[boardPointAverage] became : ' + JSON.stringify(ret.get('boardPointAverage')));
+          this.LOG.goOut(Log.DEBUG2);
+          this.LOG.setLevel(Log.ERROR);
           break;
         default:
           this.LOG.fatal('Store#makeSlice : wrong data name arrived!');
@@ -420,7 +438,8 @@ var Store = Class.create(Hash, {
   getMsg : function getMsg(option){ // Store
     LOG.getInto('Store#getMsg'); 
     //LOG.setLevel(Log.DEBUG);
-    var bid   = this.currentBid;
+//    var bid   = this.currentBid;
+    var bid   = globalOptions.msgOption.bid;
     var uid   = globalOptions.msgOption.uid;
     var level = globalOptions.msgOption.level;
     var mask  = globalOptions.msgOption.mask;
@@ -442,7 +461,8 @@ var Store = Class.create(Hash, {
         this.LOG.getInto('onSuccess_getMsg');
         this.LOG.debug('responseText : ' + Object.toJSON(response.responseText));
         var data= msgpack.unpack(response.responseText);
-        this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
+        //this.LOG.debug('unpacked responseText : ' + Object.toJSON(data));
+        this.LOG.error('unpacked responseText : ' + JSON.stringify(data));
         this.readDB(data);
  //       this.LOG.debug('store.toDebugHtml : ' + this.toDebugHtml());
         this.ready = true;

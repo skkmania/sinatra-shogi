@@ -13,7 +13,7 @@ var Options = Class.create({
     this.isImg = false;
     this.boardSize = 40;
     this.bkmkSize  = 20;
-    this.msgOption = { bid: 1, uid: 1, level: 3, mask: 7,
+    this.msgOption = { bid: 1, uid: 1, level: 3, mask: 199,
                        range:'full', async: true };
     this.initArea();
     LOG.goOut();

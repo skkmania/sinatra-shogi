@@ -284,7 +284,6 @@ GameController = Class.create({
       //  Boardのinitializeにおいては
       //  top=0を前提にstyle.top, style.leftを決めている
       //  ので、topが決まったこの時点で必要なら修正しておく必要がある
-    this.boardPoint = new BoardPoint(1, 0, 0);
     LOG.debug('GameController initializer coming to end.');
     LOG.debug('now, going to each process named by playerSetting : ' + this.playerSetting);
     LOG.goOut();
