@@ -42,6 +42,20 @@ var Slice = Class.create(Hash, {
     } else {
       this.set('prevMoves', (new Moves('prevMoves')));
     }
+
+    var boardPointByUser = state.get('boardPointByUser','');
+    if (boardPointByUser.length > 0) {
+      this.set('boardPointByUser', (new BoardPointByUser()).fromDelta(boardPointByUser));
+    } else {
+      this.set('boardPointByUser', (new BoardPointByUser()));
+    }
+
+    var boardPointAverage = state.get('boardPointAverage','');
+    if (boardPointAverage.length > 0) {
+      this.set('boardPointAverage', (new BoardPointAverage()).fromDelta(boardPointAverage));
+    } else {
+      this.set('boardPointAverage', (new BoardPointAverage()));
+    }
     LOG.goOut();
     return this;
   },
@@ -54,8 +68,8 @@ var Slice = Class.create(Hash, {
     LOG.debug('keys : ' + Object.toJSON(this.keys()));
     LOG.debug('values : ' + this.values().invoke('toDebugString').join('::'));
     this.keys().each(function(key){
-      this.LOG.debug('pair.key: ' + Object.toJSON(key));
-      this.LOG.debug('pair.value: ' + this.get(key).toDebugString());
+      this.LOG.debug2('pair.key of slice: ' + Object.toJSON(key));
+      this.LOG.debug2('pair.value of slice: ' + this.get(key).toDebugString());
       ret += '<tr>';
       ret += '<td>' + key + '</td>';
       if (!this.get(key)){
@@ -390,7 +404,7 @@ var Store = Class.create(Hash, {
           this.LOG.fatal('Store#makeSlice : wrong data name arrived!');
           break;
       }
-      return ret;
+      //return ret;
     }.bind(this));
     // prevMovesだけは、あるbidの画面にはnxt_bidがbidのオブジェクトを集める
     LOG.debug('returning from makeSlice with : ' + ret.toDebugString());
@@ -627,8 +641,8 @@ var Store = Class.create(Hash, {
     // slicesを表示
     var ret_slice = '<table class="storeTable">';
     this.slices.each(function(pair){
-      this.LOG.debug('pair.key : ' + JSON.stringify(pair.key));
-      this.LOG.debug('pair.value : ' + pair.value.toDebugString());
+      this.LOG.debug('pair.key of slices : ' + JSON.stringify(pair.key));
+      this.LOG.debug('pair.value of slices : ' + pair.value.toDebugString());
       ret_slice += '<tr>'
       ret_slice += '<td>' + pair.key + '</td>';
       ret_slice += '<td>' + pair.value.toDebugHtml() + '</td>';
@@ -639,7 +653,24 @@ var Store = Class.create(Hash, {
     //LOG.debug(JSON.stringify(this));
     LOG.goOut(Log.DEBUG2);
     return ret + ret_slice;
-  }
+  },
+	/*
+	 * show()
+	 */
+	// currentSliceの各要素について、
+	// それぞれのshowを呼び出しそれぞれのwindowに内容を表示する
+        // ただし、boardだけは別
+    show : function show(){ // Store
+      LOG.getInto('Store#show', Log.DEBUG2);
+      var slice = this.slices.get(this.currentBid);
+      //this.currentSlice().each(function(pair){
+      slice.each(function(pair){
+        if(pair.key != 'board'){
+          pair.value.show();
+        }
+      });
+      LOG.goOut(Log.DEBUG2);
+    }
 });
 
 dataStore = new Store();

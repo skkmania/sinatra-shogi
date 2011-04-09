@@ -183,6 +183,16 @@ var MovePoints = Class.create({
       return ret;
     },
   	/*
+  	 * fromDelta()
+  	 */
+    fromDelta : function fromDelta(str){ // BoardPointByUser
+      var ary = str.split(',');
+      this.bid		= parseInt(ary[0]);
+      this.uid		= parseInt(ary[1]);
+      this.pbpoint	= parseInt(ary[2]);
+      return this;
+    },
+  	/*
   	 * toDelta()
   	 */
     toDelta : function toDelta(){ // BoardPointByUser
@@ -190,6 +200,16 @@ var MovePoints = Class.create({
       ret =  this.bid + ',' + this.uid;
       ret += ',' + this.pbpoint
       return ret;
+    },
+	/*
+	 * show()
+	 */
+	// 自身のwindowに内容を表示する
+    show : function show(){ // BoardPointByUser
+      LOG.getInto('BoardPointByUser#show', Log.DEBUG2);
+      $('boardPointSlider').value = this.pbpoint;
+      $('boardPointSlider').next().textContent = this.pbpoint;
+      LOG.goOut(Log.DEBUG2);
     }
   }; // end of prototype of BoardPointByUser
 })(window);
@@ -205,8 +225,10 @@ var MovePoints = Class.create({
   }
   BoardPointAverage.prototype = {
     initialize : function(obj){
-      this.bid		= obj.bid;
-      this.bpoint	= obj.bpoint;
+      if(obj){
+        this.bid	= obj.bid;
+        this.bpoint	= obj.bpoint;
+      }
       return this;
     },
   
@@ -227,6 +249,16 @@ var MovePoints = Class.create({
       return ret;
     },
   	/*
+  	 * fromDelta()
+  	 */
+    fromDelta : function fromDelta(str){ // BoardPointAverage
+      var ary = str.split(',');
+      this.bid		= parseInt(ary[0]);
+      //this.bpoint	= parseFloat(ary[1]);
+      this.bpoint	= ary[1];
+      return this;
+    },
+  	/*
   	 * toDelta()
   	 */
     toDelta : function toDelta(){ // BoardPointAverage
@@ -235,6 +267,15 @@ var MovePoints = Class.create({
       //ret += ',' + this.bpoint.toFixed(2);
       ret += ',' + this.bpoint;
       return ret;
+    },
+	/*
+	 * show()
+	 */
+	// 自身のwindowに内容を表示する
+    show : function show(){ // BoardPointAverage
+      LOG.getInto('BoardPointAverage#show', Log.DEBUG2);
+      $('totalBoardPoint').textContent = this.bpoint;
+      LOG.goOut(Log.DEBUG2);
     }
   }; // end of prototype of BoardPointAverage
 })(window);

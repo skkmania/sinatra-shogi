@@ -440,8 +440,9 @@ GameController = Class.create({
     this.game.toggleDraggable();
     this.game.board.turn = this.readTurnFromState(state);
     controlPanel.update('playing');
-    dataStore.currentSlice().get('nextMoves').show();
-    dataStore.currentSlice().get('prevMoves').show();
+    dataStore.show();
+    //dataStore.currentSlice().get('nextMoves').show();
+    //dataStore.currentSlice().get('prevMoves').show();
     //this.prepareFromState(state);
     LOG.goOut();
   },
@@ -463,8 +464,9 @@ GameController = Class.create({
     this.game.boardReadFromDB();
     this.game.toggleDraggable();
     controlPanel.update('review');
-    dataStore.currentSlice().get('nextMoves').show();
-    dataStore.currentSlice().get('prevMoves').show();
+    dataStore.show();
+    //dataStore.currentSlice().get('nextMoves').show();
+    //dataStore.currentSlice().get('prevMoves').show();
     LOG.goOut();
   },
 	/**
@@ -518,8 +520,9 @@ GameController = Class.create({
     if(slice){
       this.game.boardReadFromDB();
       this.game.board.show();
-      dataStore.currentSlice().get('prevMoves').show();
-      dataStore.currentSlice().get('nextMoves').show();
+      dataStore.show();
+      //dataStore.currentSlice().get('nextMoves').show();
+      //dataStore.currentSlice().get('prevMoves').show();
     } else {
       LOG.fatal('cannot get slice');
     }
@@ -610,6 +613,8 @@ GameController = Class.create({
       delta['board'] = slice.get('board').toDelta();
       delta['next']  = slice.get('nextMoves').toDelta();
       delta['prev']  = slice.get('prevMoves').toDelta();
+      delta['boardPointByUser']  = slice.get('boardPointByUser').toDelta();
+      delta['boardPointAverage'] = slice.get('boardPointAverage').toDelta();
       LOG.debug('delta : ' + Object.toJSON(delta));
     } else {
       LOG.fatal('cannot get slice');
@@ -662,6 +667,8 @@ GameController = Class.create({
       delta['board'] = slice.get('board').toDelta();
       delta['next']  = slice.get('nextMoves').toDelta();
       delta['prev']  = slice.get('prevMoves').toDelta();
+      delta['boardPointByUser']  = slice.get('boardPointByUser').toDelta();
+      delta['boardPointAverage'] = slice.get('boardPointAverage').toDelta();
       LOG.debug('delta : ' + JSON.stringify(delta));
     } else {
       LOG.fatal('cannot get slice');
