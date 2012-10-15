@@ -29,6 +29,12 @@ describe Board, "のfrom_stateをテストする" do
     @board = Board.new
     SpecLog.debug(@board.to_log)
   end
+  it "boardの文字列にカンマが足りないとき、例外が発生する" do
+    expect {
+      state = {'bid'=>1, 'turn'=>'true', 'board'=>'1,tlxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL,,'}
+      @board.from_state state }.to raise_error
+  end
+
   it "持駒がないとき、各プロパティの値が定まる" do
     state = {'bid'=>1, 'turn'=>'true', 'board'=>'1,t,lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL,,'}
     @board.from_state state
@@ -141,7 +147,14 @@ describe Board, "のapplyをテストする" do
       :board=>"lxpxxxPxLnbpxxxPRNsxpxxxPxSgxpxxxPxGkxpxxxPxKgxpxxxPxGsxpxxPxxSnrpxxxPBNlxpxxxPxL"}]
   end
   it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のnextの値は" do
-    @result['next'].should ==  [{:bid=>2, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false, :mid=>0}, {:bid=>2, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false, :mid=>1}, {:bid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false, :mid=>2}, {:bid=>2, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false, :mid=>3}, {:mid=>4, :m_from=>11, :m_to=>12, :piece=>"l", :nxt_bid=>15077, :promote=>false, :bid=>2}]
+    @result['next'].should ==
+[{:bid=>2, :m_from=>33, :m_to=>34, :piece=>"p", :nxt_bid=>3, :promote=>false, :mid=>0},
+{:bid=>2, :m_from=>83, :m_to=>84, :piece=>"p", :nxt_bid=>235, :promote=>false, :mid=>1},
+{:bid=>2, :m_from=>53, :m_to=>54, :piece=>"p", :nxt_bid=>14817, :promote=>false, :mid=>2},
+{:bid=>2, :m_from=>13, :m_to=>14, :piece=>"p", :nxt_bid=>10647, :promote=>false, :mid=>3},
+{:mid=>4, :m_from=>11, :m_to=>12, :piece=>"l", :nxt_bid=>15077, :promote=>false, :bid=>2},
+{:promote=>false, :bid=>2, :mid=>5, :m_from=>41, :m_to=>32, :piece=>"g", :nxt_bid=>15089},
+{:promote=>false, :bid=>2, :mid=>6, :m_from=>23, :m_to=>24, :piece=>"p", :nxt_bid=>16481}]
   end
   it "初期盤面に'+7776FU\n'を#applyしたあとの返り値のprevの値は" do
     @result['prev'].should == [{:bid=>1, :mid=>0, :m_from=>77, :m_to=>76, :piece=>"P", :nxt_bid=>2, :promote=>false}] 
