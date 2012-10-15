@@ -1,12 +1,24 @@
 require 'pseudo_wave.rb'
 
+  GpsLog = Logger.new('log/gpsclient_spec.log')
+
   host = '0.0.0.0'
   port = 8081
-  $wave = Wave.new
+  tmpState = Wave::State.new ( {'status'=>'gpsc', 'mode'=>'playing',
+                          'move'=>'+7776FU', 'bid'=> '1', 'count'=>'1',
+                          'turn'=>'t', 'board'=> ('1,t,' + Board::Initial_board_string + ',,') ,
+                          'next'=>'1,0,77,76,P,f,2:1,1,27,26,P,f,123',
+                          'prev'=>'' })
+  GpsLog.debug tmpState.toString
+  $wave = Wave.new({ :state => tmpState, :host => host, :mode => 'playing',
+                     :participants => 'skkmania', :time => 3000,
+                     :viewer => 'skphack' } )
+  GpsLog.debug $wave.to_s
   
   $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
   $server.attach(Rev::Loop.default)
-  Log.debug "start on #{host}:#{port}"
+  GpsLog.debug "start on #{host}:#{port}"
+  GpsLog.debug "$wave is  #{$wave.to_s}"
   
 $gps_config = { :initial_filename => "bin/csa.init",
              :opponent => "skkmania",
@@ -23,7 +35,6 @@ $gps_config = { :initial_filename => "bin/csa.init",
              :other_options => "",
              :base_command => 'bin/gpsshogi -v -r -c' # random play for test
            }
-GpsLog = Logger.new('log/gpsclient_spec.log')
 describe GpsClient, "は初期化されたとき" do
   before(:all) do
     @gpsclient = GpsClient.new($wave, $gps_config, GpsLog)
@@ -41,9 +52,14 @@ describe GpsClient, "は初期化されたとき" do
     @gpsclient.status.should be_nil
   end
 
+  it "のwave プロパティをもつ" do
+    @gpsclient.wave.should_not be_nil
+  end
+
   it "のboard プロパティをもつ" do
     @gpsclient.board.should_not be_nil
   end
+
   it "のboard.storeはupdateされている" do
     @gpsclient.board.store.should_not be_nil
   end

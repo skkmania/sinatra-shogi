@@ -11,8 +11,9 @@ class GpsClient < GpsShogi
   def initialize(wave, config, logger=Logger.new('log/gpsclient.log'))
     @gclogger = logger
     @wave   = wave
+    @gclogger.debug "GpsClient initializing with wave.state : #{@wave.state.toString}"
     @status = nil
-    @board  = Board.new
+    @board  = Board.new( logger )
     @board.from_state @wave.state
     unless config[:initial_filename]
       config[:initial_filename] = make_initial_file
@@ -26,9 +27,10 @@ class GpsClient < GpsShogi
     @gps_th      = gps_thread
     #@svr_th     = svr_thread
     @debug_cnt   = 0
+    @gclogger.debug "GpsClient initialized."
   end
   attr_accessor :status, :board
-  attr_reader :gps_th
+  attr_reader :gps_th, :wave
 
 #
 #  make_initial_file
