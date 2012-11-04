@@ -89,7 +89,8 @@
       //  $('Log').insert(new Element('img',
       //   {id:'handle0', src:"img/lib/window_close.gif"}));
        // new Resizable('Log',{handle:'handle0'});
-        LOG.setLevel(Log.ERROR);
+        LOG.setLevel(Log.DEBUG);
+        //LOG.setLevel(Log.ERROR);
         if(wave){
           window.gameController = new GameController({containerId:'shogi',
                'playerSetting':'playGame', 'gameConstructor':'shogi'});
