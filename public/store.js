@@ -660,17 +660,17 @@ var Store = Class.create(Hash, {
 	// currentSliceの各要素について、
 	// それぞれのshowを呼び出しそれぞれのwindowに内容を表示する
         // ただし、boardだけは別
-    show : function show(){ // Store
-      LOG.getInto('Store#show', Log.DEBUG2);
-      var slice = this.slices.get(this.currentBid);
-      //this.currentSlice().each(function(pair){
-      slice.each(function(pair){
-        if(pair.key != 'board'){
-          pair.value.show();
-        }
-      });
-      LOG.goOut(Log.DEBUG2);
-    }
+  show : function show(){ // Store
+    LOG.getInto('Store#show', Log.DEBUG2);
+    var slice = this.slices.get(this.currentBid);
+    //this.currentSlice().each(function(pair){
+    slice.each(function(pair){
+      if(pair.key != 'board'){
+        pair.value.show();
+      }
+    });
+    LOG.goOut(Log.DEBUG2);
+  }
 });
 
 dataStore = new Store();
