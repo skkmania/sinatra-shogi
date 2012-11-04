@@ -590,24 +590,6 @@ var MoveComments = Class.create({
 
 });
 
-//  ユーザ(userid)の盤面(bid)へのコメント(bcomment)
-var PersonalBoardComment = Class.create({
-
-  initialize : function(bid, userid, bcomment){
-    this.bid = bid;
-    this.userid = userid;
-    this.bcomment = bcomment;
-  },
-});
-
-//
-//  personalBoardCommentの集合
-var BoardComments = Class.create({
-  bid : null,
-  boardComments : []
-});
-
-
 //
 //  持ち駒
 var HandPieces = Class.create({
