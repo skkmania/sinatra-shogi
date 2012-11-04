@@ -212,14 +212,28 @@ class Board
   #    入力 : stateのHash valueはすべて文字列 keyはbid,turn,black,board,white
   #    出力 : なし
   #    副作用 : 自身の値を変更する
+  #    例外： stateのHash valueに不正があるときArgumentErrorを発生させる
+  #           bid : 正の整数以外は不正
+  #           turn: t,f,true,false  以外の文字は不正
+  #           board: commaが4つなければ不正
   #
   def from_state(state)
     @blogger.debug("entered in from_state with #{state.inspect}")
     @blogger.debug("board now is \n#{to_log}")
-    @bid    = state['bid'].to_i
-    @turn   = (state['turn'][0] == 't'[0])
-    @board, @black, @white = state['board'].split(',',-1)[2..4]
-    @blogger.debug("leaving from from_state. board became \n#{to_log}")
+    begin
+      if (state['bid'] < 1) || 
+         (/t|f|true|false/ !~ state['turn']) || 
+         (state['board'].count(',') != 4)
+      then
+        @blogger.debug("Board#from_state :  stateのHash valueに不正がありArgumentErrorが発生")
+        raise ArgumentError, "Board#from_state : stateのHash valueに不正あり"
+      else
+        @bid    = state['bid'].to_i
+        @turn   = (state['turn'][0] == 't'[0])
+        @board, @black, @white = state['board'].split(',',-1)[2..4]
+        @blogger.debug("leaving from from_state. board became \n#{to_log}")
+      end
+    end
   end
 end
 
