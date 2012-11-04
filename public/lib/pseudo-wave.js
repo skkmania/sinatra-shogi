@@ -109,7 +109,7 @@ wave.ws.onclose = function() {
 }
 
 wave.ws.onerror = function(msg) {
-  LOG.debug("failed to connect"+msg);
+  LOG.debug("failed to connect to WebSocket server on " + WS_URL + ", msg: " + msg);
 }
 
 wave.ws.onmessage = function(event) {
@@ -235,11 +235,17 @@ wave.State.prototype = {
     LOG.goOut();
   },
   submitDelta: function(delta) {
+    var toStr;
     LOG.getInto("wave.State.submitDelta");
     if (wave.stateCallback) {
       this.merge(delta);
-      LOG.debug('sending : ' + this.toString());
-      wave.ws.send(this.toString());
+      toStr = this.toString();
+      LOG.debug('sending : ' + toStr); 
+      if (wave.ws.send(toStr)) {
+        LOG.debug('ws.send done.');
+      } else {
+        LOG.debug('ws.send failed. something maybe wrong with WebSocket communication');
+      }
     }
     LOG.goOut();
   },
@@ -249,7 +255,11 @@ wave.State.prototype = {
     LOG.debug("state changed. >> " + this.toDebugString());
     if (wave.stateCallback) {
       LOG.debug('sending : ' + this.toString());
-      wave.ws.send(state);
+      if (wave.ws.send(state)) {
+        LOG.debug('ws.send done.');
+      } else {
+        LOG.debug('ws.send failed. something maybe wrong with WebSocket communication');
+      }
     }
     LOG.goOut();
   },

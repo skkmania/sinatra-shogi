@@ -76,6 +76,7 @@ class Wave
     @time = opt[:time]
     @viewer = opt[:viewer]
     @isInWaveContainer = opt[:isInWaveContainer] || false;
+    Log.debug("Wave::initialized")
   end
   attr_accessor :state, :participants
   def getHost
@@ -110,6 +111,11 @@ class Wave
   end
   def setStateCallback(callback)
     @stateCallback = callback
+  end
+  def to_s
+    "host : #@host,  mode: #@mode, participants: #@participants\n" +
+    "state : #{@state.inspect}\n" +
+    "time: #@time,  viewer: #@viewer\n"
   end
 end
 
@@ -162,7 +168,7 @@ class Wave::State < Hash
     self.clear
   end
   def submitDelta(delta)
-    Log.debug("into submitDelta with #{delta.inspect}")
+    Log.debug("into Wave::State.submitDelta with #{delta.inspect}")
     STDERR.puts "into submitDelta with #{delta.inspect}"
     self.merge! delta
     Log.debug "submitDelta : State changed. >> #{self.inspect}"
@@ -178,7 +184,8 @@ class Wave::State < Hash
     self
   end
   def toString
-    self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
+    # self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
+    self.inspect
   end
 
   def fromString(str)
@@ -262,8 +269,16 @@ class PseudoWaveConnection < Rev::WebSocket
     end
   end
 
+  def on_error
+    Log.debug "error occured duaring connecting : <#{@host}>"
+  end
+
   def on_close
-    Log.debug "connection closed: <#{@host}>"
+    if @host
+      Log.debug "connection closed: by <#{@host}>"
+    else
+      Log.debug "connection closed: can't get host."
+    end
 
     $pubsub.unsubscribe(@sid)
     $pubsub.publish("msg:bye, I'm closing...")
