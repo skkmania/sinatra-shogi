@@ -8,17 +8,17 @@ require 'lib/rb_gpsshogi.rb'
 require 'lib/shogi_model.rb'
 
 class GpsClient < GpsShogi
-  def initialize(wave, config, logger=Logger.new('log/gpsclient.log'))
+  def initialize(ws, config, logger=Logger.new('log/gpsclient.log'))
     @gclogger = logger
-    @wave   = wave
-    @gclogger.debug "GpsClient initializing with wave.state : #{@wave.state.toString}"
+    @ws   = ws
+    @gclogger.debug "GpsClient initializing with ws.state : #{@ws.toString}"
     @status = nil
     @board  = Board.new( logger )
-    @board.from_state @wave.state
+    @board.from_state @ws.state
     unless config[:initial_filename]
       config[:initial_filename] = make_initial_file
     end
-    @board.store.current_bid = @wave.state['bid']
+    @board.store.current_bid = @ws.state['bid']
     @board.store.update_store
     super config
     @board_m     = Mutex.new
@@ -30,19 +30,19 @@ class GpsClient < GpsShogi
     @gclogger.debug "GpsClient initialized."
   end
   attr_accessor :status, :board
-  attr_reader :gps_th, :wave
+  attr_reader :gps_th, :ws
 
 #
 #  make_initial_file
 #    機能: gpsのバイナリに初期局面として渡すファイルを作成する
-#    入力: なし. @wave.state, @boardの内容を元にする
+#    入力: なし. @ws.state, @boardの内容を元にする
 #    出力: 文字列 作成したファイルの名前 
 #  副作用: gpsのバイナリに初期局面として渡すファイルが作成される
 #
   def make_initial_file
     file_name = 'bin/csa_'+ Time.now.strftime("%Y%m%d_%H%M%S.init")
     open(file_name, "w") do |f|
-      f.write(@board.to_csa_file([@wave.state['blacks'], @wave.state['whites']]))
+      f.write(@board.to_csa_file([@ws.state['blacks'], @ws.state['whites']]))
     end
     file_name
   end
@@ -127,10 +127,10 @@ class GpsClient < GpsShogi
     if delta['bid'] == "1"
       delta['count'] = "0"
     else
-      delta['count'] = (@wave.state.get('count').to_i + 1).to_s
+      delta['count'] = (@ws.state['count'].to_i + 1).to_s
     end
     delta['move']  = '' # browser userには必要ない値なので。
-    @wave.state.submitDelta(delta)
+    @ws.submitDelta(delta)
     STDERR.puts "delta submitted."
     @status = 'delta_sent'
     @gclogger.debug("leaving make_and_send_delta.")

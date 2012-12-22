@@ -4,7 +4,7 @@ require 'pseudo_wave.rb'
 
   host = '0.0.0.0'
   port = 8081
-  tmpState = Wave::State.new ( {'status'=>'gpsc', 'mode'=>'playing',
+  tmpState = Wave::State.new( {'status'=>'gpsc', 'mode'=>'playing',
                           'move'=>'+7776FU', 'bid'=> '1', 'count'=>'1',
                           'turn'=>'t', 'board'=> ('1,t,' + Board::Initial_board_string + ',,') ,
                           'next'=>'1,0,77,76,P,f,2:1,1,27,26,P,f,123',
@@ -15,8 +15,8 @@ require 'pseudo_wave.rb'
                      :viewer => 'skphack' } )
   GpsLog.debug $wave.to_s
   
-  $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
-  $server.attach(Rev::Loop.default)
+  # $server = EventMachine::WebSocketServer.new(host, port, PseudoWaveConnection)
+  # $server.attach(EventMachine::Loop.default)
   GpsLog.debug "start on #{host}:#{port}"
   GpsLog.debug "$wave is  #{$wave.to_s}"
   
@@ -46,6 +46,10 @@ describe GpsClient, "は初期化されたとき" do
     @gpsclient.toryo
     sleep 5 # wait for gpsshogi cooldown
     puts 'toryo done.'
+  end
+
+  it "初期化に成功する" do
+    @gpsclient.should_not be_nil
   end
 
   it "のstatus はnilである" do

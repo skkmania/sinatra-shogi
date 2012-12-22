@@ -5,7 +5,7 @@
 #	WebSocket pseudo wave server
 #
 require 'rubygems'
-require 'lib/rev/websocket'
+require 'em-websocket'
 require 'lib/gpsclient.rb'
 require 'logger'
 
@@ -36,6 +36,7 @@ class PubSub
 		@subscriber = {}
 		@seqid = 0
 	end
+        attr_accessor :subscriber, :seqid
 
 	def subscribe(&block)
 		sid = @seqid += 1
@@ -202,8 +203,8 @@ class Wave::State < Hash
   end
 end
 
-class PseudoWaveConnection < Rev::WebSocket
-  def on_open
+class PseudoWaveConnection < EventMachine::WebSocket::Connection
+  def onopen
     @host = peeraddr[2]
     Log.debug "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
     # send_message
@@ -291,12 +292,12 @@ if $0 == __FILE__
   $wave = Wave.new
 #  $gpsclient = GpsClient.new($wave, $gps_config)
   
-  $server = Rev::WebSocketServer.new(host, port, PseudoWaveConnection)
-  $server.attach(Rev::Loop.default)
+  $server = EventMachine::WebSocketServer.new(host, port, PseudoWaveConnection)
+  $server.attach(EventMachine::Loop.default)
   # $pubsub.publish("this connection was attached to Psuedo Wave Server")
   
   Log.debug "start on #{host}:#{port}"
   
-  Rev::Loop.default.run
+  EventMachine::Loop.default.run
 
 end

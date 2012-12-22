@@ -78,7 +78,7 @@ class Board
     @blogger.debug("process: #{ret}")
     @blogger.debug("now @turn is : #{@turn.to_s}")
     ret += (@turn ? '+' : '-') + "\n"
-    @blogger.debug("leaving from to_csa_file with #{ret}")
+    @blogger.debug("leaving from to_csa_file with #{ret}\n")
     ret
   end
 #
@@ -100,7 +100,7 @@ class Board
     @blogger.debug("@store became #{@store.dba.log_format @store}")
     @blogger.debug("@bid became : #@bid and going to get this bid's section")
     tmp = @store.get_section @bid
-    @blogger.debug("leaving from apply with the result of get_section #@bid :\n #{@store.dba.log_format tmp}")
+    @blogger.debug("leaving from apply with the result of get_section #@bid :\n   #{@store.dba.log_format tmp}\n")
     tmp
   end
 
@@ -161,9 +161,9 @@ class Board
         @board[pairdec2index(move[:m_from])] = 'x'
     end
     @blogger.debug("leaving from _apply with :")
-    @blogger.debug("@board : #{@board}")
-    @blogger.debug("@black : #{@black}")
-    @blogger.debug("@white : #{@white}")
+    @blogger.debug(" -- @board : #{@board}")
+    @blogger.debug(" -- @black : #{@black}")
+    @blogger.debug(" -- @white : #{@white}\n")
   end
 
   def un_promotes(piece)
@@ -221,7 +221,7 @@ class Board
     @blogger.debug("entered in from_state with #{state.inspect}")
     @blogger.debug("board now is \n#{to_log}")
     begin
-      if (state['bid'] < 1) || 
+      if (state['bid'].to_i < 1) || 
          (/t|f|true|false/ !~ state['turn']) || 
          (state['board'].count(',') != 4)
       then
@@ -231,7 +231,7 @@ class Board
         @bid    = state['bid'].to_i
         @turn   = (state['turn'][0] == 't'[0])
         @board, @black, @white = state['board'].split(',',-1)[2..4]
-        @blogger.debug("leaving from from_state. board became \n#{to_log}")
+        @blogger.debug("leaving from from_state. board became \n  #{to_log}\n")
       end
     end
   end
@@ -318,7 +318,7 @@ class Move < Hash
       self[:promote] = true  
     end
     @mlogger.debug("parsed move is : #{self.inspect}")
-    @mlogger.debug("leaving parse_csa with\n board : #{board.board},\n black : #{board.black},\n white : #{board.white}")
+    @mlogger.debug("leaving parse_csa with\n   board : #{board.board},\n   black : #{board.black},\n   white : #{board.white}\n")
   end
 
   def from_hand
