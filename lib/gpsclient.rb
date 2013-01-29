@@ -14,7 +14,7 @@ class GpsClient < GpsShogi
     @gclogger.debug "GpsClient initializing with ws.state : #{@ws.toString}"
     @status = nil
     @board  = Board.new( logger )
-    @board.from_state @ws.state
+    @board.from_state @ws.state if @ws.state != {}
     unless config[:initial_filename]
       config[:initial_filename] = make_initial_file
     end

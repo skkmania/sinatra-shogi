@@ -50,12 +50,18 @@ class PubSub
 
 	def publish(data)
     Log.debug "PubSub publishing : #{data}"
+		# @subscriberの全クライアントをcallするが、ネットのむこうにいるので
+		# 失敗するかもしれない。そういうクライアントはリストから削除してしまう。
 		@subscriber.reject! {|sid,block|
 			begin
 				block.call(data)
+				# callが成功すればここに戻ってきて、
 				false
+				# listから削除されない
 			rescue
+				# callが失敗すれば例外が発生してここにくるので、
 				true
+				# listから削除される
 			end
 		}
 	end
@@ -66,7 +72,6 @@ class PubSub
 end
 
 $pubsub = PubSub.new
-$record = []
 
 class Wave
   def initialize(opt = {})
@@ -77,7 +82,7 @@ class Wave
     @time = opt[:time]
     @viewer = opt[:viewer]
     @isInWaveContainer = opt[:isInWaveContainer] || false;
-    Log.debug("Wave::initialized")
+    Log.debug("Wave::initialized : #{to_s}")
   end
   attr_accessor :state, :participants
   def getHost
@@ -118,6 +123,9 @@ class Wave
     "state : #{@state.inspect}\n" +
     "time: #@time,  viewer: #@viewer\n"
   end
+	def toString
+		to_s
+	end
 end
 
 class Wave::Callback
@@ -185,8 +193,8 @@ class Wave::State < Hash
     self
   end
   def toString
-    # self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
-    self.inspect
+    self.to_a.inject([]){|r,a| r.push a.join('|'); r }.join('!!')
+    # self.inspect
   end
 
   def fromString(str)
@@ -199,37 +207,58 @@ class Wave::State < Hash
     self
   end
   def publish
-    $pubsub.publish(toString)
+		Log.debug "publishing : #{toString}"
+    $pubsub.publish(self.toString)
   end
 end
 
-class PseudoWaveConnection < EventMachine::WebSocket::Connection
-  def onopen
-    @host = peeraddr[2]
-    Log.debug "WebSocket opened from '#{peeraddr[2]}': request=#{request.inspect}"
-    # send_message
-    
-    @sid = $pubsub.subscribe {|data|
-    	send_message data
-    }
-    $record.each {|data| send_message data }
-    #open_msg = $wave.state.toString
-    #Log.debug "sending open message : #{open_msg}"
-    #send_message open_msg
-  end
+module PseudoWaveConnection
+  #
+  #  on_open(data)
+  #    WebSocketクライアントからの接続要求を処理する関数
+  #    入力: EM::WebSocket object
+  #    出力: なし
+  def on_open(socket, handshake)
+
+		  Log.debug "WebSocket opened #{{
+        :path => handshake.path,
+        :headers => handshake.headers,
+ 		    :query => handshake.query,
+ 		    :query_string => handshake.query_string,
+			  :origin => handshake.origin,
+			  :receive_data => handshake.receive_data
+		  }}" if handshake
+      
+      @sid = $pubsub.subscribe {|data|
+      	socket.send data
+      }
+      #open_msg = $wave.state.toString
+      #open_msg = '{ "status":"anonym" }'
+      open_msg = 'status|anonym'
+      Log.debug "sending open message : #{open_msg}"
+      socket.send open_msg
+	end  
 
   #
   #  on_message(data)
   #    WebSocketクライアントから送られてくる文字列を受け取り処理する関数
   #    入力: 文字列
   #    出力: なし
-  def on_message(data)
+  def on_message(socket, data)
     Log.debug "state received: '#{data}'"
     status = $wave.state.fromString(data).get('status')
+		if status
+      Log.debug "status found in status which has just arrived: '#{status}'"
+		else
+      Log.debug "status not found in status which has just arrived."
+		end
     case status
+      when 'anonym'
+        Log.debug "anonym arrived : #{data}"
       when 'sync'
         Log.debug "sync request arrived : #{data}"
-        send_message $wave.state.toString
+        # socket.send data
+        socket.send $wave.state.toString
         Log.debug "sent sync reply : #{$wave.state.toString}"
       when 'reset'
         Log.debug "reset request arrived : #{data}"
@@ -237,14 +266,16 @@ class PseudoWaveConnection < EventMachine::WebSocket::Connection
         $pubsub.publish('status|reset')
       when 'gpss'
         # gps対局を申し込まれた
+        Log.debug "gps game request arrived : #{data}"
         $gps_config[:sente] = ($wave.state.get('blacks') == 'gps')
         $gpsclient = GpsClient.new($wave, $gps_config)
         $wave.state.put('status', 'gpsc')
         $wave.state.put('mode', 'playing')
         $gpsclient.make_and_send_delta($gpsclient.board.store.get_section(1))
-        #$pubsub.publish($wave.state.toString)
+        $pubsub.publish($wave.state.toString)
       when 'gpst'
         # 局面指定gps対局を申し込まれた
+        Log.debug "gps specified game request arrived : #{data}"
         $gps_config[:sente] = ($wave.state.get('blacks') == 'gps')
         $gps_config[:black] =  $wave.state.get('blacks')
         $gps_config[:white] =  $wave.state.get('whites')
@@ -254,12 +285,14 @@ class PseudoWaveConnection < EventMachine::WebSocket::Connection
         $gpsclient = GpsClient.new($wave, $gps_config)
       when 'toryo'
         # gps対局中にユーザから投了された
+        Log.debug "toryo request from user arrived : #{data}"
         $gpsclient.toryo
         $wave.state.put('status', 'normal')
         $pubsub.publish($wave.state.toString)
       when 'gpsc'
         # gpsclientとして参加しているクライアントはstateのstatusは必ず
         # gpscとして送ること
+        Log.debug "gpsc request arrived : #{data}"
         # まずユーザからの指し手を配布
         $pubsub.publish($wave.state.toString)
         # それからgpsclientに指し手を渡す
@@ -270,13 +303,13 @@ class PseudoWaveConnection < EventMachine::WebSocket::Connection
     end
   end
 
-  def on_error
-    Log.debug "error occured duaring connecting : <#{@host}>"
+  def on_error(socket, err)
+    Log.debug "error occured duaring connecting : <#{err}>"
   end
 
-  def on_close
-    if @host
-      Log.debug "connection closed: by <#{@host}>"
+  def on_close(socket)
+    if socket
+      Log.debug "connection closed: by <#{socket.inspect}>"
     else
       Log.debug "connection closed: can't get host."
     end
@@ -289,15 +322,18 @@ end
 if $0 == __FILE__
   host = '0.0.0.0'
   port = 8081
-  $wave = Wave.new
-#  $gpsclient = GpsClient.new($wave, $gps_config)
+  $wave = Wave.new({:host => host, :port => port})
+  $gpsclient = GpsClient.new($wave, $gps_config)
   
-  $server = EventMachine::WebSocketServer.new(host, port, PseudoWaveConnection)
-  $server.attach(EventMachine::Loop.default)
-  # $pubsub.publish("this connection was attached to Psuedo Wave Server")
-  
-  Log.debug "start on #{host}:#{port}"
-  
-  EventMachine::Loop.default.run
+  EM::WebSocket.start(:host => host, :port => port, :debug => true){|socket|
+		socket.extend(PseudoWaveConnection)
+    socket.onopen { |handshake| socket.on_open(socket,handshake) }
+		socket.onclose { socket.on_close(socket) }
+    socket.onmessage { |msg| socket.on_message(socket, msg) }
+    socket.onerror { |err| socket.on_error(socket, err) }
+
+    Log.debug "this connection was attached to Psuedo Wave Server" 
+    Log.debug "WebSocket server started on #{host}:#{port}"
+  } 
 
 end

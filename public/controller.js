@@ -194,8 +194,12 @@ Player = Class.create({
     this.counterElm.update(global.gameController.count);
     // 手番表示の更新
     // if(this.game) $('boardTurn').update('board : ' + this.game.board.turn.toString());
-    $('bottom-turn').toggleClassName('turn');
-    $('top-turn').toggleClassName('turn');
+    if ($('bottom-turn')) {
+      $('bottom-turn').toggleClassName('turn');
+    }
+    if ($('top-turn')) {
+      $('top-turn').toggleClassName('turn');
+    }
     // bidの表示を現在の盤面のbidへ更新
     $('inputText').value = global.gameController.game.board.bid;
     if (!this.elm) this.elm = $('control-panel');                         

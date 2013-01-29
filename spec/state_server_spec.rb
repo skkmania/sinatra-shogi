@@ -4,6 +4,7 @@
 #  pseudo_wave_spec.rb
 #
 require '/home/skkmania/workspace/sinatra/shogi/state_server.rb'
+require 'spec_helper.rb'
 
 SpecLog = Logger.new('log/state_server_spec.log')
   
@@ -28,6 +29,8 @@ $gps_config = {
 #  StateModule
 #
 describe StateModule do
+  let (:Log) { double :logger }
+
   class DummyClass; end
 
   before(:all) do
@@ -35,49 +38,210 @@ describe StateModule do
     @dummy.extend StateModule
   end
 
-  describe "loginMessage?は" do
+  #
+  #  StateModule#readStatus
+  #
+  describe "#readStatus?" do
+    it "dataを受け取るとハッシュ構造を理解する"
+    it "理解したハッシュからstatus key の値を読んでかえす"
+    it "理解したハッシュにstatus keyがなければ例外を発行する"
+  end
+	  
+  #
+  #  StateModule#loginMessage
+  #
+  describe "#loginMessage?" do
     it '受信したメッセージがログイン要求ならば真である' do
-      @dummy.loginMessage?('sync|wave').should == true
+      @dummy.loginMessage?('sync|wave').should be_true
     end
 
     it '受信したメッセージがログイン要求でないならば偽である' do
-      @dummy.loginMessage?('not_login_request').should == false
+      @dummy.loginMessage?('not_login_request').should_not be_true
     end
   end
 
-  describe "sendBroadcastは" do
-    it "長さ0のmessageをうけとればなにもせずreturnする" do
-      @dummy.sendBroadcast('')	   
-    end	
-
-    it "長さのあるmessageをうけとれば接続ユーザー全員にメッセージを送る" do
-      @dummy.sendBroadcast('test message')	   
-    end	
-  end
-
-  describe "loginは" do
-    it "同じ名前のuserからLOGINリクエストがきたら拒否する" do
+  #
+  #  StateModule#sendBroadcast
+  #
+  describe "#sendBroadcast" do
+    shared_context 'clientが存在する' do
+      before do
+	@dummy.connected_clients[0] = 'a'
+	@dummy.connected_clients[1] = 'b'
+      end
     end
+      
+	  
+    context "長さ0のmessageをうけとったとき" do
+      it "そのむねをerrorとしてlogに記す" do
+        Log.should_receive(:error).with "StateModule#sendBroadcast : empty message has arrived."
+        @dummy.sendBroadcast('')	   
+      end
+
+      it "どのクライアントにも送信せずreturnする" do
+	# any in connected_clients should_not_receive(:send)  みたいに書けるか?
+        @dummy.sendBroadcast('')	   
+      end	
+
+    end
+
+    context "長さのあるmessageをうけとったとき" do
+      include_context 'clientが存在する'
+      let(:message) { "sample message" }
+      let(:response) { "sent to all : sample message" }
+
+      it "接続ユーザー全員にメッセージを送る" do
+	@dummy.connected_clients.each{|c|
+	  c.should_receive(:send).with(message)
+	}
+        @dummy.sendBroadcast(message)	   
+      end	
+      it "接続ユーザー全員にメッセージを1回送る" do
+	# all in connected_clients should__receive(:send).once  みたいに書けるか?
+        @dummy.sendBroadcast('test message')	   
+      end	
+      it "送付したことをmessageとともにlogに記す" do
+        Log.should_receive(:debug).with response
+        @dummy.sendBroadcast(message)	   
+      end
+      
+    end
+
   end
 
-  describe "logoutは" do
+  #
+  #  StateModule#login
+  #
+  describe "#loginは" do
+
+    context "同じ名前のuserからLOGINリクエストがきたら" do
+      it "拒否する"
+        # 拒否されたほうの検証
+      end
+      it "@@connected_clientsの要素がひとつ増える" do
+        expect{ @dummy.login }.to change{ @dummy.g.size }.by(1)
+      end
+    end
+
+    context "新しいuserからLOGINリクエストがきたら" do
+      it "@@connected_clientsの要素がひとつ増える" do
+        expect{ @dummy.login }.to change{ @dummy.g.size }.by(1)
+      end
+    end
+
+  end
+
+  #
+  #  StateModule#logout
+  #
+  describe "#logoutは" do
+
     it "@@connected_clientsから要素がひとつ減る" do
+      expect{ @dummy.logout }.to change{ @dummy.g.size }.by(-1)
+    end
+    it "#bad_method" do 
+	      expect{ subject.bad_method }.to raise_error(NoMethodError)
+    end
+
+  end
+
+  #
+  #  StateModule#toString
+  #
+  describe "#toString" do
+    it " "
+  end
+
+  #
+  #  StateModule#submitDelta
+  #
+  describe "#submitDelta" do
+    it " "
+  end
+
+
+#
+#  main programme
+#
+describe "main" do
+  describe "onopen" do
+    it "loginを促すメッセージが送られる" do
+      EM.run {
+	main
+	test_client = EM.connect("0.0.0.0", 8081, FakeSocketClient)
+	test_client.onopen = lambda {
+          socket.data.last.chomp.should == "Welcome! Please login!"
+	  EM.stop
+	}
+      }
     end
   end
 
-  describe "toStringは" do
-    it "" do
+  describe "onmessage" do
+    it "messageからstatusを読みとる" do
+      EM.run {
+	main
+	test_client = EM.connect("0.0.0.0", 8081, FakeSocketClient)
+	test_client.send_data("sync|")
+	test_client.onmessage = lambda {|data|
+          data.chomp.should == "sync|"
+	  EM.stop
+	}
+      }
     end
   end
 
-  describe "submitDeltaは" do
-    it "" do
+  context "onmessageのうけとったstatusの値が" do
+    context "正常値" do
+      describe "syncのとき" do
+	it "受け取ったdataをそのままbroadcastする"
+	it "logにその旨を記述する"
+      end
+      describe "reset のとき" do
+	it "serverが保持しているstateをクリアする"
+	it "stateがクリアされたことをbroadcastする"
+	it "stateがクリアされたことをlogに記録する"
+      end
+      describe "gpss のとき" do
+	it "gps対局を申し込まれたことをlogに記録する"
+	it "GpsClientをsetupする"
+	it "serverが保持しているstateのstatusをgpscにする"
+	it "serverが保持しているstateのmodeをplayingにする"
+	it "setupしたGpsClientをキックする"
+	it "setupしたGpsClientをキックしたことをlogに記録する"
+      end
+      describe "toryo のとき" do
+        # gps対局中にユーザから投了された
+	it "GpsClientにtoryoを伝達する"
+	it "serverが保持しているstateをクリアする"
+	it "stateがクリアされたことをbroadcastする"
+	it "ユーザが投了してstateがクリアされたことをlogに記録する"
+      end
+      describe "gpsc のとき" do
+	it "まず受け取ったdataをそのままbroadcastする"
+        it "それからgpsclientにstate(指し手情報を含む)を渡す"
+      end
+    end
+    context "異常値" do
+      describe "その他 のとき" do
+        # expect Exception
+      end
     end
   end
 
+  context "onclose" do
+  end
+
+  context "onerror" do
+    it do
+      pending("error の定義をしなければ")
+      expect { }.to raise_error
+    end
+  end
 end
-end
 
+# -------------------------------------
+# 以下は参考に残しただけ
 =begin
 
 describe PubSub, 'のsubscribeメソッドは' do

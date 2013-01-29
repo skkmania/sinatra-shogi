@@ -277,7 +277,6 @@ wave.State.prototype = {
         LOG.debug("undefined value for key: " + key);
       }
     }
-    // ºÇ¸å¤Î!!¤ÏÍ¾·×¤Ê¤Î¤Ç¼è¤ê½ü¤¤¤ÆÊÖ¤¹
     ret = ret.slice(0,-2);
     LOG.debug("returning : " + ret);
     LOG.goOut();
