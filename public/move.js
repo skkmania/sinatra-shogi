@@ -323,12 +323,17 @@ var Moves = Class.create(Hash, {
     LOG.goOut();
     this.area.window_contents.observe('click',
       function(evt){ 
+        var clickedMove = evt.findElement('li');
         this.LOG.getInto('Moves#initOnClick#observe');
-        this.LOG.debug('id of clicked element : ' + evt.findElement('li').id);
-        var mid = parseInt(evt.findElement('li').id.match(/\d+/)[0]);
-        this.LOG.debug('mid of clicked element : ' + mid);
-        var inner = evt.findElement('li').innerHTML;
-        this.areaClicked(mid, inner);
+        if (clickedMove){
+          this.LOG.debug('id of clicked element : ' + clickedMove.id);
+          var mid = parseInt(clickedMove.id.match(/\d+/)[0]);
+          this.LOG.debug('mid of clicked element : ' + mid);
+          var inner = clickedMove.innerHTML;
+          this.areaClicked(mid, inner);
+	} else {
+          this.LOG.debug('It seems that empty move area was clicked.');
+	}
         this.LOG.goOut();
       }.bind(this)
     );
