@@ -149,7 +149,10 @@ Player = Class.create({
                        <button onclick="javascript:gameController.jumpButtonPressed();" id="submitButton">jump</button>\
                     </div>';
         contents += '<div id="counter"><span class="t">count</span><span id="counterNum"><span></div>';
-        contents += '<div id="bottom-panel" class="player"><span id="bottom-turn" class="t">sente</span> : <span id="bottom-player" class="t">waiting</span></div>';
+        contents += '<div id="bottom-panel" class="player">'
+        contents +=   '<span id="bottom-turn" class="t">sente</span> : ';
+	contents +=   '<div id="bottom-player" class="t">waiting</div>';
+	contents += '</div>';
         contents += '<div id="top-panel" class="player"><span id="top-turn" class="t turn">gote</span> : <span id="top-player" class="t">waiting</span></div>';
             // ここでわざとtopにclassNames turnを付与しておくと
             // bottom is black by default なので、後でCPがupdateされたとき
